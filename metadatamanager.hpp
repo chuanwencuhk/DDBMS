@@ -1,5 +1,10 @@
+#ifndef METADATAMANAGER_H_
+#define METADATAMANAGER_H_
+
 #include <string>
 #include <vector>
+#include "zookeeper.hpp"
+
 
 //#define SERVER_MAX_COUNT_OF_SITE 5
 
@@ -34,6 +39,7 @@ struct SiteServerKV {
 	vector<string> serverNameList;
 };
 
+
 struct SiteServerList {
 	vector<SiteServerKV*> list;
 	SiteServerList(int cnt){
@@ -60,16 +66,18 @@ private:
 	static string siteServerTablePath = "/siteServerTable";
 public:
 	static string getAppPath(){
-
+		return appPath;
 	}
 	static string getSiteIpTablePath(){
-
+		return appPath + siteIpTablePath;
 	}
 
 	static string getSiteServerTablePath(){
-
+		return appPath + siteServerTable;
 	}
 };
+
+
 
 class MetaDataManager {
 public:
@@ -77,6 +85,25 @@ public:
 	int setSiteIpTable(SiteIpList& siteIpList);
 	int getSiteServerTable(SiteServerList& siteServerList);
 	int setSiteServerTable(SiteServerList& siteServerList);
+	string getMetaData(const string& path, bool watch = false);
+	void setMetaData(const string& path, string& value);
+
+	MetaDataDirManager(const std::string& server_hosts,
+            ZooWatcher* global_watcher = nullptr,
+            int timeout_ms = 5 * 1000)
+	: global_watcher_(global_watcher){
+		zookeeper_ = new Zookeeper(server_hosts, global_watcher, timeout_ms);
+	}
+
+	~MetaDataDirManager(){
+		delete zookeeper_;
+	}
 private:
+	Zookeeper zookeeper_;
+	zhandle_t* zoo_handle_ = nullptr;
+  	ZooWatcher* global_watcher_ = nullptr;
 
 };
+
+
+#endif
