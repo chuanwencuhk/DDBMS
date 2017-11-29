@@ -5,3 +5,4 @@ CONFIG -= qt
 
 SOURCES += main.cpp
 LIBS +=  -L /usr/local/lib/ -lmysqlcppconn
+
