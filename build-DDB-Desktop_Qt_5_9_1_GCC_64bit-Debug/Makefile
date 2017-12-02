@@ -53,11 +53,15 @@ OBJECTS_DIR   = ./
 SOURCES       = ../DDB/main.cpp \
 		../DDB/MetadataManager/attribution.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
-		../DDB/MetadataManager/tablemetadata.cpp 
+		../DDB/MetadataManager/tablemetadata.cpp \
+		../DDB/MysqlConnector/mysqlconnector.cpp \
+		../DDB/MetadataManager/siteinfo.cpp 
 OBJECTS       = main.o \
 		attribution.o \
 		metadatamanager.o \
-		tablemetadata.o
+		tablemetadata.o \
+		mysqlconnector.o \
+		siteinfo.o
 DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/linux.conf \
@@ -217,6 +221,7 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		../DDB/.qmake.stash \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -237,12 +242,16 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/yacc.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf \
 		../DDB/DDB.pro ../DDB/MetadataManager/attribution.h \
-		../DDB/MetadataManager/global.h \
 		../DDB/MetadataManager/metadatamanager.h \
-		../DDB/MetadataManager/tableMetadata.h ../DDB/main.cpp \
+		../DDB/MetadataManager/tableMetadata.h \
+		../DDB/MysqlConnector/mysqlconnector.h \
+		../DDB/global.h \
+		../DDB/MetadataManager/siteinfo.h ../DDB/main.cpp \
 		../DDB/MetadataManager/attribution.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
-		../DDB/MetadataManager/tablemetadata.cpp
+		../DDB/MetadataManager/tablemetadata.cpp \
+		../DDB/MysqlConnector/mysqlconnector.cpp \
+		../DDB/MetadataManager/siteinfo.cpp
 QMAKE_TARGET  = DDB
 DESTDIR       = 
 TARGET        = DDB
@@ -413,6 +422,7 @@ Makefile: ../DDB/DDB.pro /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf 
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -596,6 +606,7 @@ Makefile: ../DDB/DDB.pro /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf 
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -634,8 +645,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/global.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h ../DDB/MysqlConnector/mysqlconnector.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MetadataManager/siteinfo.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -683,23 +694,36 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-main.o: ../DDB/main.cpp 
+main.o: ../DDB/main.cpp ../DDB/global.h \
+		../DDB/MetadataManager/metadatamanager.h \
+		../DDB/MetadataManager/tableMetadata.h \
+		../DDB/MetadataManager/attribution.h \
+		../DDB/MetadataManager/siteinfo.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../DDB/main.cpp
 
 attribution.o: ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/attribution.h \
-		../DDB/MetadataManager/global.h
+		../DDB/global.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o attribution.o ../DDB/MetadataManager/attribution.cpp
 
 metadatamanager.o: ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/metadatamanager.h \
-		../DDB/MetadataManager/global.h \
+		../DDB/global.h \
 		../DDB/MetadataManager/tableMetadata.h \
-		../DDB/MetadataManager/attribution.h
+		../DDB/MetadataManager/attribution.h \
+		../DDB/MetadataManager/siteinfo.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o metadatamanager.o ../DDB/MetadataManager/metadatamanager.cpp
 
 tablemetadata.o: ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MetadataManager/tableMetadata.h \
-		../DDB/MetadataManager/global.h \
+		../DDB/global.h \
 		../DDB/MetadataManager/attribution.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tablemetadata.o ../DDB/MetadataManager/tablemetadata.cpp
+
+mysqlconnector.o: ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MysqlConnector/mysqlconnector.h \
+		../DDB/global.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mysqlconnector.o ../DDB/MysqlConnector/mysqlconnector.cpp
+
+siteinfo.o: ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/siteinfo.h \
+		../DDB/global.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o siteinfo.o ../DDB/MetadataManager/siteinfo.cpp
 
 ####### Install
 

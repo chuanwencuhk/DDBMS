@@ -15,7 +15,9 @@ LIBS += -L /usr/local/lib/ -lconfig++
 SOURCES += main.cpp \
     MetadataManager/attribution.cpp \
     MetadataManager/metadatamanager.cpp \
-    MetadataManager/tablemetadata.cpp
+    MetadataManager/tablemetadata.cpp \
+    MysqlConnector/mysqlconnector.cpp \
+    MetadataManager/siteinfo.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -30,6 +32,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     MetadataManager/attribution.h \
-    MetadataManager/global.h \
     MetadataManager/metadatamanager.h \
-    MetadataManager/tableMetadata.h
+    MetadataManager/tableMetadata.h \
+    MysqlConnector/mysqlconnector.h \
+    global.h \
+    MetadataManager/siteinfo.h

@@ -1,7 +1,7 @@
 #ifndef TABLEMETADATA_H
 #define TABLEMETADATA_H
 
-#include "global.h"
+#include "../global.h"
 #include "attribution.h"
 
 class TableMetadata

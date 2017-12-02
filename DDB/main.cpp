@@ -1,5 +1,5 @@
 
-#include "MetadataManager/global.h"
+#include "global.h"
 #include "MetadataManager/metadatamanager.h"
 
 using namespace std;
@@ -12,6 +12,7 @@ int main()
      cout<<sizeof(int)<<" int,"<<sizeof(float)<<" float,"<<sizeof(DATE)<<" is DATE";
      cout << "Hello World!" << endl;
      mtr.setMetadataVer("0.0.2");
+     mtr.initialize_siteinfo();
      //getchar();
      //test_code();
     return 0;

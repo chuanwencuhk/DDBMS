@@ -1,8 +1,10 @@
 #ifndef METADATAMANAGER_H
 #define METADATAMANAGER_H
 
-#include "global.h"
+#include "../global.h"
 #include "tableMetadata.h"
+#include "siteinfo.h"
+
 #include <libconfig.h++>
 
 
@@ -24,10 +26,15 @@ public:
 
     void initialize_tablemetadata();
 
-    void setMetadataVer(std::string str);
+    void setMetadataVer(std::string str);//set the version of DDB
+
+    SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
+    void set_siteinfo();
+    void initialize_siteinfo();
 
 private:
 
+    SiteInfo siteinfo[MAX_SITE_NUM];
     TableMetadata tablemetadata[MAX_TABLE_NUM];
     TableMetadata* ptablemetadata;
 

@@ -1,7 +1,7 @@
 #ifndef ATTRIBUTION_H
 #define ATTRIBUTION_H
 
-#include "global.h"
+#include "../global.h"
 #include <string>
 
 

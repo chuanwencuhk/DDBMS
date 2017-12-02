@@ -221,3 +221,45 @@ void MetadataManager::setMetadataVer(string str)
     string s = cfg.lookup("version");
     cout << "the update version is: " << s << endl;
 }
+
+void MetadataManager::initialize_siteinfo()
+{
+    cfg.setOptions(Config::OptionFsync
+                   | Config::OptionSemicolonSeparators
+                   | Config::OptionColonAssignmentForGroups
+                   | Config::OptionOpenBraceOnSeparateLine);
+
+    Setting &root = cfg.getRoot();
+    if(! root.exists("site_info"))
+    {
+      root.add("site_info", Setting::TypeList);
+      cout<<"initialize_siteinfo no site_info"<<endl;
+    }
+      Setting& siteInfolist = root["site_info"];
+//    Setting& infoItem = siteInfolist.add(Setting::TypeGroup);
+//    infoItem.add("site_name",Setting::TypeString) = "site4";
+//    infoItem.add("site_ip",Setting::TypeString) = "123.123.123.123";
+//    infoItem.add("site_port",Setting::TypeInt) = 3389;
+
+    // Write out the updated configuration.
+    try
+    {
+      cfg.writeFile(METADATA_CONFIG_FILE);
+      cerr << "Updated configuration successfully written to: " << METADATA_CONFIG_FILE
+           << endl;
+
+    }
+    catch(const FileIOException &fioex)
+    {
+      cerr << "I/O error while writing file: " << METADATA_CONFIG_FILE << endl;
+      //return(EXIT_FAILURE);
+    }
+    //read_config_file(METADATA_CONFIG_FILE);
+    //return(EXIT_SUCCESS);
+    Setting& item = root["site_info"];
+
+    string s ;
+    item[0].lookupValue("site_ip", s);
+    cout << "the update version is: " << s << endl;
+
+}

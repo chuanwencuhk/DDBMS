@@ -11,11 +11,14 @@
 #define BASE_DATABASE_PATH "./database/" //database path
 #define METADATA_CONFIG_FILE "metadata.cfg" //config file name
 
+#define MAX_SITE_NUM 4 //max site number of DDB
+
 typedef enum _DataTYpe
 {
     INTEGER, CHAR, VARCHAR, LONG, FLOAT, DOUBLE, DATE, TYPE_NULL
 
 }DataType;
+
 
 typedef enum _RulesType
 {
