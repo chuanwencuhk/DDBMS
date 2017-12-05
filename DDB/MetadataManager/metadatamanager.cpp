@@ -3,7 +3,9 @@
 #include <iomanip>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 
+#include <unistd.h>//for access() fuction
 using namespace std;
 using namespace libconfig;
 MetadataManager::MetadataManager()
@@ -27,6 +29,13 @@ MetadataManager::~MetadataManager()
 
 void MetadataManager::read_config_file( const string& filename)
 {
+    if(-1 == access(filename.c_str(),F_OK))//whether the metadata.cfg exist
+    {
+        ofstream of;
+        of.open(filename.c_str());
+        of.close();
+        cout<<"file not exist create it"<<endl;
+    }
     //try-catch block from libconfig manual
     // Read the file. If there is an error, report it and exit.
     try
@@ -222,6 +231,7 @@ void MetadataManager::setMetadataVer(string str)
     cout << "the update version is: " << s << endl;
 }
 
+
 void MetadataManager::initialize_siteinfo()
 {
     cfg.setOptions(Config::OptionFsync
@@ -235,31 +245,60 @@ void MetadataManager::initialize_siteinfo()
       root.add("site_info", Setting::TypeList);
       cout<<"initialize_siteinfo no site_info"<<endl;
     }
-      Setting& siteInfolist = root["site_info"];
+//      Setting& siteInfolist = root["site_info"];
+
 //    Setting& infoItem = siteInfolist.add(Setting::TypeGroup);
 //    infoItem.add("site_name",Setting::TypeString) = "site4";
 //    infoItem.add("site_ip",Setting::TypeString) = "123.123.123.123";
 //    infoItem.add("site_port",Setting::TypeInt) = 3389;
 
     // Write out the updated configuration.
+
+    //read_config_file(METADATA_CONFIG_FILE);
+    //return(EXIT_SUCCESS);
+    //Setting& item = root["site_info"];
+
+    //string s ;
+    //item[0].lookupValue("site_ip", s);
+    write_to_config_file(METADATA_CONFIG_FILE);
+    cout << "initialize_siteinfo is ok! "  << endl;
+
+}
+
+void MetadataManager::initialize_database(std::string db_name)
+{
+    cfg.setOptions(Config::OptionFsync
+                   | Config::OptionSemicolonSeparators
+                   | Config::OptionColonAssignmentForGroups
+                   | Config::OptionOpenBraceOnSeparateLine);
+
+    Setting &root = cfg.getRoot();
+    if(! root.exists(db_name))
+    {
+      root.add(db_name, Setting::TypeGroup);
+      cout<<"initialize_database:"<<db_name<<endl;
+    }
+
+    write_to_config_file(METADATA_CONFIG_FILE);
+    cout << "initialize_siteinfo is ok! "  << endl;
+
+
+}
+
+void MetadataManager::write_to_config_file(std::string filename)
+{
     try
     {
-      cfg.writeFile(METADATA_CONFIG_FILE);
-      cerr << "Updated configuration successfully written to: " << METADATA_CONFIG_FILE
+      cfg.writeFile(filename.c_str());
+      cerr << "Updated configuration successfully written to: " << filename
            << endl;
 
     }
     catch(const FileIOException &fioex)
     {
-      cerr << "I/O error while writing file: " << METADATA_CONFIG_FILE << endl;
+      cerr << "I/O error while writing file: " << filename << endl;
       //return(EXIT_FAILURE);
     }
-    //read_config_file(METADATA_CONFIG_FILE);
-    //return(EXIT_SUCCESS);
-    Setting& item = root["site_info"];
-
-    string s ;
-    item[0].lookupValue("site_ip", s);
-    cout << "the update version is: " << s << endl;
+    cout<<"write_to_config file:"<<filename;
 
 }

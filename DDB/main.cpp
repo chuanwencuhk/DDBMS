@@ -13,6 +13,7 @@ int main()
      cout << "Hello World!" << endl;
      mtr.setMetadataVer("0.0.2");
      mtr.initialize_siteinfo();
+     mtr.initialize_database("my_db");
      //getchar();
      //test_code();
     return 0;

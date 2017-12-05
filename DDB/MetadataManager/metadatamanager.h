@@ -29,8 +29,11 @@ public:
     void setMetadataVer(std::string str);//set the version of DDB
 
     SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
-    void set_siteinfo();
+
     void initialize_siteinfo();
+    void initialize_database(std::string db_name);
+
+    void write_to_config_file(std::string filename);//write the new data into meatadata.cfg
 
 private:
 

@@ -9,7 +9,7 @@
 #define MAX_TABLE_NUM 100 //max numbers of table in a database
 
 #define BASE_DATABASE_PATH "./database/" //database path
-#define METADATA_CONFIG_FILE "metadata.cfg" //config file name
+#define METADATA_CONFIG_FILE "etadata.cfg" //config file name
 
 #define MAX_SITE_NUM 4 //max site number of DDB
 
