@@ -18,7 +18,7 @@ string getSiteServerTablePath(){
 }
 
 string getTestDataPath(){
-	return "/ouddb/testDataPath";
+	return "/ouddb/testData";
 }
 
 string MetaDataManager::getTestData(){

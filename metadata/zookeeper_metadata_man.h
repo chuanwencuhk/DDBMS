@@ -32,8 +32,10 @@ public:
 	void setTestData(const string& value);
 
 	//eg hostPort 127.0.0.1:2181
-	MetaDataManager(const string& hostPort) {
-		zookeeper_ = new Zookeeper(hostPort);
+	MetaDataManager(const string& hostPort) 
+	: zookeeper_(new ZooKeeper(hostPort, nullptr, 5 * 1000))
+	{
+		//zookeeper_ = new Zookeeper(hostPort);
 	}
 
 	~MetaDataManager(){
