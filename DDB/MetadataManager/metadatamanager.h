@@ -35,6 +35,8 @@ public:
 
     void write_to_config_file(std::string filename);//write the new data into meatadata.cfg
 
+
+
 private:
 
     SiteInfo siteinfo[MAX_SITE_NUM];
