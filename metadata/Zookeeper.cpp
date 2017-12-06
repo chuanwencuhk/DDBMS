@@ -27,7 +27,8 @@ ZooKeeper::ZooKeeper(const std::string& server_hosts,
                      int timeout_ms)
 : global_watcher_(global_watcher) {
   set_default_debug_level();
-
+  Println2("Zookeeper::server_host", server_hosts);
+  Println("Zookeeper::before zookeeper_init");
   zoo_handle_ = zookeeper_init(server_hosts.c_str(),
                                GlobalWatchFunc,
                                timeout_ms,
@@ -98,6 +99,8 @@ bool ZooKeeper::Exists(const std::string& path, bool watch, NodeStat* stat) {
 
 NodeStat ZooKeeper::Stat(const std::string& path) {
   NodeStat stat;
+  Println("Stat::before zoo_exists");
+  Println2("Stat::path ", path);
   auto zoo_code = zoo_exists(zoo_handle_, path.c_str(), false, &stat);
   CHECK_ZOOCODE_AND_THROW(zoo_code);
 
@@ -176,8 +179,10 @@ std::string ZooKeeper::Get(const std::string& path, bool watch) {
   auto node_stat = Stat(path);
 
   value_buffer.resize(node_stat.dataLength);
-
   int buffer_len = value_buffer.size();
+  Println2("Get::buffer_len ", buffer_len);
+  Println("Get::before zoo_get");
+  Println2("Get::path ", path);
   auto zoo_code = zoo_get(zoo_handle_,
                           path.c_str(),
                           watch,
@@ -186,14 +191,16 @@ std::string ZooKeeper::Get(const std::string& path, bool watch) {
                           &node_stat);
 
   CHECK_ZOOCODE_AND_THROW(zoo_code);
-
+  Println2("Get::buffer_len", buffer_len);
   value_buffer.resize(buffer_len);
   return value_buffer;
 }
 
 void ZooKeeper::Set(const std::string& path, const std::string& value) {
   auto node_stat = Stat(path);
-
+  Println("Set::enter ZooKeeper::Set");
+  Println("Set::before zoo_set");
+  Println2("Set::path ", path);
   auto zoo_code = zoo_set(zoo_handle_,
                           path.c_str(),
                           value.data(),

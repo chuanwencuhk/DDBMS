@@ -2,6 +2,7 @@
 #include <zookeeper/zookeeper.h>
 #include <string>
 #include <vector>
+#include "zk_check.h"
 
 namespace zookeeper {
 

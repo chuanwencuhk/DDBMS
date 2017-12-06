@@ -14,11 +14,11 @@ string getSiteIpTablePath(){
 }
 
 string getSiteServerTablePath(){
-	return "/ouddb/siteServerTable";
+	return "/ourddb/siteServerTable";
 }
 
 string getTestDataPath(){
-	return "/ouddb/testData";
+	return "/ourddb/testData";
 }
 
 string MetaDataManager::getTestData(){
