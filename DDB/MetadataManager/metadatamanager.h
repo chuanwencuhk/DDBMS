@@ -27,6 +27,7 @@ public:
     void initialize_tablemetadata();
 
     void setMetadataVer(std::string str);//set the version of DDB
+    std::string get_metadata_version(){return version;}//get the version info
 
     SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
 

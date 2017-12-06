@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../DDB -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../DDB -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.9.1/5.9.1/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -55,13 +55,16 @@ SOURCES       = ../DDB/main.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
 		../DDB/MetadataManager/tablemetadata.cpp \
 		../DDB/MysqlConnector/mysqlconnector.cpp \
-		../DDB/MetadataManager/siteinfo.cpp 
+		../DDB/MetadataManager/siteinfo.cpp \
+		../DDB/MetadataManager/ddbmainwin.cpp moc_ddbmainwin.cpp
 OBJECTS       = main.o \
 		attribution.o \
 		metadatamanager.o \
 		tablemetadata.o \
 		mysqlconnector.o \
-		siteinfo.o
+		siteinfo.o \
+		ddbmainwin.o \
+		moc_ddbmainwin.o
 DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/linux.conf \
@@ -246,12 +249,14 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../DDB/MetadataManager/tableMetadata.h \
 		../DDB/MysqlConnector/mysqlconnector.h \
 		../DDB/global.h \
-		../DDB/MetadataManager/siteinfo.h ../DDB/main.cpp \
+		../DDB/MetadataManager/siteinfo.h \
+		../DDB/MetadataManager/ddbmainwin.h ../DDB/main.cpp \
 		../DDB/MetadataManager/attribution.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
 		../DDB/MetadataManager/tablemetadata.cpp \
 		../DDB/MysqlConnector/mysqlconnector.cpp \
-		../DDB/MetadataManager/siteinfo.cpp
+		../DDB/MetadataManager/siteinfo.cpp \
+		../DDB/MetadataManager/ddbmainwin.cpp
 QMAKE_TARGET  = DDB
 DESTDIR       = 
 TARGET        = DDB
@@ -260,7 +265,7 @@ TARGET        = DDB
 first: all
 ####### Build rules
 
-$(TARGET):  $(OBJECTS)  
+$(TARGET): ui_ddbmainwin.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../DDB/DDB.pro /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -645,8 +650,9 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h ../DDB/MysqlConnector/mysqlconnector.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MetadataManager/siteinfo.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h ../DDB/MysqlConnector/mysqlconnector.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/ddbmainwin.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -678,27 +684,257 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all:
+compiler_moc_header_make_all: moc_ddbmainwin.cpp
 compiler_moc_header_clean:
+	-$(DEL_FILE) moc_ddbmainwin.cpp
+moc_ddbmainwin.cpp: /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtgui-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmargins.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrect.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsize.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatastream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qline.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h \
+		../DDB/MetadataManager/metadatamanager.h \
+		../DDB/global.h \
+		../DDB/MetadataManager/tableMetadata.h \
+		../DDB/MetadataManager/attribution.h \
+		../DDB/MetadataManager/siteinfo.h \
+		../DDB/MetadataManager/ddbmainwin.h \
+		moc_predefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc
+	/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/yfchai/DDBMS/DDB -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../DDB/MetadataManager/ddbmainwin.h -o moc_ddbmainwin.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all:
+compiler_uic_make_all: ui_ddbmainwin.h
 compiler_uic_clean:
+	-$(DEL_FILE) ui_ddbmainwin.h
+ui_ddbmainwin.h: ../DDB/MetadataManager/ddbmainwin.ui \
+		/opt/Qt5.9.1/5.9.1/gcc_64/bin/uic
+	/opt/Qt5.9.1/5.9.1/gcc_64/bin/uic ../DDB/MetadataManager/ddbmainwin.ui -o ui_ddbmainwin.h
+
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean 
+compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
-main.o: ../DDB/main.cpp ../DDB/global.h \
+main.o: ../DDB/main.cpp /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtgui-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsize.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmargins.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrect.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatastream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qline.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qinputmethod.h \
+		../DDB/global.h \
 		../DDB/MetadataManager/metadatamanager.h \
 		../DDB/MetadataManager/tableMetadata.h \
 		../DDB/MetadataManager/attribution.h \
-		../DDB/MetadataManager/siteinfo.h
+		../DDB/MetadataManager/siteinfo.h \
+		../DDB/MetadataManager/ddbmainwin.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../DDB/main.cpp
 
 attribution.o: ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/attribution.h \
@@ -724,6 +960,121 @@ mysqlconnector.o: ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MysqlConnector
 siteinfo.o: ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/siteinfo.h \
 		../DDB/global.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o siteinfo.o ../DDB/MetadataManager/siteinfo.cpp
+
+ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbmainwin.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtgui-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmargins.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrect.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsize.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatastream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qline.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h \
+		../DDB/MetadataManager/metadatamanager.h \
+		../DDB/global.h \
+		../DDB/MetadataManager/tableMetadata.h \
+		../DDB/MetadataManager/attribution.h \
+		../DDB/MetadataManager/siteinfo.h \
+		ui_ddbmainwin.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ddbmainwin.o ../DDB/MetadataManager/ddbmainwin.cpp
+
+moc_ddbmainwin.o: moc_ddbmainwin.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ddbmainwin.o moc_ddbmainwin.cpp
 
 ####### Install
 

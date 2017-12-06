@@ -1,19 +1,29 @@
 
+#include <QApplication>
+
 #include "global.h"
 #include "MetadataManager/metadatamanager.h"
+#include "MetadataManager/ddbmainwin.h"
+
 
 using namespace std;
 using namespace libconfig;
 
 int test_code();
-int main()
+int main(int argc, char *argv[])
 {
-     MetadataManager mtr;
+    QApplication app(argc,argv);
+    DDBMainWin dm;
+    dm.show();
+    return app.exec();
+
+
+     //MetadataManager mtr;
      cout<<sizeof(int)<<" int,"<<sizeof(float)<<" float,"<<sizeof(DATE)<<" is DATE";
      cout << "Hello World!" << endl;
-     mtr.setMetadataVer("0.0.2");
-     mtr.initialize_siteinfo();
-     mtr.initialize_database("my_db");
+     //mtr.setMetadataVer("0.0.2");
+     //mtr.initialize_siteinfo();
+     //mtr.initialize_database("my_db");
      //getchar();
      //test_code();
     return 0;

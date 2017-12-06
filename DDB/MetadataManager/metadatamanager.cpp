@@ -229,7 +229,10 @@ void MetadataManager::setMetadataVer(string str)
     //return(EXIT_SUCCESS);
     string s = cfg.lookup("version");
     cout << "the update version is: " << s << endl;
+    this->version = s;
 }
+
+
 
 
 void MetadataManager::initialize_siteinfo()
