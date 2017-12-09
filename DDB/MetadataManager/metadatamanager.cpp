@@ -65,15 +65,15 @@ void MetadataManager::initialize_from_config_file(const string &str)
     {
         Setting &root = cfg.getRoot();
 
-        if(! root.exists("version"))
+        if(! root.exists(CONFIG_NAME_VERSION))
           {
-            root.add("version", Setting::TypeString);
+            root.add(CONFIG_NAME_VERSION, Setting::TypeString);
             this->version = "";
             cout<<"initialize_from_config_file no version\n";
           }
         else
         {
-            string version = cfg.lookup("version");
+            string version = cfg.lookup(CONFIG_NAME_VERSION);
             cout << "version: " << version << endl;
             this->version = version;//get version info
         }
@@ -201,13 +201,13 @@ void MetadataManager::setMetadataVer(string str)
 
     Setting &root = cfg.getRoot();
 
-    if(! root.exists("version"))
+    if(! root.exists(CONFIG_NAME_VERSION))
     {
-      root.add("version", Setting::TypeString);
+      root.add(CONFIG_NAME_VERSION, Setting::TypeString);
       cout<<"setMetadataVer no version\n";
     }
 
-    Setting &version = root["version"];
+    Setting &version = root[CONFIG_NAME_VERSION];
     version = str;
 
 
@@ -227,7 +227,7 @@ void MetadataManager::setMetadataVer(string str)
     }
     //read_config_file(METADATA_CONFIG_FILE);
     //return(EXIT_SUCCESS);
-    string s = cfg.lookup("version");
+    string s = cfg.lookup(CONFIG_NAME_VERSION);
     cout << "the update version is: " << s << endl;
     this->version = s;
 }
@@ -243,7 +243,7 @@ void MetadataManager::initialize_siteinfo()
                    | Config::OptionOpenBraceOnSeparateLine);
 
     Setting &root = cfg.getRoot();
-    if(! root.exists("site_info"))
+    if(! root.exists(CONFIG_NAME_SITEINFO))
     {
       root.add("site_info", Setting::TypeList);
       cout<<"initialize_siteinfo no site_info"<<endl;
@@ -279,12 +279,32 @@ void MetadataManager::initialize_database(std::string db_name)
     if(! root.exists(db_name))
     {
       root.add(db_name, Setting::TypeGroup);
+      write_to_config_file(METADATA_CONFIG_FILE);
       cout<<"initialize_database:"<<db_name<<endl;
     }
 
-    write_to_config_file(METADATA_CONFIG_FILE);
+
     cout << "initialize_siteinfo is ok! "  << endl;
 
+
+}
+
+void MetadataManager::initialize_fragment()
+{
+    cfg.setOptions(Config::OptionFsync
+                   | Config::OptionSemicolonSeparators
+                   | Config::OptionColonAssignmentForGroups
+                   | Config::OptionOpenBraceOnSeparateLine);
+
+    Setting &root = cfg.getRoot();
+    if(! root.exists(CONFIG_NAME_FRAGMENT))
+    {
+      root.add(CONFIG_NAME_FRAGMENT, Setting::TypeGroup);
+      cout<<"initialize_fragment no fragment"<<endl;
+      write_to_config_file(METADATA_CONFIG_FILE);
+    }
+
+    cout << "initialize_fragment is ok! "  << endl;
 
 }
 

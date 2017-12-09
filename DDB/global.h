@@ -13,6 +13,9 @@
 
 #define MAX_SITE_NUM 4 //max site number of DDB
 
+#define CONFIG_NAME_SITEINFO "site_info"
+#define CONFIG_NAME_FRAGMENT "fragment"
+#define CONFIG_NAME_VERSION "version"
 typedef enum _DataTYpe
 {
     INTEGER, CHAR, VARCHAR, LONG, FLOAT, DOUBLE, DATE, TYPE_NULL

@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
     DDBMainWin dm;
+    dm.mtr.initialize_fragment();
+
     dm.show();
     return app.exec();
 

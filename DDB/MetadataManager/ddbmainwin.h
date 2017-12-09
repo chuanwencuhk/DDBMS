@@ -17,12 +17,13 @@ public:
 
     void show_info_in_listView();
 
+    Ui::DDBMainWin *ui;
+    MetadataManager mtr;
 private slots:
     void on_button_show_DDB_clicked();
 
 private:
-    Ui::DDBMainWin *ui;
-    MetadataManager mtr;
+
 };
 
 #endif // DDBMAINWIN_H
