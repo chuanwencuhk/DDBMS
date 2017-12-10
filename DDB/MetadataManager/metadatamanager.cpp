@@ -304,7 +304,7 @@ void MetadataManager::initialize_fragment()
       write_to_config_file(METADATA_CONFIG_FILE);
     }
 
-    cout << "initialize_fragment is ok! "  << endl;
+    cout << "initialize_fragment  is ok! "  << endl;
 
 }
 
