@@ -310,6 +310,7 @@ void MetadataManager::initialize_fragment()
 
 void MetadataManager::set_siteinfo(SiteInfo& sti)
 {
+    //to do
 
 
 
