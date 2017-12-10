@@ -308,6 +308,13 @@ void MetadataManager::initialize_fragment()
 
 }
 
+void MetadataManager::set_siteinfo(SiteInfo& sti)
+{
+
+
+
+}
+
 void MetadataManager::write_to_config_file(std::string filename)
 {
     try

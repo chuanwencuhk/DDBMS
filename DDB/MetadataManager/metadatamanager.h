@@ -35,6 +35,8 @@ public:
     void initialize_database(std::string db_name);
     void initialize_fragment();
 
+    void set_siteinfo(SiteInfo &sti);
+
     void write_to_config_file(std::string filename);//write the new data into meatadata.cfg
 
 
