@@ -62,31 +62,41 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "bison.y" /* yacc.c:339  */
+#line 1 "yacc.y" /* yacc.c:339  */
 
-extern int yylex();
-extern int yyerror();
-extern int lex_init();
-#include <stdio.h>
 #include <string.h>
+#include "parser.h"
+extern "C"{
+	extern int yylex(void);
+	extern int lex_init();
+	void parser_init();
+	extern int yyerror(char *s);
+}
 
-char* tbname;
-static unsigned int attrcnt;
 
-
-static int funcRnt;
-
-static int curPos;
+SelectQuery* query;
+DeleteQuery* delete_query;
+int cond_count = 0;
+int join_count = 0;
+int attr_count = 0;
+int sel_count = 0;
+int from_count = 0;
+int orderby_count = 0;
+int curPos = 0;
+//record fragment info
+int frag_num = 0;
+int frag_cond_count=0;
+int funcRnt;
+AttrInfo attr_list[MAX_ATTR_NUM];
+Condition cond_list[MAX_COND_NUM];
+FragInfo frag_list[10];
+char* tb_name;
+static char errmsg[4096];
+int Operator(char* opstr);
+int GetType(char* type_str);
 static char recordstr[4096];
 
-int condcnt;
-
-static char errmsg[4096];
-
-static int SelCnt;
-int optrans(char* opstr);
-
-#line 90 "bison.tab.c" /* yacc.c:339  */
+#line 100 "yacc.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -105,12 +115,12 @@ int optrans(char* opstr);
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "bison.tab.h".  */
-#ifndef YY_YY_BISON_TAB_H_INCLUDED
-# define YY_YY_BISON_TAB_H_INCLUDED
+   by #include "yacc.tab.h".  */
+#ifndef YY_YY_YACC_TAB_H_INCLUDED
+# define YY_YY_YACC_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -126,31 +136,34 @@ extern int yydebug;
     NUMBER = 260,
     COMPARISION = 261,
     AND = 262,
-    SELECT = 263,
-    FROM = 264,
-    WHERE = 265,
-    ORDER = 266,
-    BY = 267,
-    ASC = 268,
-    DESC = 269,
-    ALL = 270,
-    UNIQUE = 271,
-    DISTINCT = 272,
-    CREATE = 273,
-    TABLE = 274,
-    DROP = 275,
-    INDEX = 276,
-    INSERT = 277,
-    INTO = 278,
-    VALUES = 279,
-    DELETE = 280,
-    CHARACTER = 281,
-    VARCHAR = 282,
-    INTEGER = 283,
-    DATE = 284,
-    SHOW = 285,
-    TABLES = 286,
-    EXIT = 287
+    OR = 263,
+    SELECT = 264,
+    FROM = 265,
+    WHERE = 266,
+    ORDER = 267,
+    BY = 268,
+    ASC = 269,
+    DESC = 270,
+    FRAGMENT = 271,
+    ALL = 272,
+    UNIQUE = 273,
+    DISTINCT = 274,
+    CREATE = 275,
+    TABLE = 276,
+    DROP = 277,
+    INDEX = 278,
+    INSERT = 279,
+    INTO = 280,
+    VALUES = 281,
+    DELETE = 282,
+    CHARACTER = 283,
+    INTEGER = 284,
+    DATE = 285,
+    FLOAT = 286,
+    VARCHAR = 287,
+    SHOW = 288,
+    TABLES = 289,
+    EXIT = 290
   };
 #endif
 
@@ -159,12 +172,12 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 25 "bison.y" /* yacc.c:355  */
+#line 35 "yacc.y" /* yacc.c:355  */
 
 	int intval;
 	char* strval;
 
-#line 168 "bison.tab.c" /* yacc.c:355  */
+#line 181 "yacc.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -175,11 +188,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_BISON_TAB_H_INCLUDED  */
+#endif /* !YY_YY_YACC_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 183 "bison.tab.c" /* yacc.c:358  */
+#line 196 "yacc.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -419,23 +432,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  22
+#define YYFINAL  28
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   79
+#define YYLAST   103
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  42
+#define YYNTOKENS  45
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  25
+#define YYNNTS  31
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  53
+#define YYNRULES  65
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  102
+#define YYNSTATES  126
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   287
+#define YYMAXUTOK   290
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -448,8 +461,8 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      38,    39,    10,     8,    40,     9,    41,    11,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    37,
+      41,    42,    11,     9,    43,    10,    44,    12,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    40,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -470,21 +483,23 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,    12,    13,    14,    15,    16,    17,    18,
+       5,     6,     7,     8,    13,    14,    15,    16,    17,    18,
       19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,    35,    36
+      29,    30,    31,    32,    33,    34,    35,    36,    37,    38,
+      39
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    55,    55,    66,    73,    77,    78,    79,    80,    81,
-      85,    92,    99,   100,   103,   110,   119,   125,   130,   135,
-     143,   153,   159,   165,   171,   180,   192,   201,   207,   217,
-     222,   229,   237,   241,   246,   250,   257,   258,   261,   266,
-     272,   273,   276,   283,   289,   296,   298,   301,   302,   305,
-     310,   314,   318,   322
+       0,    65,    65,    78,    84,    88,    89,    90,    91,    92,
+      93,    97,   105,   114,   115,   118,   122,   129,   138,   146,
+     147,   150,   157,   163,   168,   173,   179,   185,   193,   201,
+     208,   213,   218,   226,   237,   252,   257,   266,   271,   278,
+     285,   289,   294,   299,   306,   307,   310,   314,   320,   321,
+     324,   330,   334,   339,   341,   344,   345,   348,   352,   356,
+     360,   364,   369,   371,   374,   378
 };
 #endif
 
@@ -494,16 +509,18 @@ static const yytype_uint16 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "NAME", "STRING", "NUMBER",
-  "COMPARISION", "AND", "'+'", "'-'", "'*'", "'/'", "SELECT", "FROM",
-  "WHERE", "ORDER", "BY", "ASC", "DESC", "ALL", "UNIQUE", "DISTINCT",
-  "CREATE", "TABLE", "DROP", "INDEX", "INSERT", "INTO", "VALUES", "DELETE",
-  "CHARACTER", "VARCHAR", "INTEGER", "DATE", "SHOW", "TABLES", "EXIT",
-  "';'", "'('", "')'", "','", "'.'", "$accept", "sql_start", "sql_func",
-  "table_def", "table", "table_attr_list", "column_def", "column",
-  "data_type", "table_drop", "insert_stat", "insert_list", "delete_stat",
-  "select_stat", "select_seg", "select_clause", "selectbegin", "unique",
-  "sellist", "sel_column", "fromlist", "sel_table", "where_clause",
-  "condition", "expr", YY_NULLPTR
+  "COMPARISION", "AND", "OR", "'+'", "'-'", "'*'", "'/'", "SELECT", "FROM",
+  "WHERE", "ORDER", "BY", "ASC", "DESC", "FRAGMENT", "ALL", "UNIQUE",
+  "DISTINCT", "CREATE", "TABLE", "DROP", "INDEX", "INSERT", "INTO",
+  "VALUES", "DELETE", "CHARACTER", "INTEGER", "DATE", "FLOAT", "VARCHAR",
+  "SHOW", "TABLES", "EXIT", "';'", "'('", "')'", "','", "'.'", "$accept",
+  "sql_start", "sql_func", "frag_stat", "frag_stat_list", "frag_condition",
+  "frag_expr", "table_def", "table", "table_attr_list", "column_def",
+  "column", "data_type", "table_drop", "insert_stat", "insert_list",
+  "delete_stat", "select_stat", "select_seg", "select_clause",
+  "selectbegin", "unique", "sellist", "sel_column", "fromlist",
+  "sel_table", "where_clause", "condition", "expr", "orderby_clause",
+  "orderlist", YY_NULLPTR
 };
 #endif
 
@@ -512,18 +529,18 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,    43,    45,
-      42,    47,   263,   264,   265,   266,   267,   268,   269,   270,
+       0,   256,   257,   258,   259,   260,   261,   262,   263,    43,
+      45,    42,    47,   264,   265,   266,   267,   268,   269,   270,
      271,   272,   273,   274,   275,   276,   277,   278,   279,   280,
-     281,   282,   283,   284,   285,   286,   287,    59,    40,    41,
-      44,    46
+     281,   282,   283,   284,   285,   286,   287,   288,   289,   290,
+      59,    40,    41,    44,    46
 };
 # endif
 
-#define YYPACT_NINF -25
+#define YYPACT_NINF -29
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-25)))
+  (!!((Yystate) == (-29)))
 
 #define YYTABLE_NINF -1
 
@@ -534,17 +551,19 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -7,   -25,    -9,    11,   -23,     3,   -25,   -25,    18,   -25,
-     -25,   -25,   -25,   -25,   -25,     6,    31,    -8,    42,    42,
-      42,    42,   -25,   -25,    -3,   -25,   -25,   -25,     0,   -25,
-       8,    10,    21,    34,   -25,    38,   -12,   -25,    13,   -25,
-      15,   -25,    48,   -25,    14,    50,    19,    23,    -3,   -25,
-      54,    55,   -25,   -19,   -25,   -24,    22,    -5,    52,   -25,
-     -25,    57,   -25,   -25,   -25,    24,    48,    25,    26,   -25,
-     -25,   -25,   -25,   -25,    -2,    35,    62,    50,   -25,   -25,
-     -25,    61,    63,    30,    37,   -25,   -25,    64,   -25,    32,
-      33,   -25,   -25,   -25,    20,   -25,   -25,    28,   -25,   -25,
-      70,   -25
+      -8,   -29,     1,    -6,    21,    18,    34,   -29,   -29,    49,
+     -29,   -29,   -29,   -29,   -29,   -29,   -29,    11,    36,     3,
+      46,    13,    10,   -29,    51,    51,    51,    51,   -29,   -29,
+      -3,   -29,   -29,   -29,     0,    17,   -29,   -29,     1,   -29,
+      14,    16,    27,    43,   -29,    47,   -13,   -29,    15,   -29,
+      19,   -29,   -29,   -29,   -29,    58,   -29,    22,    61,    25,
+      26,    -3,    50,    64,    66,   -29,   -28,   -29,   -26,    32,
+      -5,    63,   -29,   -29,    68,   -29,    55,   -29,   -29,   -29,
+      33,    58,    35,   -29,   -29,    37,    39,   -29,   -29,   -29,
+      -2,    38,    71,    61,   -29,    72,   -29,   -29,    74,    76,
+      77,    44,    40,   -29,   -29,    79,   -29,   -29,    45,    41,
+      48,    52,   -29,   -29,   -29,    24,    83,   -29,   -29,   -29,
+      53,   -29,   -29,   -29,    84,   -29
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -552,33 +571,37 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,    31,     0,     0,     0,     0,     3,     4,     0,     2,
-       5,     6,     7,     8,     9,     0,     0,    32,     0,     0,
-       0,     0,     1,    27,     0,    33,    35,    34,     0,    11,
-       0,     0,     0,    45,    42,     0,    45,    40,    38,    30,
-      29,    36,     0,    20,     0,     0,     0,     0,     0,    28,
-       0,     0,    15,     0,    12,     0,     0,     0,    46,    47,
-      26,    43,    41,    39,    37,     0,     0,     0,     0,    18,
-      19,    14,    23,    22,     0,     0,     0,     0,    44,    10,
-      13,     0,     0,     0,     0,    51,    50,     0,    48,     0,
-       0,    21,    25,    24,     0,    16,    17,     0,    53,    52,
-       0,    49
+       0,    39,     0,     0,     0,     0,     0,     3,     4,     0,
+       2,    10,     5,     6,     7,     8,     9,     0,     0,    40,
+       0,     0,     0,    13,     0,     0,     0,     0,     1,    35,
+       0,    41,    43,    42,     0,     0,    11,    12,     0,    18,
+       0,     0,     0,    53,    50,     0,    53,    48,    46,    38,
+      37,    44,    16,    15,    14,     0,    28,     0,     0,     0,
+       0,     0,    62,     0,     0,    22,     0,    19,     0,     0,
+       0,    54,    55,    34,    51,    49,     0,    36,    47,    45,
+       0,     0,     0,    24,    25,     0,     0,    21,    31,    30,
+       0,     0,     0,     0,    52,     0,    17,    20,     0,     0,
+       0,     0,     0,    59,    58,     0,    56,    64,    63,     0,
+       0,     0,    29,    33,    32,     0,     0,    23,    27,    26,
+       0,    61,    60,    65,     0,    57
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -25,   -25,   -25,   -25,    12,   -25,     9,   -25,   -25,   -25,
-     -25,   -25,   -25,   -25,    39,   -25,   -25,   -25,   -25,    27,
-     -25,    29,    40,   -25,     2
+     -29,   -29,   -29,   -29,   -29,   -29,    54,   -29,     8,   -29,
+      -4,   -29,   -29,   -29,   -29,   -29,   -29,   -29,    56,   -29,
+     -29,   -29,   -29,    29,   -29,    28,    57,   -29,     2,   -29,
+     -29
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     8,     9,    10,    30,    53,    54,    55,    71,    11,
-      12,    74,    13,    14,    15,    16,    17,    28,    40,    41,
-      36,    37,    46,    58,    59
+      -1,     9,    10,    11,    21,    22,    23,    12,    40,    66,
+      67,    68,    87,    13,    14,    90,    15,    16,    17,    18,
+      19,    34,    50,    51,    46,    47,    59,    71,    72,    77,
+     108
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -586,65 +609,75 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      34,    75,    45,    38,    20,     1,    67,    68,    69,    70,
-      39,    25,    26,    27,    18,     2,    21,     3,    22,     4,
-      65,    66,     5,    97,    98,    99,    72,    73,    48,     6,
-       7,    31,    32,    33,    19,    35,    76,    83,    84,    85,
-      86,    92,    93,    23,    24,    29,    42,    43,    45,    44,
-       1,    52,    56,    57,    50,    51,    60,    63,    38,    77,
-      78,    79,    61,    81,    82,    87,    89,    91,    90,   100,
-      94,    95,    96,   101,    47,    80,    49,    62,    64,    88
+      44,    91,    58,    48,    20,     1,    82,    83,    84,    85,
+      86,    49,     2,    37,    80,    81,     3,    38,     4,    24,
+       5,    52,    53,     6,    31,    32,    33,   120,   121,   122,
+      61,     7,     8,    41,    42,    43,    88,    89,    45,    92,
+     101,   102,   103,   104,   113,   114,    25,    26,    27,    28,
+      30,    29,    35,    36,    39,    55,    56,    57,    58,    63,
+       1,    65,    64,    69,    70,    73,    76,    78,    74,    48,
+      93,    94,    95,    96,   105,   107,    98,    97,    99,   109,
+     100,   110,   111,   117,   112,   115,   123,   125,   116,    75,
+     118,     0,    54,    79,   119,   106,     0,   124,     0,     0,
+       0,    60,     0,    62
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       3,     6,    14,     3,    27,    12,    30,    31,    32,    33,
-      10,    19,    20,    21,    23,    22,    13,    24,     0,    26,
-      39,    40,    29,     3,     4,     5,     4,     5,    40,    36,
-      37,    19,    20,    21,    23,    38,    41,    39,    40,     4,
-       5,     4,     5,    37,    13,     3,    38,    37,    14,    28,
-      12,     3,    38,     3,    41,    40,    37,     3,     3,     7,
-       3,    37,    39,    38,    38,     3,     5,    37,     5,    41,
-       6,    39,    39,     3,    35,    66,    36,    48,    51,    77
+       3,     6,    15,     3,     3,    13,    32,    33,    34,    35,
+      36,    11,    20,     3,    42,    43,    24,     7,    26,    25,
+      28,     4,     5,    31,    21,    22,    23,     3,     4,     5,
+      43,    39,    40,    25,    26,    27,     4,     5,    41,    44,
+      42,    43,     4,     5,     4,     5,    25,    29,    14,     0,
+      14,    40,     6,    40,     3,    41,    40,    30,    15,    44,
+      13,     3,    43,    41,     3,    40,    16,     3,    42,     3,
+       7,     3,    17,    40,     3,     3,    41,    81,    41,     5,
+      41,     5,     5,    42,    40,     6,     3,     3,    43,    61,
+      42,    -1,    38,    64,    42,    93,    -1,    44,    -1,    -1,
+      -1,    45,    -1,    46
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    12,    22,    24,    26,    29,    36,    37,    43,    44,
-      45,    51,    52,    54,    55,    56,    57,    58,    23,    23,
-      27,    13,     0,    37,    13,    19,    20,    21,    59,     3,
-      46,    46,    46,    46,     3,    38,    62,    63,     3,    10,
-      60,    61,    38,    37,    28,    14,    64,    56,    40,    64,
-      41,    40,     3,    47,    48,    49,    38,     3,    65,    66,
-      37,    39,    63,     3,    61,    39,    40,    30,    31,    32,
-      33,    50,     4,     5,    53,     6,    41,     7,     3,    37,
-      48,    38,    38,    39,    40,     4,     5,     3,    66,     5,
-       5,    37,     4,     5,     6,    39,    39,     3,     4,     5,
-      41,     3
+       0,    13,    20,    24,    26,    28,    31,    39,    40,    46,
+      47,    48,    52,    58,    59,    61,    62,    63,    64,    65,
+       3,    49,    50,    51,    25,    25,    29,    14,     0,    40,
+      14,    21,    22,    23,    66,     6,    40,     3,     7,     3,
+      53,    53,    53,    53,     3,    41,    69,    70,     3,    11,
+      67,    68,     4,     5,    51,    41,    40,    30,    15,    71,
+      63,    43,    71,    44,    43,     3,    54,    55,    56,    41,
+       3,    72,    73,    40,    42,    70,    16,    74,     3,    68,
+      42,    43,    32,    33,    34,    35,    36,    57,     4,     5,
+      60,     6,    44,     7,     3,    17,    40,    55,    41,    41,
+      41,    42,    43,     4,     5,     3,    73,     3,    75,     5,
+       5,     5,    40,     4,     5,     6,    43,    42,    42,    42,
+       3,     4,     5,     3,    44,     3
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    42,    43,    43,    44,    44,    44,    44,    44,    44,
-      45,    46,    47,    47,    48,    49,    50,    50,    50,    50,
-      51,    52,    53,    53,    53,    53,    54,    55,    56,    57,
-      57,    58,    59,    59,    59,    59,    60,    60,    61,    61,
-      62,    62,    63,    63,    63,    64,    64,    65,    65,    66,
-      66,    66,    66,    66
+       0,    45,    46,    46,    47,    47,    47,    47,    47,    47,
+      47,    48,    49,    50,    50,    51,    51,    52,    53,    54,
+      54,    55,    56,    57,    57,    57,    57,    57,    58,    59,
+      60,    60,    60,    60,    61,    62,    63,    64,    64,    65,
+      66,    66,    66,    66,    67,    67,    68,    68,    69,    69,
+      70,    70,    70,    71,    71,    72,    72,    73,    73,    73,
+      73,    73,    74,    74,    75,    75
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     1,     1,     1,     1,     1,     1,     1,
-       7,     1,     1,     3,     2,     1,     4,     4,     1,     1,
-       4,     8,     1,     1,     3,     3,     5,     2,     4,     3,
-       3,     1,     0,     1,     1,     1,     1,     3,     1,     3,
-       1,     3,     1,     3,     4,     0,     2,     1,     3,     7,
-       3,     3,     5,     5
+       1,     3,     2,     1,     3,     3,     3,     7,     1,     1,
+       3,     2,     1,     4,     1,     1,     4,     4,     4,     8,
+       1,     1,     3,     3,     5,     2,     5,     3,     3,     1,
+       0,     1,     1,     1,     1,     3,     1,     3,     1,     3,
+       1,     3,     4,     0,     2,     1,     3,     7,     3,     3,
+       5,     5,     0,     3,     1,     3
 };
 
 
@@ -1321,352 +1354,402 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 56 "bison.y" /* yacc.c:1646  */
+#line 66 "yacc.y" /* yacc.c:1646  */
     {
-			/*(funcRnt == 0)
-				printf("> Success.\n");
+			if(funcRnt == 0)
+			{
+				//cout<<"should new query here."<<endl;
+				cout << "Success" <<endl;
+			}
 			else if(funcRnt < 0)
 			{
-				printf("> Failure:%d> %s\n",funcRnt,errmsg);
-			}*/
-			printf("> Success.\n");
+				cout << "Failure："<<funcRnt<<errmsg<<endl; 
+			}
 			return 0;
 		}
-#line 1336 "bison.tab.c" /* yacc.c:1646  */
+#line 1371 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 67 "bison.y" /* yacc.c:1646  */
+#line 79 "yacc.y" /* yacc.c:1646  */
     {
-			printf("EXIT.\n");
-			return 0;
+			cout<<"Should Flush Table Here.\n"<<endl;
 		}
-#line 1345 "bison.tab.c" /* yacc.c:1646  */
+#line 1379 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 74 "bison.y" /* yacc.c:1646  */
+#line 85 "yacc.y" /* yacc.c:1646  */
     {
-			printf(";\n");
+			funcRnt = 100;
 		}
-#line 1353 "bison.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 10:
-#line 86 "bison.y" /* yacc.c:1646  */
-    {	
-			printf(">CreateTable fuc. (%s,%d,%s)\n",tbname,attrcnt,errmsg);
-		}
-#line 1361 "bison.tab.c" /* yacc.c:1646  */
+#line 1387 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 93 "bison.y" /* yacc.c:1646  */
+#line 98 "yacc.y" /* yacc.c:1646  */
     {
-			tbname = (yyvsp[0].strval);
-			printf("tbname %s \n",tbname);
+			//frag_total = (int)atoi($2);
+			//cout<<"frag_total"<<frag_total<<endl;
+			cout<< "one frag over"<<endl;
 		}
-#line 1370 "bison.tab.c" /* yacc.c:1646  */
+#line 1397 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
-  case 14:
-#line 104 "bison.y" /* yacc.c:1646  */
+  case 12:
+#line 106 "yacc.y" /* yacc.c:1646  */
     {
-			attrcnt++;
-			printf("attrcnt %d \n", attrcnt);
+			
+			frag_list[frag_num].db_name = (yyvsp[0].strval);
+			cout<<"frag_no "<<frag_num<<" db_name "<< (yyvsp[0].strval) <<endl;
+			frag_num ++;
 		}
-#line 1379 "bison.tab.c" /* yacc.c:1646  */
+#line 1408 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 111 "bison.y" /* yacc.c:1646  */
+#line 119 "yacc.y" /* yacc.c:1646  */
     {
-			//attrs[attrcnt].name = $1;
-			printf("attr %s \n",(yyvsp[0].strval));
-			printf("column name %s \n",(yyvsp[0].strval));
-			//cond[condcnt].columnName = $1;
+			SaveFragCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), 1, Operator((yyvsp[-1].strval)));	
 		}
-#line 1390 "bison.tab.c" /* yacc.c:1646  */
+#line 1416 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 120 "bison.y" /* yacc.c:1646  */
+#line 123 "yacc.y" /* yacc.c:1646  */
     {
-			printf("attrs type is CHAR\n");
-			printf("attrs used is %d",atoi((yyvsp[-1].strval)));
+			SaveFragCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), 2, Operator((yyvsp[-1].strval)));
 		}
-#line 1399 "bison.tab.c" /* yacc.c:1646  */
+#line 1424 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 126 "bison.y" /* yacc.c:1646  */
+#line 130 "yacc.y" /* yacc.c:1646  */
     {
-			printf("attrs type is VARCHAR\n");
-			printf("attrs used is %d",atoi((yyvsp[-1].strval)));
+			cout<<"Create Table "<< tb_name << endl;
+			PrintAttrList();
+			parser_init();	
 		}
-#line 1408 "bison.tab.c" /* yacc.c:1646  */
+#line 1434 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 131 "bison.y" /* yacc.c:1646  */
+#line 139 "yacc.y" /* yacc.c:1646  */
     {
-			printf("attrs type is INT.\n");
-			printf("attrs used is %d",1);
+			tb_name = (yyvsp[0].strval);
+			attr_list[attr_count].table_name = (yyvsp[0].strval);
+			//printf("tb_name %s \n",tb_name);
 		}
-#line 1417 "bison.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 19:
-#line 136 "bison.y" /* yacc.c:1646  */
-    {
-			printf("attts type is DATE.\n");
-			printf("attrs used is %d",1);
-		}
-#line 1426 "bison.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 20:
-#line 144 "bison.y" /* yacc.c:1646  */
-    {
-			printf(">DropTable fuc (%s,%s).\n",tbname,errmsg);
-		}
-#line 1434 "bison.tab.c" /* yacc.c:1646  */
+#line 1444 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 154 "bison.y" /* yacc.c:1646  */
+#line 151 "yacc.y" /* yacc.c:1646  */
     {
-			printf("InsertRecord func(newdb,%s,%s,%s)\n",tbname,recordstr,errmsg);
+			attr_count++;
+			
 		}
-#line 1442 "bison.tab.c" /* yacc.c:1646  */
+#line 1453 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 160 "bison.y" /* yacc.c:1646  */
+#line 158 "yacc.y" /* yacc.c:1646  */
     {
-			strcpy(recordstr+curPos, (yyvsp[0].strval));
-			curPos+=strlen((yyvsp[0].strval));
-			printf("insert_list NUMBER %d, curPos = %d \n",atoi((yyvsp[0].strval)),curPos);
+			attr_list[attr_count].attr_name = (yyvsp[0].strval);
 		}
-#line 1452 "bison.tab.c" /* yacc.c:1646  */
+#line 1461 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 166 "bison.y" /* yacc.c:1646  */
+#line 164 "yacc.y" /* yacc.c:1646  */
     {
-			strcpy(recordstr+curPos, (yyvsp[0].strval));
-			curPos+=strlen((yyvsp[0].strval));
-			printf("insert_list STRING %s, curPos = %d \n",(yyvsp[0].strval),curPos);
+			attr_list[attr_count].type = 2;
+			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1462 "bison.tab.c" /* yacc.c:1646  */
+#line 1470 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 172 "bison.y" /* yacc.c:1646  */
+#line 169 "yacc.y" /* yacc.c:1646  */
     {
-			strcpy(recordstr+curPos, ",");
-			curPos++;
-			printf("insert_list NUMBER %s, curPos = %d \n",",",curPos);
-			strcpy(recordstr+curPos, (yyvsp[0].strval));
-			curPos += strlen((yyvsp[0].strval));
-			printf("insert_list NUMBER %s, curPos = %d \n",(yyvsp[0].strval),curPos);
+			attr_list[attr_count].type= 1;
+			attr_list[attr_count].used_size = 1;
 		}
-#line 1475 "bison.tab.c" /* yacc.c:1646  */
+#line 1479 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 181 "bison.y" /* yacc.c:1646  */
+#line 174 "yacc.y" /* yacc.c:1646  */
     {
-			strcpy(recordstr+curPos, ",");
-			curPos++;
-			printf("insert_list STRING %s, curPos = %d \n",",",curPos);
-			strcpy(recordstr+curPos, (yyvsp[0].strval));
-			curPos += strlen((yyvsp[0].strval));
-			printf("insert_list STRING %s, curPos = %d \n",(yyvsp[0].strval),curPos);
+			attr_list[attr_count].type= 5;
+			attr_list[attr_count].used_size = 1;
 		}
-#line 1488 "bison.tab.c" /* yacc.c:1646  */
+#line 1488 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 193 "bison.y" /* yacc.c:1646  */
+#line 180 "yacc.y" /* yacc.c:1646  */
     {
-			printf("DeleteRecord func(%s,condsm,%s).\n",tbname,errmsg);
+			attr_list[attr_count].type= 3;
+			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1496 "bison.tab.c" /* yacc.c:1646  */
+#line 1497 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 202 "bison.y" /* yacc.c:1646  */
+#line 186 "yacc.y" /* yacc.c:1646  */
     {
-			printf("Finish\n");
+			attr_list[attr_count].type= 4;
+			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1504 "bison.tab.c" /* yacc.c:1646  */
+#line 1506 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 208 "bison.y" /* yacc.c:1646  */
+#line 194 "yacc.y" /* yacc.c:1646  */
     {
-			char* tmptbname = (char*)malloc(7);		//set a tmp tbname for the catch table of selection results.
-			sprintf(tmptbname,"%s%d","TMPTB_",SelCnt);
-			
-			printf("select_seg\n");			
-			printf("-----one sub selection end----\n");
+			cout<<"DROP TABLE"<< tb_name << endl;
+			cout<<"Call droptable("<<tb_name<<") func here."<<endl;
 		}
-#line 1516 "bison.tab.c" /* yacc.c:1646  */
+#line 1515 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 218 "bison.y" /* yacc.c:1646  */
+#line 202 "yacc.y" /* yacc.c:1646  */
     {
-			printf("select begin unique sellist.\n");
-			
+			cout << "Call Insert Func() here."<<endl;
+			cout << "INSERT INTO " << tb_name << " " << recordstr <<endl;
 		}
-#line 1525 "bison.tab.c" /* yacc.c:1646  */
+#line 1524 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 223 "bison.y" /* yacc.c:1646  */
+#line 209 "yacc.y" /* yacc.c:1646  */
     {
-			printf("select begin unique *.\n");
-			
+			strcpy(recordstr+curPos, (yyvsp[0].strval));
+			curPos+=strlen((yyvsp[0].strval));
 		}
-#line 1534 "bison.tab.c" /* yacc.c:1646  */
+#line 1533 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 230 "bison.y" /* yacc.c:1646  */
+#line 214 "yacc.y" /* yacc.c:1646  */
     {
-			printf("-----one sub selection begin----\n");
-			
+			strcpy(recordstr+curPos, (yyvsp[0].strval));
+			curPos+=strlen((yyvsp[0].strval));
 		}
-#line 1543 "bison.tab.c" /* yacc.c:1646  */
+#line 1542 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 237 "bison.y" /* yacc.c:1646  */
+#line 219 "yacc.y" /* yacc.c:1646  */
     {
-			printf("unique empty.\n");
-		
+			strcpy(recordstr+curPos, ",");
+			curPos++;
+
+			strcpy(recordstr+curPos, (yyvsp[0].strval));
+			curPos += strlen((yyvsp[0].strval));
 		}
-#line 1552 "bison.tab.c" /* yacc.c:1646  */
+#line 1554 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 242 "bison.y" /* yacc.c:1646  */
+#line 227 "yacc.y" /* yacc.c:1646  */
     {
-			printf("unique all.\n");
-			
+			strcpy(recordstr+curPos, ",");
+			curPos++;
+
+			strcpy(recordstr+curPos, (yyvsp[0].strval));
+			curPos += strlen((yyvsp[0].strval));
 		}
-#line 1561 "bison.tab.c" /* yacc.c:1646  */
+#line 1566 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 247 "bison.y" /* yacc.c:1646  */
+#line 238 "yacc.y" /* yacc.c:1646  */
     {
-			printf("unique distinct.\n");
+			cout << "DELETE FROM\n"<<endl;
+			delete_query->tb_name = tb_name;
+			cout << delete_query->tb_name <<endl;
+			FillDeleteCond();
+			PrintCondList();
+			cout << "Call delete() function here."<<endl;
+			
 		}
-#line 1569 "bison.tab.c" /* yacc.c:1646  */
+#line 1580 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 251 "bison.y" /* yacc.c:1646  */
+#line 253 "yacc.y" /* yacc.c:1646  */
     {
-			printf("unique unique.\n");
+		}
+#line 1587 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 258 "yacc.y" /* yacc.c:1646  */
+    {
+			FillSelectCond();
+			PrintSelectQuery();
+			parser_init();
 			
 		}
-#line 1578 "bison.tab.c" /* yacc.c:1646  */
+#line 1598 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 267 "yacc.y" /* yacc.c:1646  */
+    {
+			query->all = 0;
+			cout<<"all "<<query->all<<endl;
+		}
+#line 1607 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 262 "bison.y" /* yacc.c:1646  */
+#line 272 "yacc.y" /* yacc.c:1646  */
     {
-			printf("sel_column NAME %s.\n",(yyvsp[0].strval));
-			
+			query->all = 1;
+			cout<<"all "<<query->all<<endl;
 		}
-#line 1587 "bison.tab.c" /* yacc.c:1646  */
+#line 1616 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 267 "bison.y" /* yacc.c:1646  */
+#line 279 "yacc.y" /* yacc.c:1646  */
     {
-			printf("sel_column NAME.NAME %s.%s \n",(yyvsp[-2].strval),(yyvsp[0].strval));
+			printf("-----one sub selection begin----\n");
 		}
-#line 1595 "bison.tab.c" /* yacc.c:1646  */
+#line 1624 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 285 "yacc.y" /* yacc.c:1646  */
+    {
+			query->distinct = 0;
+			cout<<"distinct "<<query->distinct<<endl;
+		}
+#line 1633 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 290 "yacc.y" /* yacc.c:1646  */
+    {
+			query->distinct = 0;
+			cout<<"distinct "<<query->distinct<<endl;
+		}
+#line 1642 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 277 "bison.y" /* yacc.c:1646  */
-    {	
-			
-			printf("AddSelTB NAME %s",(yyvsp[0].strval));
-			
+#line 295 "yacc.y" /* yacc.c:1646  */
+    {
+			query->distinct = 1;
+			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1605 "bison.tab.c" /* yacc.c:1646  */
+#line 1651 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 284 "bison.y" /* yacc.c:1646  */
-    {	
-			char* tmptbname = (char*)malloc(8);		//set a tmp tbname for the catch table of selection results.
-			sprintf(tmptbname,"%s%d","TMPTB_",SelCnt++);
-			printf("AddSelTB NAME %s %s",tmptbname,tmptbname);
-		}
-#line 1615 "bison.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 44:
-#line 290 "bison.y" /* yacc.c:1646  */
-    {	
-			char* tmptbname = (char*)malloc(7);		//set a tmp tbname for the catch table of selection results.
-			sprintf(tmptbname,"%s%d","TMPTB_",SelCnt++);
-			printf("AddSelTB NAME %s %s",tmptbname,(yyvsp[0].strval));
-		}
-#line 1625 "bison.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 306 "bison.y" /* yacc.c:1646  */
+#line 300 "yacc.y" /* yacc.c:1646  */
     {
-			printf("Join %s.%s compare%d %s.%s \n",(yyvsp[-6].strval),(yyvsp[-4].strval),optrans((yyvsp[-3].strval)),(yyvsp[-2].strval),(yyvsp[0].strval));
-			
+			query->distinct = 1;
+			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1634 "bison.tab.c" /* yacc.c:1646  */
+#line 1660 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 311 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveSelItem(NULL,(yyvsp[0].strval));
+		}
+#line 1668 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 315 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveSelItem((yyvsp[-2].strval),(yyvsp[0].strval));
+		}
+#line 1676 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 311 "bison.y" /* yacc.c:1646  */
-    {
-			printf("SelConditions %s compare%d %s \n",(yyvsp[-2].strval),optrans((yyvsp[-1].strval)),(yyvsp[0].strval));
+#line 325 "yacc.y" /* yacc.c:1646  */
+    {	
+			SaveFromItem((yyvsp[0].strval));
+			
 		}
-#line 1642 "bison.tab.c" /* yacc.c:1646  */
+#line 1685 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 315 "bison.y" /* yacc.c:1646  */
-    {
-			printf("SelConditions %s compare%d %s \n",(yyvsp[-2].strval),optrans((yyvsp[-1].strval)),(yyvsp[0].strval));
+#line 331 "yacc.y" /* yacc.c:1646  */
+    {	
+			cout << "Sorry, Our DB Cannnot Support Nested Select Now."<<endl;
 		}
-#line 1650 "bison.tab.c" /* yacc.c:1646  */
+#line 1693 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 319 "bison.y" /* yacc.c:1646  */
-    {
-			printf("SelConditions %s.%s compare%d %s \n",(yyvsp[-4].strval),(yyvsp[-2].strval),optrans((yyvsp[-1].strval)),(yyvsp[0].strval));
+#line 335 "yacc.y" /* yacc.c:1646  */
+    {	
+			cout << "Sorry, Our DB Cannnot Support Nested Select Now."<<endl;
 		}
-#line 1658 "bison.tab.c" /* yacc.c:1646  */
+#line 1701 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 323 "bison.y" /* yacc.c:1646  */
+  case 57:
+#line 349 "yacc.y" /* yacc.c:1646  */
     {
-			printf("SelConditions %s.%s compare%d %s \n",(yyvsp[-4].strval),(yyvsp[-2].strval),optrans((yyvsp[-1].strval)),(yyvsp[0].strval));
+			SaveJoin((yyvsp[-6].strval), (yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), Operator((yyvsp[-3].strval)));	
 		}
-#line 1666 "bison.tab.c" /* yacc.c:1646  */
+#line 1709 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 353 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), 1, Operator((yyvsp[-1].strval)));	
+		}
+#line 1717 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 357 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), 2, Operator((yyvsp[-1].strval)));
+		}
+#line 1725 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 361 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveCondition((yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), 1, Operator((yyvsp[-1].strval)));
+		}
+#line 1733 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 365 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveCondition((yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), 2, Operator((yyvsp[-1].strval)));
+		}
+#line 1741 "yacc.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 375 "yacc.y" /* yacc.c:1646  */
+    {
+			SaveOrderbyItem((yyvsp[0].strval));
+		}
+#line 1749 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1670 "bison.tab.c" /* yacc.c:1646  */
+#line 1753 "yacc.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1894,40 +1977,355 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 327 "bison.y" /* yacc.c:1906  */
-
+#line 380 "yacc.y" /* yacc.c:1906  */
 
 
 void parser_init()
 {
 	lex_init();
-	attrcnt = 0;
-	tbname = NULL;
+	tb_name = NULL;
 	funcRnt = 0;
 	curPos = 0;
-	condcnt = 0;
-	SelCnt = 0;
+	cond_count = 0;
+	join_count = 0;
+	attr_count = 0;
+	sel_count = 0;
+	from_count = 0;
+	memset(attr_list,0,sizeof(AttrInfo)*MAX_ATTR_NUM);
+	memset(cond_list,0,sizeof(Condition)*MAX_COND_NUM);
+	memset(query,0,sizeof(SelectQuery));
 	return;
 }
-int optrans(char* opstr)
-{
-	if (strcmp(opstr, "=") == 0) 
+
+void InitQuery(){
+	delete_query = (DeleteQuery*)malloc(sizeof(DeleteQuery));
+	query = (SelectQuery*)malloc(sizeof(SelectQuery));
+	query->distinct = 0;
+	query->all = 0;
+}
+void DestoryQuery(){
+	free(delete_query);
+	free(query);
+}
+int SaveCondition(char* tb_name, char* col_name, char* value, int value_type, int op){
+	if(cond_count > MAX_COND_NUM){
+		return -1;
+	}
+	cond_list[cond_count].col_name = col_name;
+	
+	cond_list[cond_count].tb_name = tb_name;
+	cond_list[cond_count].value = value;
+	
+	cond_list[cond_count].value_type = value_type;
+	
+	cond_list[cond_count].op = op;
+	
+	cond_count++;
+	
+	return 0;
+}
+int SaveFragCondition(char* tb_name, char* col_name, char* value, int value_type, int op){
+	if(cond_count > MAX_COND_NUM){
+		return -1;
+	}
+	frag_list[frag_num].CondList[frag_cond_count].col_name = col_name;
+	cout<<"col_name"<<col_name;
+	frag_list[frag_num].CondList[frag_cond_count].op = op;
+	cout << " op " << op ;
+	frag_list[frag_num].CondList[frag_cond_count].tb_name = tb_name;
+	
+	frag_list[frag_num].CondList[frag_cond_count].value = value;
+	cout << " value " << value<<endl;
+	frag_list[frag_num].CondList[frag_cond_count].value_type = value_type;
+	
+	
+	
+	frag_cond_count++;
+	
+	return 0;
+}
+int SaveJoin(char* tb_name1, char* col_name1, char* tb_name2, char* col_name2, int op){
+	if(join_count > MAX_JOIN_NUM){
+			return -1;
+		}
+	query->JoinList[join_count].col_name1 = col_name1;
+	query->JoinList[join_count].col_name2 = col_name2;
+	query->JoinList[join_count].op = op;
+	query->JoinList[join_count].tb_name1 = tb_name1;
+	query->JoinList[join_count].tb_name2 = tb_name2;
+	join_count++;
+	return 0;
+
+}
+int SaveAttributeItem(char* table_name, char* attr_name, int type, int size){
+	if(attr_count > MAX_ATTR_NUM){
+				return -1;
+	}
+	attr_list[attr_count].table_name = table_name;
+	attr_list[attr_count].attr_name = attr_name;
+	attr_list[attr_count].type = type;
+	attr_list[attr_count].used_size = size;
+	attr_count++;
+	return 0;
+}
+int SaveSelItem(char* tb_name, char* col_name){
+	query->SelList[sel_count].col_name = col_name;
+	query->SelList[sel_count].table_name = tb_name;
+	sel_count ++;
+	return 0;
+}
+int SaveFromItem(char* tb_name){
+	query->FromList[from_count].tb_name = tb_name;
+	from_count++;
+	return 0;
+}
+int SaveOrderbyItem(char *col_name){
+	query->OrderbyList[orderby_count].col_name = col_name;
+	orderby_count ++;
+	return 0;
+}
+int FillSelectCond(){
+	memcpy(query->CondList,cond_list,cond_count * sizeof(Condition));
+	return 0;
+}
+int FillDeleteCond(){
+	memcpy(delete_query->CondList,cond_list,cond_count * sizeof(Condition));
+	return 0;
+}
+
+
+/*
+ * attr_list: attributes iostreamfor a table
+ */
+int PrintAttrList(){
+	int i;
+	for(i=0;i<attr_count;i++){
+			cout<<"attr "<<i<<": "<<attr_list[i].attr_name<<" type "<<attr_list[i].type<<" size "<<attr_list[i].used_size<<endl;
+		}
 		return 0;
-		//return EQ;
-	else if (strcmp(opstr, ">=") == 0) 
-		return 1;
-		//return GE;
-	else if (strcmp(opstr, "<=") == 0) 
-		return 2;
-		//return LE;
-	else if (strcmp(opstr, ">") == 0) 
-		return 3;
-		//return GT;
-	else if (strcmp(opstr, "<") == 0)
-		return 5;
-		//return LT;
-	else if (strcmp(opstr, "<>") == 0)
-		return 6;
-		//return NE;
+}
+int PrintCondList(){
+	int i;
+	for(i = 0; i < cond_count; i++){
+		cout << "AND "<<endl;	
+		if(cond_list[i].tb_name != "")
+			cout<<"\t"<<cond_list[i].tb_name<<"."<<cond_list[i].col_name<<" op "<<cond_list[i].op<<" "<< cond_list[i].value<<endl;
+		else
+			cout << " op " << query->CondList[i].op << endl;
+			cout<<"\t"<<cond_list[i].col_name<<" op "<<cond_list[i].op<<" "<< cond_list[i].value<<endl;		
+	}
+}
+int PrintSelectQuery(){
+	int i = 0;
+	if(from_count!=0)
+		cout << "SELECT "<< endl;
+	if(query->all != 0)
+		cout<< "*" << endl;
+	if(sel_count!=0){
+		cout << "SEL_LIST" <<endl;
+		for(i=0; i < sel_count; i++){
+			cout<<"\t"<<query->SelList[i].col_name<<endl;
+		}
+	}	
+	cout << "FROMLIST" << endl;
+	for(i = 0; i < from_count; i++){
+		cout<<"\t"<<query->FromList[i].tb_name<<endl;
+	}
+	if(cond_count!=0){
+		cout <<"WHERECLAUSE"<< endl;
+	}
+	PrintTree();
+/*
+	for(i = 0; i < cond_count; i++){
+			
+		if(query->CondList[i].tb_name != "")
+			cout<<"\t"<<query->CondList[i].tb_name<<"."<<query->CondList[i].col_name<<" op "<<query->CondList[i].op<<" "<< query->CondList[i].value<<endl;
+		else
+			//cout << " op " << query->CondList[i].op << endl;
+			cout<<"\t"<<query->CondList[i].col_name<<" op "<<query->CondList[i].op<<" "<< query->CondList[i].value<<endl;	
+		cout << "AND "<<endl;	
+	}
+	for(i=0;i < join_count; i++){
+		cout<<"\t"<<query->JoinList[i].tb_name1<<"."<<query->JoinList[i].col_name1<<" op "<<query->JoinList[i].op<<" "<<query->JoinList[i].tb_name2<<"."<<query->JoinList[i].col_name2<<endl;
+		cout << "AND "<<endl;
+	}*/	
+	if(attr_count != 0)
+		cout<<"CREATE TABLE "<<endl;
+	for(i=0;i<attr_count;i++){
+		cout<<attr_list[i].table_name<<"attr_name "<<attr_list[i].attr_name<<"type "<<attr_list[i].type<<"size "<<attr_list[i].used_size<<endl;
+	}
+	if(orderby_count!=0)
+		cout<<"ORDER BY"<< endl;
+	for(i=0;i<orderby_count;i++)
+		cout<<query->OrderbyList[i].col_name<<endl;
+	
+	return 0;
+}
+
+void PrintTree(){
+	int i;
+	if(cond_count == 1 && join_count == 0){
+		if(query->CondList[i].tb_name != "")
+			cout<<"\t"<<query->CondList[0].tb_name<<"."<<query->CondList[0].col_name<<" op "<<query->CondList[0].op<<" "<< query->CondList[0].value<<endl;
+		else
+			cout<<"\t"<<query->CondList[0].col_name<<" op "<<query->CondList[0].op<<" "<< query->CondList[0].value<<endl;
+		return;
+	}//end if cond_count 1
+	if(join_count == 1 && cond_count == 0){
+		cout<<"\t"<<query->JoinList[0].tb_name1<<"."<<query->JoinList[0].col_name1<<" op "<<query->JoinList[0].op<<" "<<query->JoinList[0].tb_name2<<"."<<query->JoinList[0].col_name2<<endl;
+		return;
+	}//end if join_count 1
+	else{
+		cout<<"AND"<<endl;
+		cout<<"| \t\t \\"<<endl;
+		// for join_count + cond_count >= 3
+		for(i=1;i<(join_count+cond_count)-1;i++){
+			PrintSpace(i-1);
+			PrintSpace(i-1);
+			if(i<=cond_count){
+				cout<<" op "<<query->CondList[i-1].op<<"\t\tAND"<<endl;
+				PrintSpace(i-1);
+				PrintSpace(i-1);
+				cout<<"|\t\\"<<endl;
+				PrintSpace(i-1);
+				PrintSpace(i-1);
+				if(query->CondList[i-1].tb_name != "")
+					cout<<query->CondList[i-1].tb_name<<"."<<query->CondList[i-1].col_name<<" "<< query->CondList[i-1].value<<endl;
+				else
+				//cout << " op " << query->CondList[i].op << endl;
+					cout<<query->CondList[i-1].col_name<<" "<< query->CondList[i-1].value<<endl;
+			}
+			if(i>cond_count){
+				cout<<" op "<<query->JoinList[i-cond_count-1].op<<"\t\tAND"<<endl;
+				PrintSpace(i-1);
+				PrintSpace(i-1);
+				cout<<"|\t\\"<<endl;
+				PrintSpace(i-1);
+				PrintSpace(i-1);
+				cout<<query->JoinList[i-cond_count-1].tb_name1<<"."<<query->JoinList[i-cond_count-1].col_name1<<" "<<query->JoinList[i-cond_count-1].tb_name2<<"."<<query->JoinList[i-cond_count-1].col_name2<<endl;
+			}
+			//cout<<"cond"<<i-1<<"\tAND"<<endl;
+			PrintSpace(i);
+			PrintSpace(i);
+			cout<<"| \t\t \\"<<endl;
+		}//end for
+		PrintSpace(join_count+cond_count-2);
+		PrintSpace(join_count+cond_count-2);
+		if((join_count == 1)&(cond_count>=2)){
+			cout<<" op "<<query->CondList[cond_count-1].op<<"\t\t\t"<<" op "<<query->JoinList[0].op<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			cout<<"| \\\t\t\t| \\"<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			if(query->CondList[cond_count-1].tb_name != "")
+				cout<<query->CondList[cond_count-1].tb_name<<"."<<query->CondList[cond_count-1].col_name<<" "<< query->CondList[cond_count-1].value<<"\t\t\t";
+			else
+				cout<<query->CondList[cond_count-1].col_name<<" "<< query->CondList[cond_count-1].value<<"\t\t\t";
+			cout<<query->JoinList[join_count-1].tb_name1<<"."<<query->JoinList[join_count-1].col_name1<<" "<<query->JoinList[join_count-1].tb_name2<<"."<<query->JoinList[join_count-1].col_name2<<endl;
+			return;			
+		}
+		if(join_count >=2 ){
+			cout<<" op "<<query->JoinList[join_count-2].op<<"\t\t"<<" op "<<query->JoinList[join_count-1].op<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			cout<<"| \\\t\t\t| \\"<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			cout<<query->JoinList[join_count-2].tb_name1<<"."<<query->JoinList[join_count-2].col_name1<<" "<<query->JoinList[join_count-2].tb_name2<<"."<<query->JoinList[join_count-2].col_name2<<"\t"<<query->JoinList[join_count-1].tb_name1<<"."<<query->JoinList[join_count-1].col_name1<<" "<<query->JoinList[join_count-1].tb_name2<<"."<<query->JoinList[join_count-1].col_name2<<endl;
+			return;
+		}//end if join_count >= 2
+		if (join_count==0 & cond_count >= 2){
+			cout<<" op "<<query->CondList[cond_count-2].op<<"\t\t\t"<<" op "<<query->CondList[cond_count-1].op<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			cout<<"| \\\t\t\t| \\"<<endl;
+			PrintSpace(join_count+cond_count-2);
+			PrintSpace(join_count+cond_count-2);
+			if(query->CondList[cond_count-2].tb_name != "")
+				cout<<query->CondList[cond_count-2].tb_name<<"."<<query->CondList[cond_count-2].col_name<<" "<< query->CondList[cond_count-2].value<<"\t";
+			else
+				cout<<query->CondList[cond_count-2].col_name<<" "<< query->CondList[cond_count-2].value<<"\t";
+			if(query->CondList[cond_count-1].tb_name != "")
+				cout<<query->CondList[cond_count-1].tb_name<<"."<<query->CondList[cond_count-1].col_name<<" "<< query->CondList[cond_count-1].value<<endl;
+			else
+				cout<<query->CondList[cond_count-1].col_name<<" "<< query->CondList[cond_count-1].value<<endl;
+			return;
+		}//end if join = 0 & cond >= 2
+	}//end else	
+}
+void PrintSpace(int n){
+	int i;
+	for(i=0;i<n;i++){
+		cout<<"\t";	
+	}
+}
+
+int Operator(char* opstr)
+{
+	OP op;
+	if (strcmp(opstr, "=") == 0){
+		op = E;
+		return op;
+	}
+	else if (strcmp(opstr, ">=") == 0) {
+		op = GE;
+		return op;
+	}	
+	else if (strcmp(opstr, "<=") == 0){
+		op = LE;
+		return op;
+	}
+	else if (strcmp(opstr, ">") == 0) {
+		op = G;
+		return op;
+	}
+	else if (strcmp(opstr, "<") == 0) {
+		op = L;
+		return op;
+	}
+	else if (strcmp(opstr, "<>") == 0) {
+		op = NE;
+		return op;
+	}
 	return -1;
+}
+
+int GetType(char* type_str)
+{
+	TYPE type;
+	if (strcmp(type_str, "INTEGER") == 0){
+		type = I;
+		return type;
+	}
+	else if (strcmp(type_str, "CHARACTER") == 0) {
+		type = C;
+		return type;
+	}	
+	else if (strcmp(type_str, "VARCHAR") == 0){
+		type = V;
+		return type;
+	}
+	else if (strcmp(type_str, "FLOAT") == 0) {
+		type = F;
+		return type;
+	}
+	else if (strcmp(type_str, "DATE") == 0) {
+		type = D;
+		return type;
+	}
+	return -1;
+}
+int main(){
+	cout<<"begin"<<endl;
+	InitQuery();
+	while(1)
+    {
+       parser_init();
+       int rnt = yyparse();
+       if(rnt==-1)
+            break;
+    }
+	DestoryQuery();
+	return 0;
 }

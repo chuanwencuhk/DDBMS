@@ -1,13 +1,19 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "tinySQL_test.tab.h"
+#include "parser.h"
+#include "yacc.tab.h"
 
 int lineno = 1;
-void yyerror(char *s);
+extern "C"{
+	int yyerror(char *s);
+	int yylex(void);
+	int yywrap(void);
+	int lex_init();
+}
 char *strdupxy(char *s);
 
-int lex_init();
+
 %}
 %%
 
@@ -50,12 +56,18 @@ DELETE	|
 delete		return DELETE;
 AND	|
 and		return AND;
+OR	|
+or		return OR;
 INT(EGER)? |
 int(eger)?	return INTEGER;
 CHAR(ACTER)? |
 char(acter)?	return CHARACTER;
+FRAG(MENT)? |
+frag(ment)?	return FRAGMENT;
 varchar |
 VARCHAR		return VARCHAR;
+float	|
+FLOAT		return FLOAT;
 EXIT	|
 exit	|
 QUIT	|
@@ -66,7 +78,6 @@ SHOW	|
 show		return SHOW;
 TABLES	|
 tables		return TABLES;
-
 	/* punctation */
 "="	|
 "<>"	|
@@ -93,22 +104,11 @@ tables		return TABLES;
 .		yyerror("invalid character");
 %%
 
-int main(){
-	
-	while(1)
-    {
-       parser_init();
-       int rnt = yyparse();
-       if(rnt==-1)
-            break;
-    }
-	printf("# of lines = %d\n",lineno);
-	return 0;
-}
-void yyerror(char *s)
+int yyerror(char *s)
 {
 	printf("> %s at ==> %s\n", s, yytext);
 	printf("SQL syntax error....\n");
+	return 0;
 }
 
 int yywrap()
@@ -118,13 +118,12 @@ int yywrap()
 		return 1;
 	} else {
 		fclose(yyin);
-		printf("stdDBMS> ");
 		yyin = stdin;
 		return 0;
 	}
 }
 /* make a duplicate of s */
-char *strdupxy(char *s)
+char *strdupxy(char *s)		
 {
 	char *p;
 	p = (char *) malloc(strlen(s) + 1);
@@ -137,4 +136,5 @@ int lex_init()
 	lineno = 1;
 	return 0;
 }
+
 

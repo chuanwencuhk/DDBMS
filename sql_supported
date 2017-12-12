@@ -1,0 +1,26 @@
+1.Fragment:please input each seperately.
+fragment a>1 and b<2 db1;
+fragment a>1 and b>=2 db2;
+fragment a<=1 and b<2 db3;
+fragment a<=1 and b>=2 db4;
+
+2.Create Table
+CREATE TABLE CUSTOMER (C_CUSTKEY INTEGER, C_NAME VARCHAR(20));
+CREATE TABLE SUPPLIER (S_SUPPKEY INTEGER, S_NAME CHAR(25), S_ADDRESS VARCHAR(40), S_PHONE CHAR(15), S_ACCTBAL FLOAT(1), S_COMMENT VARCHAR(101));
+
+create table nation (n_nationkey integer, n_name char(25), n_regionkey integer, n_comment varchar(152));
+
+3. Insert.
+INSERT INTO Persons VALUES ('Gates', 'Bill', 'Xuanwumen 10', 'Beijing');
+
+4. Delete
+DELETE FROM table_name where a >10 and b<100;
+
+5.Select
+SELECT LastName,FirstName FROM Persons;
+
+SELECT DISTINCT Company FROM Orders;
+
+SELECT * FROM tb1 where Persons.Id_P = Orders.Id_P AND Persons.Id_P > 10 AND Persons.name = Orders.name AND IP > 100;
+
+SELECT Persons.LastName, Persons.FirstName, Orders.OrderNo FROM Persons, Orders WHERE Persons.Id_P = Orders.Id_P AND Persons.Id_P > 10 AND Persons.name = Orders.name ORDER BY FirstName;

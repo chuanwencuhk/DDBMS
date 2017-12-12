@@ -30,11 +30,11 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_BISON_TAB_H_INCLUDED
-# define YY_YY_BISON_TAB_H_INCLUDED
+#ifndef YY_YY_YACC_TAB_H_INCLUDED
+# define YY_YY_YACC_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -50,31 +50,34 @@ extern int yydebug;
     NUMBER = 260,
     COMPARISION = 261,
     AND = 262,
-    SELECT = 263,
-    FROM = 264,
-    WHERE = 265,
-    ORDER = 266,
-    BY = 267,
-    ASC = 268,
-    DESC = 269,
-    ALL = 270,
-    UNIQUE = 271,
-    DISTINCT = 272,
-    CREATE = 273,
-    TABLE = 274,
-    DROP = 275,
-    INDEX = 276,
-    INSERT = 277,
-    INTO = 278,
-    VALUES = 279,
-    DELETE = 280,
-    CHARACTER = 281,
-    VARCHAR = 282,
-    INTEGER = 283,
-    DATE = 284,
-    SHOW = 285,
-    TABLES = 286,
-    EXIT = 287
+    OR = 263,
+    SELECT = 264,
+    FROM = 265,
+    WHERE = 266,
+    ORDER = 267,
+    BY = 268,
+    ASC = 269,
+    DESC = 270,
+    FRAGMENT = 271,
+    ALL = 272,
+    UNIQUE = 273,
+    DISTINCT = 274,
+    CREATE = 275,
+    TABLE = 276,
+    DROP = 277,
+    INDEX = 278,
+    INSERT = 279,
+    INTO = 280,
+    VALUES = 281,
+    DELETE = 282,
+    CHARACTER = 283,
+    INTEGER = 284,
+    DATE = 285,
+    FLOAT = 286,
+    VARCHAR = 287,
+    SHOW = 288,
+    TABLES = 289,
+    EXIT = 290
   };
 #endif
 
@@ -83,12 +86,12 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 25 "bison.y" /* yacc.c:1909  */
+#line 35 "yacc.y" /* yacc.c:1909  */
 
 	int intval;
 	char* strval;
 
-#line 92 "bison.tab.h" /* yacc.c:1909  */
+#line 95 "yacc.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -99,4 +102,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_BISON_TAB_H_INCLUDED  */
+#endif /* !YY_YY_YACC_TAB_H_INCLUDED  */
