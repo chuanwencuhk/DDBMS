@@ -58,6 +58,8 @@ public:
 
   std::string Get(const std::string& path, bool watch = false);
 
+  int Sync(const std::string& path);
+
   std::vector<std::string> GetChildren(const std::string& parent_path, bool watch = false);
 
 private:

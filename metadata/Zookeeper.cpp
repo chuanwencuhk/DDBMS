@@ -10,6 +10,19 @@ namespace zookeeper {
 #define CHECK_ZOOCODE_AND_THROW(code)  \
   if (code != ZOK) { throw ZooException(code); }
 
+
+void my_string_completion(int rc, const char *name, const void *data) {
+    fprintf(stderr, "[%s]: rc = %d\n", (char*)(data==0?"null":data), rc);
+    if (!rc) {
+        fprintf(stderr, "\tname = %s\n", name);
+    }
+}
+
+void my_string_completion_free_data(int rc, const char *name, const void *data) {
+    my_string_completion(rc, name, data);
+    free((void*)data);
+}
+
 void ZooKeeper::GlobalWatchFunc(zhandle_t* h, int type, int state, const char* path, void* ctx) {
   auto self = static_cast<ZooKeeper*>(ctx);
   self->WatchHandler(type, state, path);
@@ -55,6 +68,11 @@ bool ZooKeeper::is_connected() {
 
 bool ZooKeeper::is_expired() {
   return zoo_state(zoo_handle_) == ZOO_EXPIRED_SESSION_STATE;
+}
+
+int ZooKeeper::Sync(const std::string& path){
+  rc = zoo_async(zoo_handle_, path, my_string_completion_free_data, strdup(line));
+  return rc;
 }
 
 void ZooKeeper::WatchHandler(int type, int state, const char* path) {

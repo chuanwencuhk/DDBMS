@@ -22,6 +22,8 @@ string getTestDataPath(){
 }
 
 string MetaDataManager::getTestData(){
+	//todo return rc error code
+	zookeeper_->Sync(getTestDataPath());
 	return zookeeper_->Get(getTestDataPath(), 0);
 }
 
