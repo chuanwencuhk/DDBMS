@@ -6,6 +6,7 @@ class SiteInfo
 {
 public:
     SiteInfo();
+    SiteInfo(SiteInfo &sti);
     void set_site_name(std::string name){site_name = name;}
     std::string get_site_name(){return site_name;}
 
@@ -15,11 +16,15 @@ public:
     void set_site_port(int port){site_port = port;}
     int get_site_port(){return site_port;}
 
+    void set_site_ID(int ID){site_ID = ID;}
+    int get_site_ID(){return site_ID;}
+
     void set_control_site(bool iscontrol){isContorlSite = iscontrol;}
     bool get_isControlSite(){return isContorlSite;}
 
 
 private:
+    int site_ID;//site ID number
     std::string site_name;//site n's name
     std::string site_ip;//ip address
     int site_port;//port number for connection

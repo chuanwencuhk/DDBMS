@@ -5,7 +5,7 @@
 #include "MetadataManager/metadatamanager.h"
 #include "MetadataManager/ddbmainwin.h"
 
-
+#include "MetadataManager/siteinfo.h"
 using namespace std;
 using namespace libconfig;
 
@@ -14,7 +14,16 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
     DDBMainWin dm;
-    dm.mtr.initialize_fragment();
+    //dm.mtr.initialize_fragment();
+    SiteInfo sf;
+    sf.set_site_ID(1);
+    sf.set_site_name("site1");
+    sf.set_site_ip("192.168.1.1");
+    sf.set_site_port(3389);
+    sf.set_control_site(true);
+
+    dm.mtr.initialize_siteinfo();
+    dm.mtr.set_siteinfo(sf);
 
     dm.show();
     return app.exec();

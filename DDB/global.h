@@ -14,7 +14,14 @@
 #define MAX_SITE_NUM 4 //max site number of DDB
 
 #define CONFIG_NAME_SITEINFO "site_info"
+#define CONFIG_NAME_SITEINFO_SITE_ID "site_ID"
+#define CONFIG_NAME_SITEINFO_SITE_NAME "site_name"
+#define CONFIG_NAME_SITEINFO_SITE_IP "site_ip"
+#define CONFIG_NAME_SITEINFO_STIE_PORT "site_port"
+#define CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE "is_control_site"
+
 #define CONFIG_NAME_FRAGMENT "fragment"
+
 #define CONFIG_NAME_VERSION "version"
 typedef enum _DataTYpe
 {

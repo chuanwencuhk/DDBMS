@@ -310,8 +310,22 @@ void MetadataManager::initialize_fragment()
 
 void MetadataManager::set_siteinfo(SiteInfo& sti)
 {
-    //to do
+    int i = sti.get_site_ID();
+    this->siteinfo[i] = sti;
 
+    Setting &root = cfg.getRoot();
+    if(!root.exists(CONFIG_NAME_SITEINFO))
+        root.add(CONFIG_NAME_SITEINFO,Setting::TypeList);
+
+    Setting &sf = root[CONFIG_NAME_SITEINFO];
+    sf.add(CONFIG_NAME_SITEINFO_SITE_ID,Setting::TypeInt) = sti.get_site_ID();
+    sf.add(CONFIG_NAME_SITEINFO_SITE_IP,Setting::TypeString) = sti.get_site_ip();
+    sf.add(CONFIG_NAME_SITEINFO_SITE_NAME,Setting::TypeString) = sti.get_site_name();
+    sf.add(CONFIG_NAME_SITEINFO_STIE_PORT,Setting::TypeString) = sti.get_site_port();
+    sf.add(CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE,Setting::TypeBoolean) = sti.get_isControlSite();
+
+    write_to_config_file(METADATA_CONFIG_FILE);
+    cout<<"set_siteinfo() ok"<<endl;
 
 
 }
