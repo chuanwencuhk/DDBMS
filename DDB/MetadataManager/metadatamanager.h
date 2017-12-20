@@ -18,7 +18,7 @@ public:
     void set_num_of_table(int num){num_of_tables = num;}
     int get_num_of_table(){return num_of_tables;}
 
-    TableMetadata* get_tablemetadata_pointer(){return ptablemetadata;}
+
 
     void read_config_file(const std::string &filename);
 
@@ -29,13 +29,15 @@ public:
     void setMetadataVer(std::string str);//set the version of DDB
     std::string get_metadata_version(){return version;}//get the version info
 
-    SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
+
+    void set_siteinfo(SiteInfo &sti);
 
     void initialize_siteinfo();
     void initialize_database(std::string db_name);
     void initialize_fragment();
 
-    void set_siteinfo(SiteInfo &sti);
+    SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
+    TableMetadata* get_tablemetadata_pointer(){return ptablemetadata;}
 
     void write_to_config_file(std::string filename);//write the new data into meatadata.cfg
 

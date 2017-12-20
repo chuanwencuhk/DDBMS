@@ -245,7 +245,7 @@ void MetadataManager::initialize_siteinfo()
     Setting &root = cfg.getRoot();
     if(! root.exists(CONFIG_NAME_SITEINFO))
     {
-      root.add("site_info", Setting::TypeList);
+      root.add(CONFIG_NAME_SITEINFO, Setting::TypeGroup);
       cout<<"initialize_siteinfo no site_info"<<endl;
     }
 //      Setting& siteInfolist = root["site_info"];
@@ -314,15 +314,20 @@ void MetadataManager::set_siteinfo(SiteInfo& sti)
     this->siteinfo[i] = sti;
 
     Setting &root = cfg.getRoot();
-    if(!root.exists(CONFIG_NAME_SITEINFO))
-        root.add(CONFIG_NAME_SITEINFO,Setting::TypeList);
+//    if(!root.exists(CONFIG_NAME_SITEINFO))
+//        root.add(CONFIG_NAME_SITEINFO,Setting::TypeGroup);
+   string str = sti.get_site_name();
+    Setting& sf = root[CONFIG_NAME_SITEINFO];
+    if(sf.exists(str.c_str()))//if exist site_i info then delete it and rebuild it to update siteinfo
+        sf.remove(str.c_str());
 
-    Setting &sf = root[CONFIG_NAME_SITEINFO];
-    sf.add(CONFIG_NAME_SITEINFO_SITE_ID,Setting::TypeInt) = sti.get_site_ID();
-    sf.add(CONFIG_NAME_SITEINFO_SITE_IP,Setting::TypeString) = sti.get_site_ip();
-    sf.add(CONFIG_NAME_SITEINFO_SITE_NAME,Setting::TypeString) = sti.get_site_name();
-    sf.add(CONFIG_NAME_SITEINFO_STIE_PORT,Setting::TypeString) = sti.get_site_port();
-    sf.add(CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE,Setting::TypeBoolean) = sti.get_isControlSite();
+    sf.add(str.c_str(),Setting::TypeGroup);
+    Setting& info = sf[str.c_str()];
+    info.add(CONFIG_NAME_SITEINFO_SITE_ID, Setting::TypeInt) = sti.get_site_ID();
+    info.add(CONFIG_NAME_SITEINFO_SITE_IP,Setting::TypeString) = sti.get_site_ip().c_str();
+    info.add(CONFIG_NAME_SITEINFO_SITE_NAME,Setting::TypeString) = sti.get_site_name().c_str();
+    info.add(CONFIG_NAME_SITEINFO_STIE_PORT,Setting::TypeInt) = sti.get_site_port();
+    info.add(CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE,Setting::TypeBoolean) = sti.get_isControlSite();
 
     write_to_config_file(METADATA_CONFIG_FILE);
     cout<<"set_siteinfo() ok"<<endl;

@@ -56,7 +56,8 @@ SOURCES       = ../DDB/main.cpp \
 		../DDB/MetadataManager/tablemetadata.cpp \
 		../DDB/MysqlConnector/mysqlconnector.cpp \
 		../DDB/MetadataManager/siteinfo.cpp \
-		../DDB/MetadataManager/ddbmainwin.cpp moc_ddbmainwin.cpp
+		../DDB/MetadataManager/ddbmainwin.cpp \
+		../DDB/MetadataManager/fragmentinfo.cpp moc_ddbmainwin.cpp
 OBJECTS       = main.o \
 		attribution.o \
 		metadatamanager.o \
@@ -64,6 +65,7 @@ OBJECTS       = main.o \
 		mysqlconnector.o \
 		siteinfo.o \
 		ddbmainwin.o \
+		fragmentinfo.o \
 		moc_ddbmainwin.o
 DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/unix.conf \
@@ -250,13 +252,15 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../DDB/MysqlConnector/mysqlconnector.h \
 		../DDB/global.h \
 		../DDB/MetadataManager/siteinfo.h \
-		../DDB/MetadataManager/ddbmainwin.h ../DDB/main.cpp \
+		../DDB/MetadataManager/ddbmainwin.h \
+		../DDB/MetadataManager/fragmentinfo.h ../DDB/main.cpp \
 		../DDB/MetadataManager/attribution.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
 		../DDB/MetadataManager/tablemetadata.cpp \
 		../DDB/MysqlConnector/mysqlconnector.cpp \
 		../DDB/MetadataManager/siteinfo.cpp \
-		../DDB/MetadataManager/ddbmainwin.cpp
+		../DDB/MetadataManager/ddbmainwin.cpp \
+		../DDB/MetadataManager/fragmentinfo.cpp
 QMAKE_TARGET  = DDB
 DESTDIR       = 
 TARGET        = DDB
@@ -650,8 +654,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h ../DDB/MysqlConnector/mysqlconnector.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/attribution.h ../DDB/MetadataManager/metadatamanager.h ../DDB/MetadataManager/tableMetadata.h ../DDB/MysqlConnector/mysqlconnector.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h ../DDB/MetadataManager/fragmentinfo.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/attribution.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/tablemetadata.cpp ../DDB/MysqlConnector/mysqlconnector.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/fragmentinfo.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../DDB/MetadataManager/ddbmainwin.ui $(DISTDIR)/
 
 
@@ -1070,8 +1074,58 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		../DDB/MetadataManager/tableMetadata.h \
 		../DDB/MetadataManager/attribution.h \
 		../DDB/MetadataManager/siteinfo.h \
-		ui_ddbmainwin.h
+		ui_ddbmainwin.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVariant \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QAction \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qaction.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qactiongroup.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QButtonGroup \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qregularexpression.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMenuBar \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmenubar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QStatusBar \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qstatusbar.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QTextEdit \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtextedit.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextdocument.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextcursor.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextformat.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ddbmainwin.o ../DDB/MetadataManager/ddbmainwin.cpp
+
+fragmentinfo.o: ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/global.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fragmentinfo.o ../DDB/MetadataManager/fragmentinfo.cpp
 
 moc_ddbmainwin.o: moc_ddbmainwin.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ddbmainwin.o moc_ddbmainwin.cpp

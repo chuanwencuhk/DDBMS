@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
     SiteInfo sf;
     sf.set_site_ID(1);
     sf.set_site_name("site1");
-    sf.set_site_ip("192.168.1.1");
-    sf.set_site_port(3389);
+    sf.set_site_ip("192.168.1.2");
+    sf.set_site_port(3367);
     sf.set_control_site(true);
 
     dm.mtr.initialize_siteinfo();
