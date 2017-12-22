@@ -6,6 +6,7 @@
 #include "MetadataManager/ddbmainwin.h"
 
 #include "MetadataManager/siteinfo.h"
+#include <stdlib.h>
 using namespace std;
 using namespace libconfig;
 
@@ -25,7 +26,8 @@ int main(int argc, char *argv[])
     dm.mtr.initialize_siteinfo();
     dm.mtr.set_siteinfo(sf);
 
-    dm.show();
+    //dm.show();
+    cout<<endl<<rand()%100<<"the random num is"<<endl;
     return app.exec();
 
 

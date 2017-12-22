@@ -25,7 +25,7 @@
 #define CONFIG_NAME_VERSION "version"
 
 
-#define MAX_FRAGMENT_CONDITION 4
+#define MAX_FRAGMENT_NUM 4
 typedef enum _DataTYpe
 {
     INTEGER, CHAR, VARCHAR, LONG, FLOAT, DOUBLE, DATE, TYPE_NULL
