@@ -5,7 +5,9 @@
 #include "MetadataManager/metadatamanager.h"
 #include "MetadataManager/ddbmainwin.h"
 
+//below for testing
 #include "MetadataManager/siteinfo.h"
+#include "MetadataManager/fragmentinfo.h"
 #include <stdlib.h>
 using namespace std;
 using namespace libconfig;
@@ -19,12 +21,22 @@ int main(int argc, char *argv[])
     SiteInfo sf;
     sf.set_site_ID(1);
     sf.set_site_name("site1");
-    sf.set_site_ip("192.168.1.2");
+    sf.set_site_ip("192.168.1.3");
     sf.set_site_port(3367);
     sf.set_control_site(true);
 
-    dm.mtr.initialize_siteinfo();
-    dm.mtr.set_siteinfo(sf);
+     Fragment frg;
+     frg.frag_talbe_name = "EMP";
+     for(int i=0;i<4;i++)
+     {
+     frg.condtion_slice[i].isValid =true;
+     frg.condtion_slice[i].con_A.isValid =true;
+     frg.condtion_slice[i].con_B.isValid =true;
+     }
+    //dm.mtr.initialize_siteinfo();
+    dm.mtr.initialize_fragment();
+    dm.mtr.set_fargment_info(frg);
+    //dm.mtr.set_siteinfo(sf);
 
     //dm.show();
     cout<<endl<<rand()%100<<"the random num is"<<endl;

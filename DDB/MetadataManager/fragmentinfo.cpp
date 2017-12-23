@@ -4,6 +4,8 @@
 using namespace std;
 FragmentInfo::FragmentInfo()
 {
+    for(int i=0;i<100;i++)
+        fragarray_bitmap[i] = true;
 
 }
 
@@ -11,10 +13,11 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
 {
     string str = frg.frag_talbe_name;
     int i = get_availble_fragarray_pos();
+    //int j =0;
     if(map_tablename_to_pos.count(str) == 0)
     {
         map_tablename_to_pos.insert({str,i});
-        fragarray_bitmap[i] = false;
+        //fragarray_bitmap[i] = false;
         this->frag_table_num++;
 
     }
@@ -23,12 +26,14 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
         i = map_tablename_to_pos[str];
     }
 
+    this->frag_array[i].frag_talbe_name = str;
     for(int j = 0; i<MAX_FRAGMENT_NUM;j++)
     {
-        if(frg.condtion_slice[j].isValid == false)
+        cout<<i<<endl;
+        if(!frg.condtion_slice[j].isValid)
             continue;
 
-        if(frg.condtion_slice[j].con_A.isValid == true)
+        if(frg.condtion_slice[j].con_A.isValid)
         {
             frag_array[i].condtion_slice[j].con_A.isValid = frg.condtion_slice[j].con_A.isValid;
             frag_array[i].condtion_slice[j].con_A.attr_condition = frg.condtion_slice[j].con_A.attr_condition;
@@ -37,7 +42,7 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
 
         }
 
-        if(frg.condtion_slice[j].con_B.isValid == true)
+        if(frg.condtion_slice[j].con_B.isValid)
         {
             frag_array[i].condtion_slice[j].con_B.isValid = frg.condtion_slice[j].con_B.isValid;
             frag_array[i].condtion_slice[j].con_B.attr_condition = frg.condtion_slice[j].con_B.attr_condition;
@@ -65,9 +70,11 @@ int FragmentInfo::get_availble_fragarray_pos()
     while(1)
     {
         i = rand()%100;
+        cout<<"i is: "<<i<<endl;
         if(fragarray_bitmap[i] == true)
         {
             fragarray_bitmap[i] = false;
+            cout<<"the get_availble_fragarray_pos is "<<i<<endl;
             return i;
         }
 

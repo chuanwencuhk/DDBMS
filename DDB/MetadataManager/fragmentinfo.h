@@ -43,7 +43,9 @@ public:
 
     int get_availble_fragarray_pos();
 
+    int get_fragment_pos(std::string str){return (int)map_tablename_to_pos[str];}
 
+    Fragment get_frag_bypos(int i){return frag_array[i];}
 private:
     std::map<std::string , int> map_tablename_to_pos;
     //set<std::string> mapset_tablename_has;

@@ -9,7 +9,7 @@
 #define MAX_TABLE_NUM 100 //max numbers of table in a database
 
 #define BASE_DATABASE_PATH "./database/" //database path
-#define METADATA_CONFIG_FILE "etadata.cfg" //config file name
+#define METADATA_CONFIG_FILE "data.cfg" //config file name
 
 #define MAX_SITE_NUM 4 //max site number of DDB
 
@@ -21,6 +21,13 @@
 #define CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE "is_control_site"
 
 #define CONFIG_NAME_FRAGMENT "fragment"
+#define CONFIG_NAME_FRAGMENT_ISVALID "isvalid"
+#define CONFIG_NAME_FRAGMENT_SLICE "db"
+#define CONFIG_NAME_FRAGMENT_CON_A "con_A"
+#define CONFIG_NAME_FRAGMENT_CON_B "con_B"
+#define CONFIG_NAME_FRAGMENT_ATTR_NAME "attr_name"
+#define CONFIG_NAME_FRAGMENT_ATTR_CONDITION "attr_condition"
+#define CONFIG_NAME_FRAGMENT_ATTR_VALUE "attr_value"
 
 #define CONFIG_NAME_VERSION "version"
 
