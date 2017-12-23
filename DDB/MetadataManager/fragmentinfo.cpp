@@ -26,12 +26,14 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
         i = map_tablename_to_pos[str];
     }
 
-    this->frag_array[i].frag_talbe_name = str;
-    for(int j = 0; i<MAX_FRAGMENT_NUM;j++)
+    frag_array[i].frag_talbe_name = str;
+    for(int j = 0; j<MAX_FRAGMENT_NUM;j++)
     {
         cout<<i<<endl;
         if(!frg.condtion_slice[j].isValid)
             continue;
+
+        frag_array[i].condtion_slice[j].isValid = frg.condtion_slice[j].isValid;
 
         if(frg.condtion_slice[j].con_A.isValid)
         {

@@ -330,9 +330,10 @@ void MetadataManager::set_fargment_info(Fragment &frg)
         {
             continue;
         }
-        frg_slc_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) = frg.condtion_slice[i].isValid;
+
         frg_slc_cfg.add(CONFIG_NAME_FRAGMENT_SLICE+to_string(i),Setting::TypeGroup);
         Setting& frg_i_cfg = frg_slc_cfg[CONFIG_NAME_FRAGMENT_SLICE+to_string(i)];
+        frg_i_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) = frg.condtion_slice[i].isValid;
 
 
           if(frg.condtion_slice[i].con_A.isValid)
@@ -350,13 +351,14 @@ void MetadataManager::set_fargment_info(Fragment &frg)
 
               frg_conA_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
                       =frg.condtion_slice[i].con_A.attr_value;
+              //write_to_config_file(METADATA_CONFIG_FILE);
 
           }
 
           if(frg.condtion_slice[i].con_B.isValid)
           {
-              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_A,Setting::TypeGroup);
-              Setting& frg_conB_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_A];
+              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_B,Setting::TypeGroup);
+              Setting& frg_conB_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_B];
               frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
                       = frg.condtion_slice[i].con_B.isValid;
 
@@ -369,11 +371,13 @@ void MetadataManager::set_fargment_info(Fragment &frg)
               frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
                       =frg.condtion_slice[i].con_B.attr_value;
 
+              //write_to_config_file(METADATA_CONFIG_FILE);
+
           }
       }
 
 
-    write_to_config_file(METADATA_CONFIG_FILE);
+             write_to_config_file(METADATA_CONFIG_FILE);
 
 
 
