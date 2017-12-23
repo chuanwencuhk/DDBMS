@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include "rpc/client.h"
+#include "mylog.h"
 
 using std::string;
 

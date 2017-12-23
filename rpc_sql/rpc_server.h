@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include "local_sql.h"
+#include "mylog.h"
 
 using std::string;
 using std::ifstream;

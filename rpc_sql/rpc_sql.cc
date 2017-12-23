@@ -3,7 +3,9 @@
 
 bool RPCExecute(string host_ip, string sql_statement){
     rpc::client client(host_ip, rpc::constants::DEFAULT_PORT);
+    cout << "    rpc::client client(host_ip, rpc::constants::DEFAULT_PORT);" << endl;
     bool ok = client.call("localExecute", sql_statement).as<bool>();
+    cout << "    bool ok = client.call(\"localExecute\", sql_statement).as<bool>();";
     return ok;
 }
 
