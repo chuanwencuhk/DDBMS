@@ -5,10 +5,10 @@ string getMySQLIp(){
 	return "tcp://127.0.0.1:3306";
 }
 string getUsername(){
-	return "user";
+	return "root";
 }
 string getPassword(){
-	return "password";
+	return "root";
 }
 
 
@@ -57,7 +57,7 @@ string localExecuteQuery(string sql_statement){
 	string result;
 	while (res->next()){
 		for (int i=1;i<=columnCnt;++i){
-			result.append(res.getString(i));
+			result.append(res->getString(i));
 			result.append(",");
 		}
 		result.append("\n");

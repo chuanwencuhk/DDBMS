@@ -1,8 +1,8 @@
 #include <mysql_connection.h>  
 #include <mysql_driver.h>  
-#include <statement.h>  
+#include <cppconn/statement.h>  
 #include <cassert>
-#include <resultset_metadata.h>
+#include <cppconn/resultset_metadata.h>
 #include <string>
 #include <fstream>
 
