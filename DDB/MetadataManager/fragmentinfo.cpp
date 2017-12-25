@@ -71,7 +71,7 @@ int FragmentInfo::get_availble_fragarray_pos()
     int i;
     while(1)
     {
-        i = rand()%100;
+        i = rand()%MAX_TABLE_NUM;
         cout<<"i is: "<<i<<endl;
         if(fragarray_bitmap[i] == true)
         {

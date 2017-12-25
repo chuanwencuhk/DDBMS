@@ -12,12 +12,14 @@ MetadataManager::MetadataManager()
 {
     //string str = METADATA_CONFIG_FILE;
     initialize_from_config_file(METADATA_CONFIG_FILE);//initialize the MetadataManager
-    initialize_tablemetadata();//initialize the tablemetadata
+    initialize_database();
+    //initialize_tablemetadata();//initialize the tablemetadata
     //read_config_file(str);
     cout<<"MetadataManager() is starting"<<endl;
-    ptablemetadata = NULL;
-    ptablemetadata = tablemetadata;
-    printf("ptablemetadata is %p\n",ptablemetadata);
+
+    //ptablemetadata = NULL;
+    //ptablemetadata = tablemetadata;
+    //printf("ptablemetadata is %p\n",ptablemetadata);
 
 }
 
@@ -112,17 +114,17 @@ void MetadataManager::initialize_from_config_file(const string &str)
     }
 
 
-    try
-    {
-      int num_of_tables = cfg.lookup("db1.table_num");
+//    try
+//    {
+//      int num_of_tables = cfg.lookup("db1.table_num");
 
-      this->num_of_tables = num_of_tables;//get tables' num
-      cout << "num_of_tables: " << this->num_of_tables << endl;
-    }
-    catch(const SettingNotFoundException &nfex)
-    {
-      cerr << "No 'table_num' setting in configuration file." << endl;
-    }
+//      this->num_of_tables = num_of_tables;//get tables' num
+//      cout << "num_of_tables: " << this->num_of_tables << endl;
+//    }
+//    catch(const SettingNotFoundException &nfex)
+//    {
+//      cerr << "No 'table_num' setting in configuration file." << endl;
+//    }
 
 
 //    const Setting& database = cfg.getRoot();
@@ -142,50 +144,89 @@ void MetadataManager::initialize_from_config_file(const string &str)
 
 }
 
+//not to use anymore
 void MetadataManager::initialize_tablemetadata()
 {
-        const Setting& database = cfg.getRoot();
+
 
       try
         {
-          //const Setting &tables = database["db1"]["supplier"];
-          const Setting &tables = database["db1"]["SUPPLIER"];
-          int count = tables.getLength();
-          cout<<"the table own attr num is "<<count<<endl;
-          string str_table_name;
-          string str_path;
-          int attr_num = 0;
+        cfg.setOptions(Config::OptionFsync
+                       | Config::OptionSemicolonSeparators
+                       | Config::OptionColonAssignmentForGroups
+                       | Config::OptionOpenBraceOnSeparateLine);
+        Setting &root = cfg.getRoot();
 
-          string attr_name;
-          string attr_datatype;
-          int attr_length;
-          string attr_rulestype;
+                if(! root.exists(CONFIG_NAME_DATABASE))
+                {
+                  root.add(CONFIG_NAME_DATABASE, Setting::TypeGroup);
+                  cout<<"initialize_tablemetadata no database"<<endl;
+                }
+//          //const Setting &tables = database["db1"]["supplier"];
+//          const Setting &tables = database["db1"]["SUPPLIER"];
+//          int count = tables.getLength();
+//          cout<<"the table own attr num is "<<count<<endl;
+//          string str_table_name;
+//          string str_path;
+//          int attr_num = 0;
 
-          tables[0].lookupValue("table_attr_num",attr_num);
-          tables[0].lookupValue("table_name",str_table_name);
-          tables[0].lookupValue("table_path",str_path);
-          cout<<"tables[0].table_name is: "<<str_table_name<<endl;
-          cout<<"tables[0].table_attr_num is: "<<attr_num<<endl;
-          cout<<"tables[0].table_path is: "<<str_path<<endl<<endl;
-          for(int i =1;i < count;i++)
-          {
-           tables[i].lookupValue("attr_name",attr_name);
-           tables[i].lookupValue("attr_datatype",attr_datatype);
-           tables[i].lookupValue("attr_length",attr_length);
-           tables[i].lookupValue("attr_rulestype",attr_rulestype);
-           cout<<i<<" attr_name is: "<<attr_name<<endl;
-           cout<<i<<" attr_datatype is: "<<attr_datatype<<endl;
-           cout<<i<<" attr_length is: "<<attr_length<<endl;
-           cout<<i<<" attr_rulestype is: "<<attr_rulestype<<endl<<endl;
+//          string attr_name;
+//          string attr_datatype;
+//          int attr_length;
+//          string attr_rulestype;
+
+//          tables[0].lookupValue("table_attr_num",attr_num);
+//          tables[0].lookupValue("table_name",str_table_name);
+//          tables[0].lookupValue("table_path",str_path);
+//          cout<<"tables[0].table_name is: "<<str_table_name<<endl;
+//          cout<<"tables[0].table_attr_num is: "<<attr_num<<endl;
+//          cout<<"tables[0].table_path is: "<<str_path<<endl<<endl;
+//          for(int i =1;i < count;i++)
+//          {
+//           tables[i].lookupValue("attr_name",attr_name);
+//           tables[i].lookupValue("attr_datatype",attr_datatype);
+//           tables[i].lookupValue("attr_length",attr_length);
+//           tables[i].lookupValue("attr_rulestype",attr_rulestype);
+//           cout<<i<<" attr_name is: "<<attr_name<<endl;
+//           cout<<i<<" attr_datatype is: "<<attr_datatype<<endl;
+//           cout<<i<<" attr_length is: "<<attr_length<<endl;
+//           cout<<i<<" attr_rulestype is: "<<attr_rulestype<<endl<<endl;
 
 
           }
-        }
+
         catch(const SettingNotFoundException &nfex)
         {
           //Ignore.
           cout<<"initialize_tablemetadata() error"<<endl;
         }
+
+
+
+}
+
+void MetadataManager::set_tablemetadata(TableMedata &Tbm)
+{
+    string str = Tbm.table_name;
+    tableMetadataInfo.set_table_metadata(Tbm);
+
+    Setting& root = cfg.getRoot();
+    Setting& ddb_cfg = root[CONFIG_NAME_DATABASE];
+    if(ddb_cfg.exists(str.c_str()))
+        ddb_cfg.remove(str.c_str());
+
+    ddb_cfg.add(str.c_str(),Setting::TypeGroup);
+    Setting& tb_cfg = ddb_cfg[str.c_str()];
+
+    int pos = tableMetadataInfo.get_available_array_pos();
+    TableMedata tmp =tableMetadataInfo.get_tablemetadata_bypos(pos);
+
+    for(int i = 0;i<tmp.table_attr_num;i++)
+    {
+
+
+
+    }
 
 
 
@@ -249,27 +290,13 @@ void MetadataManager::initialize_siteinfo()
       root.add(CONFIG_NAME_SITEINFO, Setting::TypeGroup);
       cout<<"initialize_siteinfo no site_info"<<endl;
     }
-//      Setting& siteInfolist = root["site_info"];
 
-//    Setting& infoItem = siteInfolist.add(Setting::TypeGroup);
-//    infoItem.add("site_name",Setting::TypeString) = "site4";
-//    infoItem.add("site_ip",Setting::TypeString) = "123.123.123.123";
-//    infoItem.add("site_port",Setting::TypeInt) = 3389;
-
-    // Write out the updated configuration.
-
-    //read_config_file(METADATA_CONFIG_FILE);
-    //return(EXIT_SUCCESS);
-    //Setting& item = root["site_info"];
-
-    //string s ;
-    //item[0].lookupValue("site_ip", s);
     write_to_config_file(METADATA_CONFIG_FILE);
     cout << "initialize_siteinfo is ok! "  << endl;
 
 }
 
-void MetadataManager::initialize_database(std::string db_name)
+void MetadataManager::initialize_database()
 {
     cfg.setOptions(Config::OptionFsync
                    | Config::OptionSemicolonSeparators
@@ -277,11 +304,11 @@ void MetadataManager::initialize_database(std::string db_name)
                    | Config::OptionOpenBraceOnSeparateLine);
 
     Setting &root = cfg.getRoot();
-    if(! root.exists(db_name))
+    if(! root.exists(CONFIG_NAME_DATABASE))
     {
-      root.add(db_name, Setting::TypeGroup);
+      root.add(CONFIG_NAME_DATABASE, Setting::TypeGroup);
       write_to_config_file(METADATA_CONFIG_FILE);
-      cout<<"initialize_database:"<<db_name<<endl;
+      cout<<"initialize_database:"<<CONFIG_NAME_DATABASE<<endl;
     }
 
 
