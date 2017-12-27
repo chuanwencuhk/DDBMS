@@ -12,10 +12,11 @@ FragmentInfo::FragmentInfo()
 void FragmentInfo:: set_fragment_info(Fragment &frg)
 {
     string str = frg.frag_talbe_name;
-    int i = get_availble_fragarray_pos();
+    int i;
     //int j =0;
     if(map_tablename_to_pos.count(str) == 0)
     {
+        i = get_availble_fragarray_pos();
         map_tablename_to_pos.insert({str,i});
         //fragarray_bitmap[i] = false;
         this->frag_table_num++;
@@ -71,7 +72,7 @@ int FragmentInfo::get_availble_fragarray_pos()
     int i;
     while(1)
     {
-        i = rand()%MAX_TABLE_NUM;
+        i = (rand()%(MAX_FRAGMENT_NUM-1))+1;
         cout<<"i is: "<<i<<endl;
         if(fragarray_bitmap[i] == true)
         {
@@ -83,6 +84,28 @@ int FragmentInfo::get_availble_fragarray_pos()
 
     }
 
+
+
+}
+
+int FragmentInfo::get_fragment_pos(string str)
+{
+    if(map_tablename_to_pos.count(str)==0)
+        return 0;
+
+    return (int)map_tablename_to_pos[str];
+}
+
+Fragment FragmentInfo::get_frag_bystr(string str)
+{
+    int pos = get_fragment_pos(str);
+    if(pos == 0)
+    {
+        cout<<"frag not exist!\n"<<endl;
+        return frag_array[0];
+    }
+
+    return frag_array[pos];
 
 
 }

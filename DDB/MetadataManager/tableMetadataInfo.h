@@ -40,9 +40,11 @@ public:
     void set_table_metadata(TableMedata& Tbm);
 
     int get_available_array_pos();
-    int get_tablemetadata_pos_bystr(std::string str){return map_str_topos[str.c_str()];}
+    int get_tablemetadata_pos_bystr(std::string str);
 
-    TableMedata get_tablemetadata_bypos(int i){return tableMetaArray[i];}
+    TableMedata get_tablemetadata_bystr(std::string str);
+
+    //TableMedata get_tablemetadata_bypos(int i){return tableMetaArray[i];}
 
 
 private:

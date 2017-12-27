@@ -24,9 +24,10 @@ TableMetadataInfo::TableMetadataInfo()
 void TableMetadataInfo::set_table_metadata(TableMedata &Tbm)
 {
     string str = Tbm.table_name;
-    int i = get_available_array_pos();
+    int i ;
     if(map_str_topos.count(str) == 0)
     {
+        i = get_available_array_pos();
         map_str_topos.insert({str,i});
         this->table_num++;
 
@@ -56,7 +57,7 @@ int TableMetadataInfo::get_available_array_pos()
     int i;
     while(1)
     {
-        i = rand()%MAX_TABLE_NUM;
+        i = (rand()%(MAX_TABLE_NUM)-1)+1;
         cout<<"TableMetadataInfo::get_available_array_pos i is: "<<i<<endl;
         if(tableMetaArray_bitmap[i] == true)
         {
@@ -67,5 +68,27 @@ int TableMetadataInfo::get_available_array_pos()
 
 
     }
+
+}
+
+int TableMetadataInfo::get_tablemetadata_pos_bystr(string str)
+{
+    if(map_str_topos.count(str) == 0)
+        return 0;
+
+    return map_str_topos[str];
+
+}
+
+TableMedata TableMetadataInfo::get_tablemetadata_bystr(string str)
+{
+    int pos = get_tablemetadata_pos_bystr(str) ;
+    if(pos == 0)
+    {
+        cout<<"tablemetadata not exist!"<<endl;
+        return tableMetaArray[0];
+    }
+
+    return tableMetaArray[pos];
 
 }

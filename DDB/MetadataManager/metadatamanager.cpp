@@ -12,14 +12,17 @@ MetadataManager::MetadataManager()
 {
     //string str = METADATA_CONFIG_FILE;
     initialize_from_config_file(METADATA_CONFIG_FILE);//initialize the MetadataManager
-    initialize_database();
+    initialize_database();//initialize DDB segment
+    initialize_siteinfo();//initialzie site_info segment
+    initialize_fragment();//initialize fragment segment
+
     //initialize_tablemetadata();//initialize the tablemetadata
     //read_config_file(str);
-    cout<<"MetadataManager() is starting"<<endl;
-
     //ptablemetadata = NULL;
     //ptablemetadata = tablemetadata;
     //printf("ptablemetadata is %p\n",ptablemetadata);
+
+    cout<<"MetadataManager() is starting"<<endl;
 
 }
 
@@ -218,19 +221,20 @@ void MetadataManager::set_tablemetadata(TableMedata &Tbm)
     ddb_cfg.add(str.c_str(),Setting::TypeGroup);
     Setting& tb_cfg = ddb_cfg[str.c_str()];
 
-    int pos = tableMetadataInfo.get_tablemetadata_pos_bystr(str);
-    TableMedata tmp =tableMetadataInfo.get_tablemetadata_bypos(pos);
+    //int pos = tableMetadataInfo.get_tablemetadata_pos_bystr(str);
+    //TableMedata tmp =tableMetadataInfo.get_tablemetadata_bypos(pos);
+    TableMedata tmp =tableMetadataInfo.get_tablemetadata_bystr(str);
 
     for(int i = 0; i<tmp.table_attr_num; i++)
     {
         tb_cfg.add(CONFIG_NAME_TABLE_ATTR_SLICE+to_string(i), Setting::TypeGroup);
         Setting& attr_cfg = tb_cfg[CONFIG_NAME_TABLE_ATTR_SLICE+to_string(i)];
 
-        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_NAME, Setting::TypeString) = Tbm.Attr[pos].attr_name;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_NAME, Setting::TypeString) = tmp.Attr[i].attr_name;
         attr_cfg.add(CONFIG_NAME_TABLE_ATTR_DATATYPE,Setting::Setting::TypeInt) \
-                = (int)Tbm.Attr[pos].attr_datatype;
-        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_LENGTH,Setting::TypeInt) = Tbm.Attr[pos].attr_length;
-        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_RULESTYPE,Setting::TypeInt) = (int)Tbm.Attr[pos].attr_rulestype;
+                = (int)tmp.Attr[i].attr_datatype;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_LENGTH,Setting::TypeInt) = tmp.Attr[i].attr_length;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_RULESTYPE,Setting::TypeInt) = (int)tmp.Attr[i].attr_rulestype;
 
 
     }
@@ -355,9 +359,9 @@ void MetadataManager::set_fargment_info(Fragment &frg)
     frg_tb_cfg.add(str.c_str(),Setting::TypeGroup);
     Setting& frg_slc_cfg = frg_tb_cfg[str.c_str()];
 
-    int pos = fragInfo.get_fragment_pos(str);
-    Fragment tmp = fragInfo.get_frag_bypos(pos);
-
+    //int pos = fragInfo.get_fragment_pos(str);
+    //Fragment tmp = fragInfo.get_frag_bypos(pos);
+    Fragment tmp = fragInfo.get_frag_bystr(str);
     for(int i =0;i<MAX_FRAGMENT_NUM;i++)
     {
         if(!tmp.condtion_slice[i].isValid )
@@ -418,6 +422,8 @@ void MetadataManager::set_fargment_info(Fragment &frg)
 
 
 }
+
+
 
 void MetadataManager::set_siteinfo(SiteInfo& sti)
 {

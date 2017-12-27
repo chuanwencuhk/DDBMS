@@ -9,6 +9,8 @@
 #include "MetadataManager/siteinfo.h"
 #include "MetadataManager/fragmentinfo.h"
 #include "MetadataManager/tableMetadataInfo.h"
+
+
 #include <stdlib.h>
 using namespace std;
 using namespace libconfig;
@@ -18,9 +20,8 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
     DDBMainWin dm;
-    //dm.mtr.initialize_fragment();
+//emulated input site info
     SiteInfo sf;
-    dm.mtr.initialize_siteinfo();
     for(int i=0;i<4;i++)
     {
     sf.set_site_ID(i);
@@ -30,7 +31,8 @@ int main(int argc, char *argv[])
     sf.set_control_site(true);
     dm.mtr.set_siteinfo(sf);
     }
-     Fragment frg;
+//emulated input fragment info
+    Fragment frg;
      frg.frag_talbe_name = "EMP";
      for(int i=0;i<4;i++)
      {
@@ -38,22 +40,22 @@ int main(int argc, char *argv[])
      frg.condtion_slice[i].con_A.isValid =true;
      frg.condtion_slice[i].con_B.isValid =true;
      }
-
-
+   dm.mtr.set_fargment_info(frg);
+//emulated input table metadata
      TableMedata tmd;
-     tmd.table_name = "EMP";
+     tmd.table_name = "ASG";
      tmd.table_attr_num = 5;
      for(int i =0; i<tmd.table_attr_num;i++)
      {
          tmd.Attr[i].attr_name = "attr"+to_string(i);
          tmd.Attr[i].attr_length = i;
+         tmd.Attr[i].attr_datatype = ( DataType)0;
+         tmd.Attr[i].attr_rulestype = (RulesType)0;
      }
 
     dm.mtr.set_tablemetadata(tmd);
-    dm.mtr.initialize_fragment();
-    dm.mtr.set_fargment_info(frg);
 
-    dm.mtr.setMetadataVer("0.0.2");
+    dm.mtr.setMetadataVer("0.0.1");
 
 
     //dm.show();
