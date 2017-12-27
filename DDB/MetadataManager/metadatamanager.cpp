@@ -218,17 +218,24 @@ void MetadataManager::set_tablemetadata(TableMedata &Tbm)
     ddb_cfg.add(str.c_str(),Setting::TypeGroup);
     Setting& tb_cfg = ddb_cfg[str.c_str()];
 
-    int pos = tableMetadataInfo.get_available_array_pos();
+    int pos = tableMetadataInfo.get_tablemetadata_pos_bystr(str);
     TableMedata tmp =tableMetadataInfo.get_tablemetadata_bypos(pos);
 
-    for(int i = 0;i<tmp.table_attr_num;i++)
+    for(int i = 0; i<tmp.table_attr_num; i++)
     {
+        tb_cfg.add(CONFIG_NAME_TABLE_ATTR_SLICE+to_string(i), Setting::TypeGroup);
+        Setting& attr_cfg = tb_cfg[CONFIG_NAME_TABLE_ATTR_SLICE+to_string(i)];
 
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_NAME, Setting::TypeString) = Tbm.Attr[pos].attr_name;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_DATATYPE,Setting::Setting::TypeInt) \
+                = (int)Tbm.Attr[pos].attr_datatype;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_LENGTH,Setting::TypeInt) = Tbm.Attr[pos].attr_length;
+        attr_cfg.add(CONFIG_NAME_TABLE_ATTR_RULESTYPE,Setting::TypeInt) = (int)Tbm.Attr[pos].attr_rulestype;
 
 
     }
 
-
+    write_to_config_file(METADATA_CONFIG_FILE);
 
 }
 

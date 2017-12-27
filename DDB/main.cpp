@@ -8,6 +8,7 @@
 //below for testing
 #include "MetadataManager/siteinfo.h"
 #include "MetadataManager/fragmentinfo.h"
+#include "MetadataManager/tableMetadataInfo.h"
 #include <stdlib.h>
 using namespace std;
 using namespace libconfig;
@@ -19,12 +20,16 @@ int main(int argc, char *argv[])
     DDBMainWin dm;
     //dm.mtr.initialize_fragment();
     SiteInfo sf;
-    sf.set_site_ID(1);
-    sf.set_site_name("site1");
-    sf.set_site_ip("192.168.1.3");
-    sf.set_site_port(3367);
+    dm.mtr.initialize_siteinfo();
+    for(int i=0;i<4;i++)
+    {
+    sf.set_site_ID(i);
+    sf.set_site_name("site"+to_string(i));
+    sf.set_site_ip("192.168.1."+to_string(i+1));
+    sf.set_site_port(3367+i);
     sf.set_control_site(true);
-
+    dm.mtr.set_siteinfo(sf);
+    }
      Fragment frg;
      frg.frag_talbe_name = "EMP";
      for(int i=0;i<4;i++)
@@ -33,10 +38,23 @@ int main(int argc, char *argv[])
      frg.condtion_slice[i].con_A.isValid =true;
      frg.condtion_slice[i].con_B.isValid =true;
      }
-    //dm.mtr.initialize_siteinfo();
+
+
+     TableMedata tmd;
+     tmd.table_name = "EMP";
+     tmd.table_attr_num = 5;
+     for(int i =0; i<tmd.table_attr_num;i++)
+     {
+         tmd.Attr[i].attr_name = "attr"+to_string(i);
+         tmd.Attr[i].attr_length = i;
+     }
+
+    dm.mtr.set_tablemetadata(tmd);
     dm.mtr.initialize_fragment();
     dm.mtr.set_fargment_info(frg);
-    //dm.mtr.set_siteinfo(sf);
+
+    dm.mtr.setMetadataVer("0.0.2");
+
 
     //dm.show();
     cout<<endl<<rand()%100<<"the random num is"<<endl;

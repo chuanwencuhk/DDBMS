@@ -2,6 +2,20 @@
 #define SITEINFO_H
 
 #include "../global.h"
+
+
+typedef struct _SiteMetadata
+{
+    int site_ID = 0;
+    int site_port = 0;
+    bool isControlSite = false;
+    std::string site_name = "";
+    std::string site_ip = "";
+
+
+}SiteMetadata;
+
+
 class SiteInfo
 {
 public:
@@ -19,8 +33,8 @@ public:
     void set_site_ID(int ID){site_ID = ID;}
     int get_site_ID(){return site_ID;}
 
-    void set_control_site(bool iscontrol){isContorlSite = iscontrol;}
-    bool get_isControlSite(){return isContorlSite;}
+    void set_control_site(bool iscontrol){isControlSite = iscontrol;}
+    bool get_isControlSite(){return isControlSite;}
 
 
 private:
@@ -28,7 +42,7 @@ private:
     std::string site_name;//site n's name
     std::string site_ip;//ip address
     int site_port;//port number for connection
-    bool isContorlSite;//whether this site is a control site
+    bool isControlSite;//whether this site is a control site
 };
 
 #endif // SITEINFO_H

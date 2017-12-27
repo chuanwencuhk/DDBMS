@@ -34,9 +34,10 @@
 #define CONFIG_NAME_VERSION "version"
 
 #define CONFIG_NAME_TABLE_ATTR_NAME "attr_name"
-#define CONFIG_NAME_TABLE_STTR_DATATYPE "attr_datatype"
-#define CONFIG_NAME_TALBE_ATTR_LENGTH "attr_length"
+#define CONFIG_NAME_TABLE_ATTR_DATATYPE "attr_datatype"
+#define CONFIG_NAME_TABLE_ATTR_LENGTH "attr_length"
 #define CONFIG_NAME_TABLE_ATTR_RULESTYPE "attr_rulestype"
+#define CONFIG_NAME_TABLE_ATTR_SLICE "ATTR"
 
 
 
