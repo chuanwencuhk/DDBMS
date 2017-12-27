@@ -3,17 +3,37 @@
  *  Created on: Nov 30, 2017
  *      Author: gpadmin
  */
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
+using namespace std;
+
 #define MAX_SELITEM_NUM 20
 #define MAX_ATTR_NUM 20
 #define MAX_FROM_NUM 20
 #define MAX_COND_NUM 20
 #define MAX_JOIN_NUM 20
 #define MAX_ORDER_BY 20
-#include <iostream>
-#include <string>
-#include <stdio.h>
-#include <string.h>
-using namespace std;
+#define MAX_ATTR_NAME_LENGTH 50
+#define MAX_FRAG_NUM 4
+#define MAX_TUPLE_SIZE 512
+#define MAX_INT_LENGTH 16
+#define MAX_SQL_SIZE 1024
+
+
+enum FRAG_TYPE
+{
+	HOR=1,VER,M,N
+};
+enum TYPE{
+	I=1,C,V,F,D
+};
+enum OP{
+	E=1,GE,G,LE,L,NE
+};
+
 
 /*
  * for create, store table meta data info
@@ -25,7 +45,7 @@ using namespace std;
 struct AttrInfo{
 	char* table_name;
 	char* attr_name;
-	int type;
+	TYPE type;
 	int used_size;
 };
 
@@ -51,17 +71,17 @@ struct Condition{
 	 * cond1:tb1.col_name1 op tb2.col_name2
 	 * cond2:tb1.col_name1 op value;
 	 */
-	int op;
+	OP op;
 	char* tb_name;
 	int tb_id;
 	char* col_name;
 	char* value;
-	int value_type;
+	TYPE value_type;
 //	struct Condition* next;
 };
 
 struct Join{
-	int op;
+	OP op;
 	char* tb_name1;
 	char* tb_name2;
 	char* col_name1;
@@ -77,6 +97,10 @@ struct Orderby{
 struct SelectQuery{
 	int distinct;
 	int all;
+	int sel_count;
+	int cond_count;
+	int from_count;
+	int join_count;
 	SelItem		SelList[MAX_SELITEM_NUM];
 	FromItem 	FromList[MAX_FROM_NUM];
 	Join 		JoinList[MAX_JOIN_NUM];
@@ -87,35 +111,50 @@ struct SelectQuery{
 
 struct DeleteQuery{
 	char* tb_name;
+	int cond_count;
 	Condition	CondList[MAX_JOIN_NUM];
 };
 
+
 struct FragInfo{
-	char* db_name;
+	//FRAG_TYPE frag_type;
+	char* site_name;
+	int cond_count;
+	int attr_count;
 	Condition CondList[MAX_COND_NUM];
+	char* attr_names[MAX_ATTR_NAME_LENGTH];
 };
+
+extern int frag_count;
+extern char* frag_tb_name;
+extern FRAG_TYPE frag_type;
+extern FragInfo frag_list[MAX_FRAG_NUM];
+extern string frag_select_stmt[MAX_FRAG_NUM];
+extern SelectQuery* query;
+
+extern int attr_count;
+extern char* tb_name;
+extern AttrInfo attr_list[MAX_ATTR_NUM];
+
 
  /* if necessary, query stack for nested query.*/
-
-enum TYPE{
-	I=1,C,V,F,D
-};
-enum OP{
-	E=1,GE,G,LE,L,NE
-};
-
 int PrintSelectQuery();
 int PrintAttrList();
 int PrintCondList();
-void PrintSpace(int n);
-void PrintTree();
-int SaveSelItem(char* tb_name, char* col_name);
-int SaveFromItem(char* tb_name);
-int SaveCondition(char* tb_name, char* col_name, char* value, int value_type, int op);
-int SaveJoin(char* tb_name1, char* col_name1, char* tb_name2, char* col_name2, int op);
-int SaveOrderbyItem(char *col_name);
-int SaveAttributeInfo(char* attr_name, int type, int size);
-int SaveFragCondition(char* tb_name, char* col_name, char* value, int value_type, int op);
-int SaveFragCondition();
-int FillSelectCond();
-int FillDeleteCond();
+void InitQuery();
+void DestoryQuery();
+void parser_init();
+bool GetFragInfo(FragInfo *g_frag_list,char* g_tb_name, int g_frag_count,int g_frag_type);
+void printFraglist();
+void print();
+void spliceFragToSelect();
+string spliceSelectStmt();
+string spliceCreateStmt();
+string spliceDropStmt();
+
+void exec_drop_table_stmt();
+int get_frag_data();
+void load_data();
+void exec_create_stmt();
+void exec_select_stmt();
+

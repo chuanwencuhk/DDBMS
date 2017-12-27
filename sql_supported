@@ -1,12 +1,12 @@
-1.Fragment:please input each seperately.
-fragment a>1 and b<2 db1;
-fragment a>1 and b>=2 db2;
-fragment a<=1 and b<2 db3;
-fragment a<=1 and b>=2 db4;
+1.frag
+frag -hor EMP POSITION < 'F' and NAME < 'K' db1 * POSITION <'F' and NAME >='K' db2 * POSITION >='F' and NAME  <'K' db3 * POSITION >= 'F' and NAME >= 'K' db4;
+
+frag -ver emp(EMP_NO,POSITION)	db1 * (EMP_NO,NAME) db2;
+
 
 2.Create Table
 CREATE TABLE CUSTOMER (C_CUSTKEY INTEGER, C_NAME VARCHAR(20));
-CREATE TABLE SUPPLIER (S_SUPPKEY INTEGER, S_NAME CHAR(25), S_ADDRESS VARCHAR(40), S_PHONE CHAR(15), S_ACCTBAL FLOAT(1), S_COMMENT VARCHAR(101));
+CREATE TABLE SUPPLIER (S_SUPPKEY INTEGER, S_NAME CHAR(25), S_ADDRESS VARCHAR(40), S_PHONE CHAR(15), S_COMMENT VARCHAR(101));
 
 create table nation (n_nationkey integer, n_name char(25), n_regionkey integer, n_comment varchar(152));
 
@@ -18,6 +18,8 @@ DELETE FROM table_name where a >10 and b<100;
 
 5.Select
 SELECT LastName,FirstName FROM Persons;
+
+SELECT * FROM Persons;
 
 SELECT DISTINCT Company FROM Orders;
 

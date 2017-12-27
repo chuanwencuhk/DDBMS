@@ -1,0 +1,12 @@
+create table sal(title char(100),sal integer);
+create table emp(eno char(100),ename char(100), title char(100));
+create table job(jno char(100),jname char(20), budget integer, loc char(20));
+create table asg(eno char(100), jno char(20), resp char(20), dur integer);
+
+
+
+frag -hor emp eno < 'E1000' and title < 'N' db1 * eno < 'E1000' and title >= 'N' db2 * eno >= 'E1000' and title < 'N' db3 * eno >= 'E1000' and title >= 'N' db4;
+
+frag -hor asg eno < 'E1000' and jno < 'J0500' db1 * eno < 'E1000' and jno >= 'J0500' db2 * eno >= 'E1000' and jno < 'J0500' db3 * eno >= 'E1000' and jno >= 'J0500' db4;
+
+frag -hor job jno < 'J0500' db1 * jno >= 'J0500' db2;

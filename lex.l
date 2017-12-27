@@ -5,14 +5,13 @@
 #include "yacc.tab.h"
 
 int lineno = 1;
+char *strdupxy(char *s);
 extern "C"{
 	int yyerror(char *s);
 	int yylex(void);
 	int yywrap(void);
 	int lex_init();
 }
-char *strdupxy(char *s);
-
 
 %}
 %%
@@ -64,6 +63,12 @@ CHAR(ACTER)? |
 char(acter)?	return CHARACTER;
 FRAG(MENT)? |
 frag(ment)?	return FRAGMENT;
+HOR(IZONAL)? |
+hor(izonal)? return HORIZONAL;
+VER(TICAL)? |
+ver(tical)?	return VERTICAL;
+MIX |
+mix return MIX;
 varchar |
 VARCHAR		return VARCHAR;
 float	|
