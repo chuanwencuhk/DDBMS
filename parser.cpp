@@ -2,7 +2,8 @@
  * parser.cpp
  *
  *  Created on: Nov 30, 2017
- *      Author: gpadmin
+ *      Author: wcw
+ *	
  */
 #include <malloc.h>
 #include <iostream>
@@ -18,6 +19,10 @@ extern FragInfo frag_list[MAX_FRAG_NUM];
 
 extern SelectQuery* query;
 
+extern DeleteQuery* delete_query;
+
+extern UpdateQuery* update_query;
+
 extern int attr_count;
 extern char* tb_name;
 extern AttrInfo attr_list[MAX_ATTR_NUM];
@@ -25,26 +30,35 @@ extern AttrInfo attr_list[MAX_ATTR_NUM];
 string frag_select_stmt[MAX_FRAG_NUM];
 string data_path[MAX_FRAG_NUM];
 string dir = string("/var/lib/mysql-files/");
-///var/lib/mysql-files/data.csv
-
-// "SELECT * INTO OUTFILE '/var/lib/mysql-files/data.csv' FIELDS TERMINATED BY ',' FROM EMP;",
-// strlen("SELECT * INTO OUTFILE '/var/lib/mysql-files/data.csv' FIELDS TERMINATED BY ',' FROM EMP;"
 
 
-string	GetTypeString(OP op_type,string type_string){
-		if(op_type ==  G)
-			type_string.append("=");
-		if(op_type == GE)
-			type_string.append(">=");
-		if(op_type == G)
-			type_string.append(">");
-		if(op_type == LE)
-			type_string.append(">=");
-		if(op_type == L)
-			type_string.append("<");
-		if(op_type == NE)
-			type_string.append("!=");
-		return type_string;
+string GetTypeString(OP op_type){
+	string type_string = " ";
+	switch(op_type){
+		case E:
+			type_string += "= ";
+			break;
+		case GE:
+			type_string += ">= ";
+			break;
+		case G:
+			type_string +=	"> ";
+			break;
+		case LE:
+			type_string += "<= ";
+			break;
+		case L:
+			type_string += "< ";
+			break;
+
+		case NE:
+			type_string += "!= ";
+			break;
+		default:
+			cout<<"Invalid Operator!"<<endl;
+			return "";
+	}
+	return type_string;
 }
 
 string GetVTypeString(TYPE type, int i){
@@ -70,9 +84,13 @@ string GetVTypeString(TYPE type, int i){
 		return "DATE";
 }
 
+
+
 string spliceCreateStmt(){
-	if((attr_count == 0) || (tb_name ==NULL))
+	if((attr_count == 0) || (tb_name ==NULL)){
 		cout<<"spliceCreateStmt error"<<endl;
+		return "";
+	}
 	string tmp_stmt;
 	tmp_stmt = "CREATE TABLE ";
 	tmp_stmt.append(tb_name);
@@ -98,7 +116,7 @@ string spliceDropStmt(){
 	cout<<"spliceDropStmt"<<endl;
 	if(NULL == tb_name){
 		cout << "spliceDropStmt error"<<endl;
-		return NULL;
+		return "";
 	}
 	string tmp_stmt;
 	tmp_stmt = "DROP TABLE ";
@@ -107,11 +125,81 @@ string spliceDropStmt(){
 	cout<<tmp_stmt<<endl;
 	return tmp_stmt;
 }
+
+string spliceCondStmt(int cond_count, Condition* cond_list){
+	if((cond_count == 0)|(NULL == cond_list))
+		return "";
+	string cond_stmt = " WHERE ";
+	if(cond_list[0].tb_name != NULL){
+		cond_count.append(cond_list[0].tb_name);
+		cond_count += ".";
+	}
+	cond_stmt.append(cond_list[0].col_name);
+	string type_string = GetTypeString(cond_list[0].op);
+	cond_stmt.append(type_string);
+	cond_stmt.append(cond_list[0].value);
+	for(int i = 1;i < cond_count;i++){
+		cond_stmt.append(" AND ");
+		if(cond_list[i].tb_name != NULL){
+			cond_count.append(cond_list[i].tb_name);
+			cond_count += ".";
+		}
+		cond_stmt.append(cond_list[i].col_name);
+		string type_string = GetTypeString(cond_list[i].op);
+		cond_stmt.append(type_string);
+		cond_stmt.append(cond_list[i].value);
+	}
+	return cond_stmt;
+}
+
+string spliceDeleteStmt(){
+	if(NULL == delete_query){
+		cout<<"spliceDeleteStmt error. no delete stmt."<<endl;
+		return "";
+	}
+	string tmp_stmt = "DELETE FROM ";
+	tmp_stmt.append(delete_query->tb_name);
+	/*
+		slpice cond_list same as where_cond in select.
+	 */
+	string cond_stmt = spliceCondStmt(delete_query->cond_count,delete_query->CondList);
+	if(cond_stmt != "")
+		tmp_stmt.append(cond_stmt);
+		tmp_stmt.append(";");
+		cout<< tmp_stmt <<endl;
+		return tmp_stmt;
+}
+
+string spliceUpdateStmt(){
+	if((NULL == update_query)|(update_query->col_count ==0)){
+		cout<<"spliceUpdateStmt error. no update stmt."<<endl;
+		return "";
+	}
+	string tmp_stmt = "UPDATE ";
+	string tmp_tb_name(update_query->tb_name);
+	tmp_stmt.append(tmp_tb_name);
+	tmp_stmt += " SET ";
+	tmp_stmt.append(update_query->col_name[0]);
+	tmp_stmt += " = ";
+	tmp_stmt.append(update_query->col_value[0]);
+	for(int i = 1; i < update_query->col_count; i++){
+		tmp_stmt += ", ";
+		tmp_stmt.append(update_query->col_name[i]);
+		tmp_stmt += " = ";
+		tmp_stmt.append(update_query->col_value[i]);
+				
+	}
+	string cond_stmt = spliceCondStmt(update_query->cond_count,update_query->CondList);
+	tmp_stmt += cond_stmt;
+	tmp_stmt += ";";
+	return tmp_stmt;
+}
+
 string spliceSelectStmt(){
 		cout<<"spliceSelectStmt"<<endl;
 		if(NULL == query){
 			cout<<"spliceSelectStmt error"<<endl;
-			return NULL;
+			return "";
 		}
 		string tmp_stmt;
 
@@ -128,39 +216,19 @@ string spliceSelectStmt(){
 			//cout<<tmp_stmt<<endl;
 		}
 		tmp_stmt.append(" FROM ");
-		//cout<<tmp_stmt<<endl;
-		//cout<<"from_count"<<query->from_count<<endl;
-		//cout<<query->FromList[0].tb_name<<endl;
 		tmp_stmt.append(query->FromList[0].tb_name);
 		for(int i = 1; i < query->from_count; i++){
 			tmp_stmt.append(", ");
 			tmp_stmt.append(query->FromList[i].tb_name);
 		}
-		//cout<<tmp_stmt<<endl;
-		if(query->cond_count!=0){
-			tmp_stmt.append(" WHERE ");
-			tmp_stmt.append(query->CondList[0].col_name);
-			tmp_stmt.append(" ");
-			string type_string = string(" ");
-			type_string = GetTypeString(query->CondList[0].op,type_string);
-			tmp_stmt.append(type_string);
-			tmp_stmt.append(query->CondList[0].value);
-		}
-		//cout<<tmp_stmt<<endl;
-		for(int i=1;i< query->cond_count;i++){
-			tmp_stmt.append(" AND ");
-			tmp_stmt.append(query->CondList[i].col_name);
-			tmp_stmt.append(" ");
-			string type_string = string(" ");
-			type_string = GetTypeString(query->CondList[i].op,type_string);
-			tmp_stmt.append(type_string);
-			tmp_stmt.append(query->CondList[i].value);
-		}
-		//cout<<tmp_stmt<<endl;
+		string cond_stmt = spliceCondStmt(query->cond_count,query->CondList);
+		if(cond_stmt != "")
+			tmp_stmt.append(cond_stmt);
 		tmp_stmt.append(";");
 		cout<<tmp_stmt<<endl;
 		return tmp_stmt;
 }
+
 void spliceFragToSelect(){
 	if(frag_count == 0){
 		cout << "there is no frag info."<<endl;
@@ -185,23 +253,9 @@ void spliceFragToSelect(){
 			tmp_stmt.append("' FIELDS TERMINATED BY '\t'");
 			tmp_stmt.append(" FROM ");
 			tmp_stmt.append(frag_tb_name);
-			tmp_stmt.append(" WHERE ");
-			if(frag_list[i].cond_count != 0){
-				tmp_stmt.append(frag_list[i].CondList[0].col_name);
-				string type_string = string(" ");
-				type_string = GetTypeString(frag_list[i].CondList[0].op,type_string);
-				tmp_stmt.append(type_string);
-				tmp_stmt.append(frag_list[i].CondList[0].value);
-
-			}
-			for(int j = 1; j < frag_list[i].cond_count; j++){
-				tmp_stmt.append(" AND ");
-				tmp_stmt.append(frag_list[i].CondList[j].col_name);
-				string type_string = string(" ");
-				type_string = GetTypeString(frag_list[i].CondList[j].op,type_string);
-				tmp_stmt.append(type_string);
-				tmp_stmt.append(frag_list[i].CondList[j].value);			
-			}
+			string cond_stmt = spliceCondStmt(frag_list[i].cond_count,frag_list[i].CondList);
+			if(cond_stmt != "")
+				tmp_stmt.append(cond_stmt);
 			tmp_stmt.append(";");
 			frag_select_stmt[i] = tmp_stmt;
 			cout<<frag_select_stmt[i]<<endl;

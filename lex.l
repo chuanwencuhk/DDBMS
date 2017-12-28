@@ -15,14 +15,19 @@ extern "C"{
 
 %}
 %%
-
 	/* reserved keywords */
 CREATE	|
 create		return CREATE;
 TABLE	|
 table		return TABLE;
+LOAD	|
+load 		return LOAD;
 DROP	|
 drop		return DROP;
+UPDATE	|
+update		return UPDATE;
+SET	|
+set 		return SET;
 INDEX	|
 index		return INDEX;
 SELECT	|

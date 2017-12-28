@@ -79,6 +79,7 @@ string localExecuteQuery(string sql_statement){
 bool localInsertFileToTable(string sql_file, string table_name){
 	cout<<"localInsertFileToTable"<<endl;
 	string file_name = "tmp";
+	remove(file_name.c_str());
 	ofstream tmp(file_name, std::ios::out);
 	tmp << sql_file;
 	cout<<sql_file<<endl;

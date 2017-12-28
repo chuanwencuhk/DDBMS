@@ -67,8 +67,68 @@ bool GetFragInfo(FragInfo *g_frag_list,char* g_tb_name,int g_frag_count,int g_fr
 	}
 	g_frag_count = frag_count;
 	g_frag_count = frag_type;
-	reutrn true;
+	return true;
 
 }
+
+// if(query->cond_count!=0){
+		// 	tmp_stmt.append(" WHERE ");
+		// 	tmp_stmt.append(query->CondList[0].col_name);
+		// 	tmp_stmt.append(" ");
+		// 	string type_string = string(" ");
+		// 	type_string = GetTypeString(query->CondList[0].op);
+		// 	tmp_stmt.append(type_string);
+		// 	tmp_stmt.append(query->CondList[0].value);
+		// }
+		// //cout<<tmp_stmt<<endl;
+		// for(int i=1;i< query->cond_count;i++){
+		// 	tmp_stmt.append(" AND ");
+		// 	tmp_stmt.append(query->CondList[i].col_name);
+		// 	tmp_stmt.append(" ");
+		// 	string type_string = string(" ");
+		// 	type_string = GetTypeString(query->CondList[i].op);
+		// 	tmp_stmt.append(type_string);
+		// 	tmp_stmt.append(query->CondList[i].value);
+		// }
+		//cout<<tmp_stmt<<endl;
+
+
+			// tmp_stmt.append(" WHERE ");
+			// if(frag_list[i].cond_count != 0){
+			// 	tmp_stmt.append(frag_list[i].CondList[0].col_name);
+			// 	string type_string = string(" ");
+			// 	type_string = GetTypeString(frag_list[i].CondList[0].op);
+			// 	tmp_stmt.append(type_string);
+			// 	tmp_stmt.append(frag_list[i].CondList[0].value);
+
+			// }
+			// for(int j = 1; j < frag_list[i].cond_count; j++){
+			// 	tmp_stmt.append(" AND ");
+			// 	tmp_stmt.append(frag_list[i].CondList[j].col_name);
+			// 	string type_string = string(" ");
+			// 	type_string = GetTypeString(frag_list[i].CondList[j].op);
+			// 	tmp_stmt.append(type_string);
+			// 	tmp_stmt.append(frag_list[i].CondList[j].value);			
+			// }
+// if(delete_query->cond_count != 0){
+	// 	tmp_stmt.append("WHERE ");
+	// 	tmp_stmt.append(delete_query->CondList[0].col_name);
+	// 	tmp_stmt.append(" ");
+	// 	string type_string = GetTypeString(delete_query->CondList[0].op);
+	// 	tmp_stmt.append(type_string);
+	// 	tmp_stmt.append(delete_query->CondList[0].value);
+	// }
+	// for(int i=1;i< query->cond_count;i++){
+	// 	tmp_stmt.append(" AND ");
+	// 	tmp_stmt.append(delete_query->CondList[i].col_name);
+	// 	tmp_stmt.append(" ");
+	// 	string type_string = GetTypeString(delete_query->CondList[i].op);
+	// 	tmp_stmt.append(type_string);
+	// 	tmp_stmt.append(delete_query->CondList[i].value);
+	// }
+
+///var/lib/mysql-files/data.csv
+// "SELECT * INTO OUTFILE '/var/lib/mysql-files/data.csv' FIELDS TERMINATED BY ',' FROM EMP;",
+// strlen("SELECT * INTO OUTFILE '/var/lib/mysql-files/data.csv' FIELDS TERMINATED BY ',' FROM EMP;"
 
 	

@@ -1,7 +1,15 @@
+/*
+ * parser.cpp
+ *
+ *  Created on: Nov 30, 2017
+ *      Author: wcw
+ *	
+ */
 #include <mysql/mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,8 +19,8 @@
 
 using namespace std;
 #define MAX_BUF_SIZE 1024
-#define DATA_PATH = "/var/lib/mysql-files/data.csv"
-#define RAW_DATA_PATH = "/raw_data"
+//#define DATA_PATH = "/var/lib/mysql-files/data.csv"
+//#define RAW_DATA_PATH = "/raw_data"
 MYSQL *mysql_conn;
 MYSQL_RES *res;
 MYSQL_FIELD *fd;
@@ -67,6 +75,8 @@ int init_mysql(){
  */
 int load_data_into_local_db(string tb_name){
 	cout<<"load_data"<<endl;
+	if(init_mysql())
+		finish_with_error(NULL);
 
 	// string("LOAD DATA LOCAL INFILE ") +
 	// "'" + file_name + "'" +
@@ -81,6 +91,7 @@ int load_data_into_local_db(string tb_name){
 	//cout<<"load_data end"<<endl;
 	if(exe_sql(cLoadData))
 		finish_with_error(NULL);
+	mysql_close(mysql_conn);
 	return 0;
 }
 
@@ -90,6 +101,7 @@ int get_frag_data(){
 		cout<<"get_frag_data: 0"<<endl;
 		return -1;
 	}
+
 	// if(init_mysql())
 	// 	finish_with_error(NULL);
 	
@@ -103,10 +115,12 @@ int get_frag_data(){
 			finish_with_error(NULL);
 		cout<<"end exe_sql "<<i<<endl;
 	}
+
 	// res = mysql_store_result(mysql_conn);
 	// int rows = mysql_num_rows(res);
 	// int fields = first_charmysql_num_fields(res);
 	// cout<<rows<<fields<<endl;
+
 	mysql_free_result(res);
 	cout << "end get_frag_data" <<endl;
 	return 0;
@@ -123,20 +137,16 @@ string readFileIntoString(string filename){
 		os_buf << buffer;
 		os_buf << endl;
 	}
-	cout<<"!!!!!!!!!!!!!!!!!"<<endl;
 	cout<<os_buf.str()<<endl;
 	return os_buf.str();
 }
 /*
-fragments for one table a time.
+	fragments for one table a time.
  */
 void load_data(){
 	/*
 	 tb_name = emp
 	 */
- 	if(init_mysql())
-		finish_with_error(NULL);
-
 	string tb_name(frag_tb_name);
 	/*
 	LOAD DATA LOCAL INFILE 'raw/emp.tsv' INTO TABLE emp;
@@ -149,9 +159,18 @@ void load_data(){
 	/*
 	exec select stmts to get fragment data
 	 */
+	if(init_mysql())
+		finish_with_error(NULL);
+
+	for(int i = 0; i < frag_count; i++){
+		cout<<"remove old frag data"<<data_path[i]<<endl;
+		cout<<remove(data_path[i].c_str())<<endl;
+	}
+
 	get_frag_data();
+
 	fstream infile;
-	string buf_string;
+	//string buf_string;
 	//buf_string = readFileIntoString("/var/lib/mysql-files/EMP_db1.data");
 	//buf_string = "0\tC. Anderso\tComputer and Information Research Scientist";
 	//cout<<"insert buf_string"<<buf_string<<endl;
@@ -163,44 +182,69 @@ void load_data(){
 
 	exe_sql(del_stmt.c_str());
 	for(int i = 0; i < frag_count; i++){
-		string buf_string;
 		cout<<data_path[i]<<endl;
-		buf_string = readFileIntoString(data_path[i]);
+		string buf_string = readFileIntoString(data_path[i]);
 		cout<<"abcde    "<<i<<" "<<buf_string.size()<<endl;
 		RPCInsertFileToTable(ip_vec[i],buf_string,tb_name);
 	}
-	//cout <<buf_string<<endl;
 	cout<<"load into"<<frag_count<<" fragments."<<endl;
 	mysql_close(mysql_conn);
 	return;
 }
 
 void exec_select_stmt(){
-	string c_sql_stmt;
+	string c_sql_stmt = spliceSelectStmt();
 	string res;
-	c_sql_stmt = spliceSelectStmt();
+	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
 	for(int i = 0; i < ip_vec.size(); i++){
 		res = RPCExecuteQuery(ip_vec[i], c_sql_stmt);
+		cout << "select result" << i << " "<< res << endl;
 	}
-	cout << "res" << res << endl;
 	return;
 }
 void exec_create_stmt(){
-	string c_sql_stmt;
-	c_sql_stmt = spliceCreateStmt();
+	string c_sql_stmt = spliceCreateStmt();
 	for(int i = 0; i < ip_vec.size(); i++){
 		RPCExecute(ip_vec[i], c_sql_stmt);
 	}	
 	return;
 }
 void exec_drop_table_stmt(){
-	string c_sql_stmt;
-	c_sql_stmt = spliceDropStmt();
+	string c_sql_stmt = spliceDropStmt();
 	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
 	for(int i = 0; i < ip_vec.size(); i++){
-		cout<<"drop "<<i<<endl;
-		RPCExecute(ip_vec[i], c_sql_stmt);
+		if(RPCExecute(ip_vec[i], c_sql_stmt))
+			cout<<"site "<<i+1<<" drop table ok."<<endl;
 	}	
+	return;
+}
+void exec_show_table_stmt(){
+	for(int i = 0; i < ip_vec.size(); i++){
+		cout<<"exec_show_table_stmt"<<i<<endl;
+		string res = RPCExecuteQuery(ip_vec[i], "show tables;");
+		cout<<"site "<< i+1 <<": "<<res<<endl;
+	}	
+	return;
+}
+void exec_delete_stmt(){
+	string c_sql_stmt = spliceDeleteStmt();
+	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
+	for(int i = 0; i < ip_vec.size(); i++){
+		cout<<"exec_delete_stmt"<<i<<endl;
+		if(RPCExecute(ip_vec[i], c_sql_stmt))
+			cout<<"site "<<i+1<<" delete ok."<<endl;
+	}	
+	return;
+}
+void exec_update_stmt(){
+	string c_sql_stmt = spliceUpdateStmt();
+	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
+	for (int i = 0; i < ip_vec.size(); ++i)
+	{
+		cout<<"exec_update_stmt"<<i<<endl;
+		if(RPCExecute(ip_vec[i],c_sql_stmt))
+			cout<<"site "<<i+1<<" update ok."<<endl;
+	}
 	return;
 }
 

@@ -1,25 +1,28 @@
 %{
 #include <string.h>
+#include <string>
 #include "parser.h"
 
 extern "C"{
 	extern int yylex(void);
 	extern int lex_init();
-	//extern void parser_init();
 	extern int yyerror(char *s);
 }//extern "C" is necessary
 
 OP Operator(char* opstr);
 TYPE GetType(char* type_str);
+
 int SaveSelItem(char* tb_name, char* col_name);
 int SaveFromItem(char* tb_name);
 int SaveCondition(char* tb_name, char* col_name, char* value, TYPE value_type, OP op);
 int SaveJoin(char* tb_name1, char* col_name1, char* tb_name2, char* col_name2, OP op);
 int SaveOrderbyItem(char *col_name);
 int SaveFragCondition(char* tb_name, char* col_name, char* value, TYPE value_type, OP op);
-int SaveFragCondition();
+
 int FillSelectCond();
 int FillDeleteCond();
+int FillUpdateCond();
+
 /*
 for insert stmt
  */
@@ -45,9 +48,13 @@ char* frag_tb_name;
 FRAG_TYPE frag_type;
 FragInfo frag_list[MAX_FRAG_NUM];
 
+UpdateQuery* update_query;
+int update_col_count = 0;
+
 
 SelectQuery* query;
 DeleteQuery* delete_query;
+
 int cond_count = 0;
 int join_count = 0;
 int sel_count = 0;
@@ -79,10 +86,10 @@ static char recordstr[4096];
 %left '*' '/'
 
 	/* reserved keywords */
-%token SELECT FROM WHERE ORDER BY ASC DESC FRAGMENT
+%token SELECT FROM WHERE ORDER BY ASC DESC FRAGMENT LOAD
 %token ALL UNIQUE DISTINCT
 %token CREATE TABLE DROP INDEX
-%token INSERT INTO VALUES DELETE
+%token INSERT INTO VALUES DELETE UPDATE SET
 %token CHARACTER INTEGER DATE FLOAT VARCHAR
 %token HORIZONAL VERTICAL MIX
 %token SHOW TABLES
@@ -114,13 +121,29 @@ sql_func:
 			funcRnt = 100;
 		}
 	|	table_def
+	|	table_load
 	|	table_drop
 	|	insert_stat
 	|	delete_stat
 	|	select_stat
 	|	frag_stat
+	|	show_table_stat
+	|	update_stat
 	;
-
+show_table_stat:
+		SHOW TABLES ';'
+		{
+			exec_show_table_stmt();
+		}
+	;
+table_load:
+		LOAD STRING INTO NAME ';'
+		{
+			tb_name = $4;
+			cout<<"LOAD " << $2 <<" INTO "<<$4<<" "<<endl;
+			string tmp_name(tb_name);
+			load_data_into_local_db(tmp_name);
+		}
 frag_stat:
 		FRAGMENT '-'HORIZONAL NAME frag_list_h ';'
 		{
@@ -248,6 +271,59 @@ attr_name:
 		}
 	;
 
+/*update statement*/
+update_stat:
+		UPDATE NAME SET set_cond  where_clause ';'
+		{
+			cout<<"Update";
+			update_query->tb_name = $2;
+			cout<<"tb_name:"<<update_query->tb_name<<endl;
+			FillUpdateCond();
+			cout<<"Update Cond:"<<endl;
+			PrintCondList();
+			cout<<"execute update."<<endl;
+			exec_update_stmt();
+		}
+	;
+set_cond:
+		set_expr
+	|	set_cond AND set_expr
+	;
+set_expr:
+		NAME COMPARISION STRING
+		{
+			if(strcmp("=",$2)==0){
+				cout << "string comp"<<endl;
+				cout << "update_count"<<update_col_count<<endl;
+				update_query->col_name[update_col_count] = (char*)malloc(20);
+				memcpy(update_query->col_name[update_col_count],$1,20);
+				update_query->col_value[update_col_count]=(char*)malloc(256);
+				memcpy(update_query->col_value[update_col_count],$3,256);
+				cout<<update_query->col_name[update_col_count]<<" = "<< update_query->col_value[update_col_count]<<endl;
+				update_col_count++;
+			}
+			else{
+				cout<<"syntax error"<<endl;
+			}
+			
+		}
+	|	NAME COMPARISION NUMBER
+		{
+			if(strcmp("=",$2)==0){
+				cout << "comp"<<endl;
+				update_query->col_name[update_col_count] = (char*)malloc(20);
+				memcpy(update_query->col_name[update_col_count],$1,20);
+				update_query->col_value[update_col_count]=(char*)malloc(sizeof(int)*8);
+				sprintf(update_query->col_value[update_col_count],"%d",$3);
+				cout<<update_query->col_name[update_col_count]<<" = "<<update_query->col_value[update_col_count];
+				update_col_count++;			
+			}
+			else{
+				cout<<"syntax error"<<endl;
+			}
+		}
+	;
+
 /* create table */
 table_def:
 		CREATE TABLE table '(' table_attr_list ')' ';'
@@ -332,7 +408,6 @@ insert_stat:
 			for(int i = 0; i<insert_count;i++){
 				cout<<i<<" "<<insert_record[i]<<endl;
 			}			
-			//parser_init();
 		}
 	; 	
 insert_list:
@@ -387,7 +462,8 @@ delete_stat:
 			cout << delete_query->tb_name <<endl;
 			FillDeleteCond();
 			PrintCondList();
-			cout << "Call delete() function here."<<endl;
+			exec_delete_stmt();
+			//cout << "Call delete() function here."<<endl;
 			
 		}
 	;
@@ -412,8 +488,6 @@ select_seg:
 			//cout<<"query_tb_name"<<query->tb_name<<endl;
 			cout<<"cond "<<query->cond_count<<"sel "<<query->sel_count<<"join "<<query->join_count<<"from "<<query->from_count<<endl;
 			exec_select_stmt();
-			//parser_init();
-			
 		}
 	;
 select_clause:
@@ -536,22 +610,28 @@ orderlist:
 void parser_init()
 {
 	lex_init();
-	tb_name = NULL;
-	frag_tb_name = NULL;
-	for(int i = 0; i<insert_count;i++)
-		memset(insert_record[i],0,MAX_TUPLE_SIZE);
-	memset(attr_list,0,sizeof(AttrInfo)*MAX_ATTR_NUM);
-	memset(cond_list,0,sizeof(Condition)*MAX_COND_NUM);
-	memset(query,0,sizeof(SelectQuery));
+
 	funcRnt = 0;
-	//curPos = 0;
-	
+	curPos = 0;
 	cond_count = 0;
 	join_count = 0;
 	attr_count = 0;
 	sel_count = 0;
 	from_count = 0;
 
+	tb_name = NULL;
+
+	memset(attr_list,0,sizeof(AttrInfo)*MAX_ATTR_NUM);
+	memset(cond_list,0,sizeof(Condition)*MAX_COND_NUM);
+	memset(query,0,sizeof(SelectQuery));
+	for(int i = 0; i<insert_count;i++)
+		memset(insert_record[i],0,MAX_TUPLE_SIZE);
+
+	memset(delete_query,0,sizeof(DeleteQuery));
+	
+	update_col_count = 0;
+	memset(update_query,0,sizeof(UpdateQuery));
+	
 	frag_count = 0;
 	frag_cond_count = 0;
 	frag_attr_count = 0;
@@ -567,11 +647,13 @@ void parser_init()
 
 void InitQuery(){
 	delete_query = (DeleteQuery*)malloc(sizeof(DeleteQuery));
+	update_query = (UpdateQuery*)malloc(sizeof(UpdateQuery));
 	query = (SelectQuery*)malloc(sizeof(SelectQuery));
 	query->distinct = 0;
 	query->all = 0;
 }
 void DestoryQuery(){
+	free(update_query);
 	free(delete_query);
 	free(query);
 }
@@ -641,10 +723,16 @@ int FillSelectCond(){
 	return 0;
 }
 int FillDeleteCond(){
+	delete_query->cond_count = cond_count;
 	memcpy(delete_query->CondList,cond_list,cond_count * sizeof(Condition));
 	return 0;
 }
-
+int FillUpdateCond(){
+	update_query->cond_count = cond_count;
+	update_query->col_count = update_col_count;
+	memcpy(update_query->CondList,cond_list,cond_count * sizeof(Condition));
+	return 0;
+}
 
 /*
  * attr_list: attributes iostreamfor a table

@@ -1,7 +1,7 @@
 /*
  * paser.h *
  *  Created on: Nov 30, 2017
- *      Author: gpadmin
+ *      Author: wcw
  */
 #include <iostream>
 #include <string>
@@ -52,6 +52,7 @@ struct AttrInfo{
 /*
  * select sellist from fromlist where condlist orderby orrderlist;
  */
+
 struct SelItem{
 	char* table_name;
 	char* col_name;
@@ -71,6 +72,7 @@ struct Condition{
 	 * cond1:tb1.col_name1 op tb2.col_name2
 	 * cond2:tb1.col_name1 op value;
 	 */
+	
 	OP op;
 	char* tb_name;
 	int tb_id;
@@ -115,6 +117,15 @@ struct DeleteQuery{
 	Condition	CondList[MAX_JOIN_NUM];
 };
 
+struct UpdateQuery{
+	char* tb_name;
+	char* col_name[256];
+	char* col_value[256];
+	int col_count;
+	int cond_count;
+	Condition	CondList[MAX_COND_NUM];
+};
+
 
 struct FragInfo{
 	//FRAG_TYPE frag_type;
@@ -130,11 +141,16 @@ extern char* frag_tb_name;
 extern FRAG_TYPE frag_type;
 extern FragInfo frag_list[MAX_FRAG_NUM];
 extern string frag_select_stmt[MAX_FRAG_NUM];
+
 extern SelectQuery* query;
+extern DeleteQuery* delete_query;
 
 extern int attr_count;
 extern char* tb_name;
 extern AttrInfo attr_list[MAX_ATTR_NUM];
+
+extern UpdateQuery* update_query;
+
 
 
  /* if necessary, query stack for nested query.*/
@@ -147,14 +163,27 @@ void parser_init();
 bool GetFragInfo(FragInfo *g_frag_list,char* g_tb_name, int g_frag_count,int g_frag_type);
 void printFraglist();
 void print();
+
+
+/*
+	funcs called in conn_mysql.cpp
+*/
 void spliceFragToSelect();
 string spliceSelectStmt();
 string spliceCreateStmt();
 string spliceDropStmt();
+string spliceDeleteStmt();
+string spliceUpdateStmt();
 
+/*
+	funcs called in yacc.y
+ */
 void exec_drop_table_stmt();
-int get_frag_data();
-void load_data();
 void exec_create_stmt();
 void exec_select_stmt();
+void exec_delete_stmt();
+void exec_update_stmt();
+void exec_show_table_stmt();
+int load_data_into_local_db(string tb_name);
+void load_data();
 

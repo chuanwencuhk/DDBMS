@@ -59,28 +59,31 @@ extern int yydebug;
     ASC = 269,
     DESC = 270,
     FRAGMENT = 271,
-    ALL = 272,
-    UNIQUE = 273,
-    DISTINCT = 274,
-    CREATE = 275,
-    TABLE = 276,
-    DROP = 277,
-    INDEX = 278,
-    INSERT = 279,
-    INTO = 280,
-    VALUES = 281,
-    DELETE = 282,
-    CHARACTER = 283,
-    INTEGER = 284,
-    DATE = 285,
-    FLOAT = 286,
-    VARCHAR = 287,
-    HORIZONAL = 288,
-    VERTICAL = 289,
-    MIX = 290,
-    SHOW = 291,
-    TABLES = 292,
-    EXIT = 293
+    LOAD = 272,
+    ALL = 273,
+    UNIQUE = 274,
+    DISTINCT = 275,
+    CREATE = 276,
+    TABLE = 277,
+    DROP = 278,
+    INDEX = 279,
+    INSERT = 280,
+    INTO = 281,
+    VALUES = 282,
+    DELETE = 283,
+    UPDATE = 284,
+    SET = 285,
+    CHARACTER = 286,
+    INTEGER = 287,
+    DATE = 288,
+    FLOAT = 289,
+    VARCHAR = 290,
+    HORIZONAL = 291,
+    VERTICAL = 292,
+    MIX = 293,
+    SHOW = 294,
+    TABLES = 295,
+    EXIT = 296
   };
 #endif
 
@@ -89,12 +92,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 63 "yacc.y" /* yacc.c:1909  */
+#line 70 "yacc.y" /* yacc.c:1909  */
 
 	int intval;
 	char* strval;
 
-#line 98 "yacc.tab.h" /* yacc.c:1909  */
+#line 101 "yacc.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
