@@ -181,11 +181,31 @@ void insert_condition(string condition_list, query_tree &o_tree)
 		//得到一条condition，插入树中
 		//判断是不是一个连接，两边都是变量的话就是连接
 		//确定比较操作符位置
-		int pos_op = maxint(condition.find("=", 0), maxint(condition.find(">", 0), condition.find("<", 0)));
-		pos_op = maxint(pos_op, maxint(condition.find(">=", 0), maxint(condition.find("<=", 0), condition.find("<>", 0))));
+		int pos_op;
+		string op; int temp; string section;
+		temp = condition.find("=", 0);  if (temp >= 0) {
+			op = "="; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+		}
+		temp = condition.find(">", 0);  if (temp >= 0) {
+			op = ">"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+		}
+		temp = condition.find("<", 0);  if (temp >= 0) {
+			op = "<"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1); 
+		}
+		temp = condition.find(">=", 0); if (temp >= 0) {
+			op = ">="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		}
+		temp = condition.find("<=", 0); if (temp >= 0) {
+			op = "<="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		}
+		temp = condition.find("<>", 0); if (temp >= 0) {
+			op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		}
 		//判断左右两侧是不是变量
 		string str1 = condition.substr(0, pos_op);//左侧字符串
-		string str2 = condition.substr(pos_op+1, condition.length() - pos_op);//右侧字符串
+		string str2 = section;//右侧字符串
+		//cout << op << pos_op << endl;
+		//cout << str1 << " " << str2 << endl;
 		if (isVar(str1) && isVar(str2))
 		{	//都是变量则为连接
 			int pos_l = loc(str1, o_tree), pos_r = loc(str2, o_tree);//确定左右变量的祖先在树中的位置
@@ -316,8 +336,8 @@ query_tree get_original_tree(string s)
 					cond[j] = sch.table[s_pos].site[j].condition[0];
 					pos[j] = o_tree.num;
 				}
-				for (int k = 1;k <= r;k++) cout << pos[k] << " " << attr[k] << " " << cond[k] << endl;
-				cout << endl;
+				//for (int k = 1;k <= r;k++) cout << pos[k] << " " << attr[k] << " " << cond[k] << endl;
+				//cout << endl;
 				int en = o_tree.num;
 				
 				for (int j = 1;j <= r;j++)
@@ -328,7 +348,7 @@ query_tree get_original_tree(string s)
 					for (int k = j + 1; k <= r;k++)
 						if (attr[j].compare(attr[k]) == 0) last = false;
 					if (can_union && last)
-					{   cout << j << endl;
+					{   //cout << j << endl;
 						//先创造一个union节点
 						o_tree.node[++o_tree.num].type = 1;
 						o_tree.node[o_tree.num].child[0] = 0;
@@ -356,8 +376,8 @@ query_tree get_original_tree(string s)
 								j--; r--;
 							}
 						}
-						for (int k = 1;k <= r;k++) cout << pos[k] << " " << attr[k] << " " << cond[k] << endl;
-						cout << endl;
+						//for (int k = 1;k <= r;k++) cout << pos[k] << " " << attr[k] << " " << cond[k] << endl;
+						//cout << endl;
 					}
 				}
 			
@@ -386,7 +406,7 @@ query_tree get_original_tree(string s)
 		}
 		i++;
 	}
-	cout << "fuck\n";
+	//cout << "fuck\n";
 	return o_tree;
 	
 }
@@ -419,8 +439,26 @@ void print_tree(query_tree tree)
 bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 {	//暂时只写AND的情况，即一个括号里只有一个条件
 	//确定比较操作符位置
-	int pos_op = maxint(condition.find("=", 0), maxint(condition.find(">", 0), condition.find("<", 0)));
-	pos_op = maxint(pos_op, maxint(condition.find(">=", 0), maxint(condition.find("<=", 0), condition.find("<>", 0))));
+	int pos_op;
+	string op; int temp; string section;
+	temp = condition.find("=", 0);  if (temp >= 0) {
+		op = "="; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+	}
+	temp = condition.find(">", 0);  if (temp >= 0) {
+		op = ">"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+	}
+	temp = condition.find("<", 0);  if (temp >= 0) {
+		op = "<"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+	}
+	temp = condition.find(">=", 0); if (temp >= 0) {
+		op = ">="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+	}
+	temp = condition.find("<=", 0); if (temp >= 0) {
+		op = "<="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+	}
+	temp = condition.find("<>", 0); if (temp >= 0) {
+		op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+	}
 	//找到.的位置，把表名去掉
 	int pos_dot = condition.find(".", 0);
 	//提取出查询条件的属性
@@ -457,11 +495,11 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 	}
 	else
 	{	//看垂直分片信息上是否有该属性
-		cout << "find " << attr << endl;
+		//cout << "find " << attr << endl;
 		int pos = sch.table[sch_pos].site[site].condition[1].find(attr);
 		if (pos >= 0)
 		{
-			cout << sch.table[sch_pos].site[site].condition[1] << " "<<pos << endl;
+			//cout << sch.table[sch_pos].site[site].condition[1] << " "<<pos << endl;
 			return true;
 		}
 		else return false;
@@ -588,29 +626,27 @@ bool intersect(string op, string section, condition_info condition)
 
 bool condition_intersect(string condition, treenode &x, query_tree &tree)
 {	//确定比较操作符位置 和 比较操作符
-	int pos_op = maxint(condition.find("=", 0), maxint(condition.find(">", 0), condition.find("<", 0)));
-	pos_op = maxint(pos_op, maxint(condition.find(">=", 0), maxint(condition.find("<=", 0), condition.find("<>", 0))));
-	//不等于的情况值得考虑一下
+	int pos_op;
 	string op; int temp; string section;
 	temp = condition.find("=", 0);  if (temp >= 0) {
-		op = "="; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+		op = "="; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
 	}
 	temp = condition.find(">", 0);  if (temp >= 0) {
-		op = ">"; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+		op = ">"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
 	}
 	temp = condition.find("<", 0);  if (temp >= 0) {
-		op = "<"; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
+		op = "<"; pos_op = temp; section = condition.substr(pos_op + 1, condition.length() - pos_op - 1);
 	}
 	temp = condition.find(">=", 0); if (temp >= 0) {
-		op = ">="; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		op = ">="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 	}
 	temp = condition.find("<=", 0); if (temp >= 0) {
-		op = "<="; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		op = "<="; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 	}
 	temp = condition.find("<>", 0); if (temp >= 0) {
-		op = "<>"; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
+		op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 	}
-	cout << op << " " << section << endl;
+	//cout << op << " " << section << endl;
 	//找到.的位置，把表名去掉
 	int pos_dot = condition.find(".", 0);
 	//提取出查询条件的属性
@@ -638,13 +674,13 @@ bool condition_intersect(string condition, treenode &x, query_tree &tree)
 	{	//分片条件有这个属性
 		if (sch.table[sch_pos].site[site].condition[0].find(attr) >= 0)
 		{	//则有这个属性，判断区间是否相交
-			cout << "判断是否香蕉" << endl;
+			//cout << "判断是否香蕉" << endl;
 			bool flag = true;
 			for (int i = 1;i <= sch.table[sch_pos].site[site].hcon_list_len;i++)
 			{	//因为只有AND，所以查询条件只有一个，然后查询条件的区间要与每个属性相同的分片条件都要有结果
 				if (attr.compare(sch.table[sch_pos].site[site].hcon_list[i].attr) == 0)
 				{	//属性相同，看是否相交
-					cout << "compare " << op << " "<<section<<" "<< sch.table[sch_pos].site[site].hcon_list[i].op << " "<< sch.table[sch_pos].site[site].hcon_list[i].section<< endl;
+					//cout << "compare " << op << " "<<section<<" "<< sch.table[sch_pos].site[site].hcon_list[i].op << " "<< sch.table[sch_pos].site[site].hcon_list[i].section<< endl;
 					if (!intersect(op, section, sch.table[sch_pos].site[site].hcon_list[i])) flag = false;
 				}
 			}
@@ -656,19 +692,19 @@ bool condition_intersect(string condition, treenode &x, query_tree &tree)
 	//混合分片
 	else if (sch.table[sch_pos].type == 2)
 	{	//首先垂直分片条件得有这个属性
-		cout << "FUCK!!!!!!" << endl;
+		//cout << "FUCK!!!!!!" << endl;
 		int pos = sch.table[sch_pos].site[site].condition[1].find(attr);
 		if (pos >= 0)
 		//然后和水平分片一样判断是否有交集
 		{	//分片条件有这个属性
 			if (sch.table[sch_pos].site[site].condition[0].find(attr) >= 0)
-			{	cout << "判断是否香蕉" << endl;
+			{	//cout << "判断是否香蕉" << endl;
 				bool flag = true;
 				for (int i = 1;i <= sch.table[sch_pos].site[site].hcon_list_len;i++)
 				{	//因为只有AND，所以查询条件只有一个，然后查询条件的区间要与每个属性相同的分片条件都要有结果
 					if (attr.compare(sch.table[sch_pos].site[site].hcon_list[i].attr) == 0)
 					{	//属性相同，看是否相交
-						cout << "compare " << op << " " << section << " " << sch.table[sch_pos].site[site].hcon_list[i].op << " " << sch.table[sch_pos].site[site].hcon_list[i].section << endl;
+						//cout << "compare " << op << " " << section << " " << sch.table[sch_pos].site[site].hcon_list[i].op << " " << sch.table[sch_pos].site[site].hcon_list[i].section << endl;
 						if (!intersect(op, section, sch.table[sch_pos].site[site].hcon_list[i])) flag = false;
 					}
 				}
@@ -729,30 +765,31 @@ void push_condition_down(query_tree &tree)
 	{	if (tree.node[i].type == 3) //遇到条件就下推
 		{	//判断是否要插入到分片上
 			for (int j = 1;j <= r;j++)
-			{	//判断查询条件的属性，分片是否拥有
+			{	
 				if (q[j] == -1) continue;
-				cout << tree.node[i].str << " " << tree.node[q[j]].str << endl;
+				//cout << tree.node[i].str << " " << tree.node[q[j]].str << endl;
+				//判断查询条件的属性，分片是否拥有
 				if (match_condition_frag(tree.node[i].str, tree.node[q[j]], tree))
 				{	//垂直分片或者不分片有这个属性其实就可以直接插入了
 					if (tree.node[i].type == 1 || tree.node[i].type == -1)
-					{	cout << tree.node[i].str << " 插入 " << tree.node[q[j]].str << endl;
+					{	//cout << tree.node[i].str << " 插入 " << tree.node[q[j]].str << endl;
 						copy_node(tree, q[j], tree.node[i]);
 					}
 					//否则在有这个属性的情况下，查询条件在这个分片上是否有结果，也就是查询条件是否与分片条件有交集
 					else
 					{	if (condition_intersect(tree.node[i].str, tree.node[q[j]], tree))
-						{	cout << "条件与分片匹配，插入" << endl;
+						{	//cout << "条件与分片匹配，插入" << endl;
 							copy_node(tree, q[j], tree.node[i]);
 						}
 						else
-						{	cout << "条件与分片不匹配，删除这一枝" << endl;
+						{	//cout << "条件与分片不匹配，删除这一枝" << endl;
 							int to_del = q[j];
 							//自底向上一直删到union
 							while (tree.node[to_del].type != 1)
 							{	delete_node(tree, to_del);
 								to_del = tree.node[to_del].fa;
 							}
-							q[j] = -1;
+							q[j] = -1;//这个分片设为无效分片
 							//如果删的union只有一个儿子了，把union也删了
 							if (tree.node[to_del].child[0] == 1) delete_node(tree, to_del);
 						}
@@ -760,7 +797,7 @@ void push_condition_down(query_tree &tree)
 				}
 				//没有就什么都不做
 				else
-				{	cout << "什么都不做" << endl;
+				{	//cout << "什么都不做" << endl;
 				}
 			}
 			//推完将这个查询条件删除
@@ -770,13 +807,382 @@ void push_condition_down(query_tree &tree)
 
 }
 
+void push_select_down(query_tree &tree)
+{
+	if (tree.node[tree.root].str.compare("*") == 0)
+	{	cout << "不用下推\n";
+	}
+	else
+	{	//则要使用投影下推
+		string s = tree.node[tree.root].str;
+		//将投影属性拆分到attr
+		int attr_num = 0;
+		string attr[20];
+		int pos = s.find(",");
+		while (pos >= 0)
+		{
+			attr[++attr_num] = s.substr(0, pos);
+			s = s.substr(pos + 1, s.length() - pos - 1);
+			pos = s.find(",");
+		}
+		attr[++attr_num] = s;
+		int en = tree.num;
+		//扫描全树，遇到分片就下推select
+		for (int i = 1;i <= en;i++)
+		{
+			if (tree.node[i].type == 0)
+			{	//提取分片表名和分片序号
+				//cout << "aaa\n";
+				string x = tree.node[i].str;
+				int pos_colon = x.find(":");
+				string name = ""; int site = 0;
+				if (pos_colon < 0)
+				{
+					name = x;
+					site = 1;
+				}
+				else
+				{
+					int len = x.length();
+					name = x.substr(0, pos_colon);
+					site = atoi(x.substr(pos_colon + 1, len - pos_colon - 1).c_str());
+				}
+				//cout << name << site << endl;
+				//自底向上看该分片需要哪些属性
+				int frag_attr_num = 0; string frag_attr[20];
+				int p = i;
+				while (tree.node[p].fa != -1)
+				{
+					if (tree.node[p].type == 2)//若是join则该分片应该有连接条件中的属性，如果可以有的话
+					{
+						string tmp = tree.node[p].str;
+						if (tmp.compare("") == 0)
+						{	//分片之间的连接，取两个分片的公共属性，其实就是分片条件中的第一个属性
+							tmp = sch.table[tree.schema_pos[name]].site[site].condition[1];
+							pos = tmp.find(",");
+							tmp = tmp.substr(0, pos);
+							//cout << tmp << endl;
+						}
+						else
+						{   //用提取两个.的最笨的做法
+							pos = tmp.find(".");
+							tmp = tmp.substr(pos + 1, tmp.length() - pos - 1);
+							pos = tmp.find(".");
+							tmp = tmp.substr(pos + 1, tmp.length() - pos - 1);
+							//cout << tmp << endl;
+							//tmp则为需要判断的属性
+						}
+						//判断tmp是否应该加入
+						bool frag_has_attr = false;//分片是否有这个属性
+						if (tree.node[i].type == -1 || tree.node[i].type == 0)
+						{	//水平分片和不分片看对应的表是否有属性
+							for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
+								if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
+						}
+						else
+						{	//垂直分片和混合分片看分片条件上是否有
+							pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
+							if (pos >= 0) frag_has_attr = true;
+						}
+						if (frag_has_attr)
+						{	//有这个属性并且还未添加
+							frag_has_attr = false;
+							for (int j = 1;j <= frag_attr_num;j++)
+								if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
+							if (!frag_has_attr) frag_attr[++frag_attr_num] = tmp;
+						}
+					}
+					//cout << "aaa\n" << endl;
+					p = tree.node[p].fa;
+				}
+				//添加投影中的属性，如果可以的话
+				for (int j = 1;j <= attr_num;j++)
+				{
+					bool frag_has_attr = false;
+					string tmp = attr[j];
+					if (tree.node[i].type == -1 || tree.node[i].type == 0)
+					{	//水平分片和不分片看对应的表是否有属性
+						for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
+							if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
+					}
+					else
+					{	//垂直分片和混合分片看分片条件上是否有
+						pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
+						if (pos >= 0) frag_has_attr = true;
+					}
+					if (frag_has_attr)
+					{	//有这个属性并且还未添加
+						frag_has_attr = false;
+						for (int j = 1;j <= frag_attr_num;j++)
+							if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
+						if (!frag_has_attr) frag_attr[++frag_attr_num] = tmp;
+					}
+				}
+				//创建一个投影节点
+				tree.node[++tree.num].type = 4;
+				tree.node[tree.num].str = "";
+				//找寻这个投影应该插入的位置
+				pos = i;
+				while (tree.node[pos].fa != -1)
+				{	//插到所有选择条件的上方
+					if (tree.node[tree.node[pos].fa].type == 3) pos = tree.node[pos].fa;
+					else break;
+				}
+				//cout << pos << " " << tree.node[tree.node[pos].fa].type << endl;
+				tree.node[tree.num].child[0] = 1; tree.node[tree.num].child[1] = pos;
+				tree.node[tree.num].fa = tree.node[pos].fa;
+				for (int j = 1;j <= tree.node[tree.node[pos].fa].child[0];j++)
+					if (tree.node[tree.node[pos].fa].child[j] == pos) tree.node[tree.node[pos].fa].child[j] = tree.num;
+				tree.node[pos].fa = tree.num;
+				for (int j = 1;j <= frag_attr_num;j++) 
+					if (j==1) tree.node[tree.num].str += frag_attr[j];
+					else tree.node[tree.num].str += ","+frag_attr[j];
+			}
+		}
+
+	}
+	//把最上面的投影操作删除
+	tree.node[tree.root].type = -1;
+	tree.node[tree.node[tree.root].child[1]].fa = -1;
+	tree.root = tree.node[tree.root].child[1];
+	
+	
+}
+
+
+//从x开始，递归复制x以下所有的树结构插入到树中fa节点之下
+void copy_branch(query_tree &tree, int x, int fa)
+{	//处理复制出来的节点
+	tree.node[++tree.num].type = tree.node[x].type;
+	tree.node[tree.num].child[0] = 0;
+	tree.node[tree.num].fa = fa;
+	tree.node[tree.num].str = tree.node[x].str;
+	//链接到fa上
+	tree.node[fa].child[++tree.node[fa].child[0]] = tree.num;
+
+	int newnode = tree.num;
+	for (int i = 1;i <= tree.node[x].child[0];i++)
+		copy_branch(tree, tree.node[x].child[i], newnode);
+}
+
+//统计从x开始以下所有树结构有多少节点
+int count_branch(query_tree &tree, int x)
+{
+	int sum = 1;
+	for (int i = 1;i <= tree.node[x].child[0];i++) sum += count_branch(tree, tree.node[x].child[i]);
+	return sum;
+}
+
+
+int dfs_push(query_tree &tree, int x)
+{	//这个节点的左右分支数目
+	int l = 0, r = 0 ,sum = 0;
+	//join准备下推
+	if (tree.node[x].type == 2)
+	{
+		l = dfs_push(tree, tree.node[x].child[1]);
+		r = dfs_push(tree, tree.node[x].child[2]);
+		if (l == 1 && r == 1)
+		{
+			//cout << x<<"没必要下推\n";
+			sum = 1;
+		}
+		else
+		{	
+			//cout << x<<" "<<l << " " << r << "需要下推\n";
+			
+			//两两join
+			int q[100], num = 0, newjoin;//保存新join的头节点
+			int lroot = tree.node[x].child[1], rroot = tree.node[x].child[2];
+			//判断树是否有足够的空间进行join下推
+			int l_branch, r_branch, node_to_add = 0;
+			for (int i = 1;i <= l;i++)
+			for (int j = 1;j <= r;j++)
+			{
+				if (l == 1) l_branch = count_branch(tree, lroot);
+				else l_branch = count_branch(tree, tree.node[lroot].child[i]);
+
+				if (r == 1) r_branch = count_branch(tree, rroot);
+				else r_branch = count_branch(tree, tree.node[rroot].child[j]);
+				
+				node_to_add += (1 + l_branch + r_branch);
+			}
+			bool can_push = true;
+			if (tree.num + node_to_add > maxtreenode) 
+			{	//插入的节点数超出树的大小
+				can_push = false; cout << x << tree.node[x].str << "添加" << node_to_add << "个节点，超出树的大小"<<endl;
+			}
+			if (l*r > maxsite - 1)
+			{	//插入的分支超出树的最大分支
+				can_push = false; cout << x << tree.node[x].str << "添加" << node_to_add << "个分支，超出树最大分支" << endl;
+			}
+			if (can_push)
+			{
+				for (int i = 1;i <= l;i++)
+					for (int j = 1;j <= r;j++)
+					{
+						//复制一个和x相同的join节点
+						tree.node[++tree.num].type = tree.node[x].type;
+						tree.node[tree.num].fa = x;
+						tree.node[tree.num].str = tree.node[x].str;
+						tree.node[tree.num].child[0] = 0;
+						newjoin = tree.num;
+						if (l == 1) copy_branch(tree, lroot, newjoin);
+						else copy_branch(tree, tree.node[lroot].child[i], newjoin);
+
+						if (r == 1) copy_branch(tree, rroot, newjoin);
+						else copy_branch(tree, tree.node[rroot].child[j], newjoin);
+						q[++num] = newjoin;
+
+					}
+				//将新建的join节点连接到x上
+				tree.node[x].child[0] = 0;
+				for (int i = 1;i <= num;i++)
+				{
+					++tree.node[x].child[0];
+					tree.node[x].child[i] = q[i];
+				}
+				tree.node[x].str = "";
+				tree.node[x].type = 1;
+				sum = num;
+			}
+			else sum = 1;
+		}
+		
+	}
+	else
+	{
+		for (int i = 1;i <= tree.node[x].child[0];i++)
+		{	
+			sum += dfs_push(tree, tree.node[x].child[i]);
+		}
+	}
+
+	if (tree.node[x].child[0]==0) return 1;
+	else return sum;
+}
+
+bool join_frag(query_tree &tree, string frag1, string frag2)
+{	//提取frag1,frag2的表名和分片序号
+	int pos_colon = frag1.find(":");
+	string name1 = ""; int site1 = 0;
+	if (pos_colon < 0)
+	{
+		name1 = frag1;
+		site1 = 1;
+	}
+	else
+	{
+		int len = frag1.length();
+		name1 = frag1.substr(0, pos_colon);
+		site1 = atoi(frag1.substr(pos_colon + 1, len - pos_colon - 1).c_str());
+	}
+	pos_colon = frag2.find(":");
+	string name2 = ""; int site2 = 0;
+	if (pos_colon < 0)
+	{
+		name2 = frag2;
+		site2 = 1;
+	}
+	else
+	{
+		int len = frag2.length();
+		name2 = frag2.substr(0, pos_colon);
+		site2 = atoi(frag2.substr(pos_colon + 1, len - pos_colon - 1).c_str());
+	}
+	//查看是否有结果
+	int pos1 = tree.schema_pos[name1], pos2 = tree.schema_pos[name2];
+	if (sch.table[pos1].type == 0 || sch.table[pos1].type == 2)
+	if (sch.table[pos2].type == 0 || sch.table[pos2].type == 2)
+	{	//只有水平或者混合才能通过条件判断是否有交集，仅通过属性是判断不出的
+		//cout << "比较" << frag1 << " " << frag2 << endl;
+		for (int i=1;i<=sch.table[pos1].site[site1].hcon_list_len;i++)
+		for (int j = 1;j <= sch.table[pos1].site[site2].hcon_list_len;j++)
+		if (sch.table[pos1].site[site1].hcon_list[i].attr.compare(sch.table[pos2].site[site2].hcon_list[i].attr) == 0)
+		{	//属性相同时，看条件是否有交集
+			if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
+string dfs_delete(query_tree &tree, int x)
+{
+	string str = "";
+	if (tree.node[x].type == 0) return tree.node[x].str;
+	else
+	{
+		for (int i = 1;i <= tree.node[x].child[0];i++)
+		{	if (str.compare("") ==0) str += dfs_delete(tree, tree.node[x].child[i]);
+			else str += " "+dfs_delete(tree, tree.node[x].child[i]);
+		}
+	}
+	//cout << x << " " << str << endl;
+	//考虑join的分片集合str是否有结果，没有删除这一支
+	if (tree.node[x].type == 2)
+	{	//提取分片数组
+		string tmp = str;
+		string frag[100]; int num = 0;
+		int pos = tmp.find(" ");
+		while (pos >= 0)
+		{
+			frag[++num] = tmp.substr(0, pos);
+			tmp = tmp.substr(pos+1, tmp.length()-pos-1);
+			pos = tmp.find(" ");
+			//cout << tmp << "啊";
+		}
+		frag[++num] = tmp;
+		
+		//看两两分片是否无结果
+		bool have_res = true;
+		for (int i=1;i<=num;i++)
+		for (int j = i+1;j <= num;j++)
+		{
+			if (!join_frag(tree, frag[i], frag[j])) have_res = false;
+		}
+		if (!have_res)
+		{	//删除这个节点
+			//cout << "删除" << x << endl;
+			tree.node[x].type = -1;
+		}
+	}
+	return str;
+}
+//清理掉删除的节点
+void clear_tree(query_tree &tree, int x)
+{	for (int i=1;i<=tree.node[x].child[0];i++)
+	{
+		if (tree.node[tree.node[x].child[i]].type == -1)
+		{
+			for (int j = i;j <= tree.node[x].child[0] - 1;j++) tree.node[x].child[j] = tree.node[x].child[j + 1];
+			tree.node[x].child[0]--;
+			i--; continue;
+		}
+		clear_tree(tree, tree.node[x].child[i]);
+	}
+}
+
+void push_join_down(query_tree &tree)
+{	//深度优先遍历树，后根    
+	dfs_push(tree, tree.root);
+	//删除没有交集的分支
+	dfs_delete(tree, tree.root);
+	clear_tree(tree, tree.root);
+}
+
 //上退下移操作，基础优化
-void get_basic_opt_tree(query_tree &tree)
+void get_basic_opt_tree(query_tree &tree, int level)
 {	//第一步，将条件下推
-	push_condition_down(tree);
+	if (level>=1) push_condition_down(tree);
 	//第二步，将投影操作下推
-
+	if (level>=2) push_select_down(tree);
 	//第三步，将连接操作下推
-
+	if (level >= 3)
+	{   push_join_down(tree);
+	}
 	
 }

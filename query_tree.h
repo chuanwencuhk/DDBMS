@@ -3,9 +3,9 @@
 #include <string>
 #include <map>
 using namespace std;
-#define maxsite 4+1
+#define maxsite 100+1
 #define maxcol 10
-#define maxtreenode 100
+#define maxtreenode 1000
 #define max_table_num 10
 
 struct condition_info
@@ -76,5 +76,5 @@ query_tree get_original_tree(string s);
 //输出树到文件
 void print_tree(query_tree tree);
 //上退下移操作，基础优化
-void get_basic_opt_tree(query_tree &tree);
+void get_basic_opt_tree(query_tree &tree, int level);
 #endif
