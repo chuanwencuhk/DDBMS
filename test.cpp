@@ -55,8 +55,9 @@ select * from emp where emp.eno >= 'E0990' AND emp.eno < 'E1001';
 
 select jno from job where jname = 'Project #999';
 
-update job set jname = 'Project #988' where jno = 'J0999';
-
 step 4. DELETE
 
 delete from emp;
+
+step 5. UPDATE
+update job set jname = 'Project #988' where jno = 'J0999';

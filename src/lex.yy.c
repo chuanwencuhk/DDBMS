@@ -647,8 +647,8 @@ char *yytext;
 #line 2 "lex.l"
 #include <stdio.h>
 #include <stdlib.h>
-#include "parser.h"
-#include "yacc.tab.h"
+#include "../include/parser.h"
+#include "../include/yacc.tab.h"
 
 int lineno = 1;
 char *strdupxy(char *s);

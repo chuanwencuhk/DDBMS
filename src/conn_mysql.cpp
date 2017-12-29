@@ -5,8 +5,6 @@
  *      Author: wcw
  *	
  */
-#include <mysql/mysql.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -14,8 +12,10 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "parser.h"
-#include "rpc_sql/rpc_sql.h"
+#include <cstdio>
+#include <mysql/mysql.h>
+#include "../include/parser.h"
+#include "../rpc_sql/rpc_sql.h"
 
 using namespace std;
 #define MAX_BUF_SIZE 1024
@@ -30,7 +30,7 @@ extern int frag_count;
 extern string frag_select_stmt[MAX_FRAG_NUM];
 extern string data_path[MAX_FRAG_NUM];
 extern char* frag_tb_name;
-
+extern char* tb_name;
 const char *pHostName = "localhost";
 const char *pUserName = "root";
 const char *pPassword = " ";
@@ -70,6 +70,7 @@ int init_mysql(){
 	return 0;
 }
 
+
 /*
 	execute LOAD sql.
  */
@@ -77,13 +78,6 @@ int load_data_into_local_db(string tb_name){
 	cout<<"load_data"<<endl;
 	if(init_mysql())
 		finish_with_error(NULL);
-
-	// string("LOAD DATA LOCAL INFILE ") +
-	// "'" + file_name + "'" +
-	// " INTO TABLE " + table_name +
-	// " FIELDS TERMINATED BY '\t' " +
-	// "LINES TERMINATED BY '\n';";
-
 	string file_name = "'/var/lib/mysql-files/raw_data/"+tb_name+".tsv'";
 	string load_stmt = "LOAD DATA INFILE "+ file_name +" INTO TABLE " + tb_name + " FIELDS TERMINATED BY '\\t' LINES TERMINATED BY '\\n'";
 	const char* cLoadData = load_stmt.c_str();
@@ -94,7 +88,6 @@ int load_data_into_local_db(string tb_name){
 	mysql_close(mysql_conn);
 	return 0;
 }
-
 int get_frag_data(){
 	cout<<"get_frag_data."<<endl;
 	if(frag_count == 0){
@@ -102,10 +95,6 @@ int get_frag_data(){
 		return -1;
 	}
 
-	// if(init_mysql())
-	// 	finish_with_error(NULL);
-	
-	//string sql_stmt = "SELECT * FROM EMP;";
 	const char* c_sql_stmt;
 	for(int i = 0; i < frag_count; i++){
 		cout << frag_select_stmt[i]<<endl;
@@ -115,11 +104,6 @@ int get_frag_data(){
 			finish_with_error(NULL);
 		cout<<"end exe_sql "<<i<<endl;
 	}
-
-	// res = mysql_store_result(mysql_conn);
-	// int rows = mysql_num_rows(res);
-	// int fields = first_charmysql_num_fields(res);
-	// cout<<rows<<fields<<endl;
 
 	mysql_free_result(res);
 	cout << "end get_frag_data" <<endl;
@@ -144,6 +128,9 @@ string readFileIntoString(string filename){
 	fragments for one table a time.
  */
 void load_data(){
+	cout<<"load_data"<<endl;
+	if(!checkIsFragStmtValid())
+		return;
 	/*
 	 tb_name = emp
 	 */
@@ -170,11 +157,6 @@ void load_data(){
 	get_frag_data();
 
 	fstream infile;
-	//string buf_string;
-	//buf_string = readFileIntoString("/var/lib/mysql-files/EMP_db1.data");
-	//buf_string = "0\tC. Anderso\tComputer and Information Research Scientist";
-	//cout<<"insert buf_string"<<buf_string<<endl;
-	//RPCInsertFileToTable("127.0.0.1", "0\tC. Anderso\tComputer and Information Research Scientist", "EMP_TEST");
 	/*
 		send data to sites.
 	 */
@@ -191,8 +173,10 @@ void load_data(){
 	mysql_close(mysql_conn);
 	return;
 }
-
 void exec_select_stmt(){
+	cout<<"exec_select_stmt"<<endl;
+	if(!checkIsSelStmtValid())
+		return;
 	string c_sql_stmt = spliceSelectStmt();
 	string res;
 	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
@@ -203,19 +187,45 @@ void exec_select_stmt(){
 	return;
 }
 void exec_create_stmt(){
+	cout<<"exec_create_stmt"<<endl;
+	if(!checkIsCStmtValid())
+		return;
 	string c_sql_stmt = spliceCreateStmt();
+
+	if(c_sql_stmt == ""){
+		cout<<"exec_create_stmt() Empty."<<endl;
+		return;
+	}
+	
+	bool res = false;
+
 	for(int i = 0; i < ip_vec.size(); i++){
-		RPCExecute(ip_vec[i], c_sql_stmt);
-	}	
+		bool resi = RPCExecute(ip_vec[i], c_sql_stmt);
+		res = res && resi;
+		cout << "send i " << i <<"" <<resi <<endl;
+	}
+	if(res){
+		cout<<"Create Error."<<endl;
+		return;
+	}
+	cout <<"Inserted-------------------"<<endl;
+	insertIntoTableMeta();
+	cout<<"New Metadata Inserted!"<<endl;
 	return;
 }
 void exec_drop_table_stmt(){
+	cout<<"exec_drop_table_stmt"<<endl;
+	if(!checkIsDtStmtValid())
+		return;
 	string c_sql_stmt = spliceDropStmt();
 	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
 	for(int i = 0; i < ip_vec.size(); i++){
 		if(RPCExecute(ip_vec[i], c_sql_stmt))
 			cout<<"site "<<i+1<<" drop table ok."<<endl;
-	}	
+	}
+	string table_name = tb_name;
+	cout<<"deleteFromMeta "<< table_name<<endl;
+	deleteFromMeta(table_name);
 	return;
 }
 void exec_show_table_stmt(){
@@ -227,6 +237,9 @@ void exec_show_table_stmt(){
 	return;
 }
 void exec_delete_stmt(){
+	cout<<"exec_delete_stmt"<<endl;
+	if(!checkIsDStmtValid())
+		return;
 	string c_sql_stmt = spliceDeleteStmt();
 	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
 	for(int i = 0; i < ip_vec.size(); i++){
@@ -237,6 +250,9 @@ void exec_delete_stmt(){
 	return;
 }
 void exec_update_stmt(){
+	cout<<"exec_update_stmt"<<endl;
+	if(!checkIsUStmtValid())
+		return;
 	string c_sql_stmt = spliceUpdateStmt();
 	cout<<"c_sql_stmt    "<<c_sql_stmt<<endl;
 	for (int i = 0; i < ip_vec.size(); ++i)
@@ -247,8 +263,3 @@ void exec_update_stmt(){
 	}
 	return;
 }
-
-// void test(){
-// 	RPCExecute("127.0.0.1", "CREATE TABLE EMP_TEST1(EMP_NO INTEGER, NAME VARCHAR(50), POSITION VARCHAR(100));");
-// 	return;
-// }

@@ -8,7 +8,7 @@
 #include <malloc.h>
 #include <iostream>
 #include <string>
-#include "parser.h"
+#include "../include/parser.h"
 using namespace std;
 using std::string;
 
@@ -27,10 +27,14 @@ extern int attr_count;
 extern char* tb_name;
 extern AttrInfo attr_list[MAX_ATTR_NUM];
 
+bool isTableExists(string table_name);
+bool isAttrExists(string col_name, string table_name);
+
 string frag_select_stmt[MAX_FRAG_NUM];
 string data_path[MAX_FRAG_NUM];
 string dir = string("/var/lib/mysql-files/");
 
+MetadataManager* MetadataManager::mtManager = 0;
 
 string GetTypeString(OP op_type){
 	string type_string = " ";
@@ -83,9 +87,83 @@ string GetVTypeString(TYPE type, int i){
 	if(type == D)
 		return "DATE";
 }
+bool insertIntoTableMeta(){
+	string tmp_tb_name(tb_name);
+	/*
+	 if table already exists, error.
+	 */
+	if(isTableExists(tmp_tb_name)){
+		cout<<"Table "<<tmp_tb_name<<" has already existed. updateTableMeta() Error."<<endl;
+		return "";
+	}
+	TableMedata tmp_tb_meta;
+	tmp_tb_meta.table_name = tmp_tb_name;
+	tmp_tb_meta.table_attr_num = attr_count;
+	for(int i = 0; i < attr_count; i++){
+		tmp_tb_meta.Attr[i].attr_name = attr_list[i].attr_name;
+		tmp_tb_meta.Attr[i].attr_datatype = attr_list[i].type;
+		tmp_tb_meta.Attr[i].attr_length = attr_list[i].used_size;
+		cout<<"insertIntoTableMeta COPY "<< tmp_tb_meta.Attr[i].attr_name<<tmp_tb_meta.Attr[i].attr_datatype<<tmp_tb_meta.Attr[i].attr_length<<endl;
+	}
 
+	MetadataManager::GetInstance()->set_tablemetadata(tmp_tb_meta);
+	cout<<"SET META."<<endl;
+	return true;
+}
+bool deleteFromMeta(string tb_name){
+	TableMedata tmp_tb_meta;
+	MetadataManager::GetInstance()->delete_tablemetadata(tb_name);
+	MetadataManager::GetInstance()->delete_fragment_info(tb_name);
+	return true;
+}
+bool isTableExists(string table_name){
+	cout<<"Enter isTableExists."<<endl;
+	TableMedata tmp_tb_meta;
+	tmp_tb_meta = MetadataManager::GetInstance()->get_tablemetadata(table_name);
+	
+	if(tmp_tb_meta.table_name == "")
+	{
+		cout<<"table not exist."<<endl;
+		return false;
+	}
+	cout<<"table exists"<<endl;
+	return true;
+}
 
+bool isAttrExists(string col_name, string table_name){
+	TableMedata tmp_tb_meta;
+	tmp_tb_meta = MetadataManager::GetInstance()->get_tablemetadata(table_name);
+	if(tmp_tb_meta.table_name == "")
+		return false;
+	for(int i = 0; i < tmp_tb_meta.table_attr_num; i++){
+		if(tmp_tb_meta.Attr[i].attr_name == col_name)
+			return true;
+	}
+	return false;
+}
 
+bool isAttrFitsMeta(AttrInfo attr_info,string table_name){
+	TableMedata tmp_tb_meta;
+	tmp_tb_meta = MetadataManager::GetInstance()->get_tablemetadata(table_name);
+	if(tmp_tb_meta.table_name == "")
+		return false;
+	//&&(tmp_tb_meta.Attr[i].attr_length==attr_info.used_size)
+	for(int i = 0; i < tmp_tb_meta.table_attr_num; i++){
+		if(tmp_tb_meta.Attr[i].attr_datatype==V)
+			tmp_tb_meta.Attr[i].attr_datatype = C;
+		if((tmp_tb_meta.Attr[i].attr_name == attr_info.attr_name)&&(tmp_tb_meta.Attr[i].attr_datatype == attr_info.type))
+			return true;
+	}
+	return false;
+}
+bool checkIsCStmtValid(){
+	string tmp_tb_name(tb_name);
+	if(isTableExists(tmp_tb_name)){
+		cout<<"Table "<<tmp_tb_name<<" has already existed."<<endl;
+		return false;
+	}
+	return true;
+}
 string spliceCreateStmt(){
 	if((attr_count == 0) || (tb_name ==NULL)){
 		cout<<"spliceCreateStmt error"<<endl;
@@ -112,6 +190,14 @@ string spliceCreateStmt(){
 	return tmp_stmt;
 
 }
+bool checkIsDtStmtValid(){
+	string tmp_tb_name = tb_name;
+	if(!isTableExists(tmp_tb_name)){
+		cout<<"Table "<<tmp_tb_name<<" not exists."<<endl;
+		return false;
+	}
+	return true;
+}
 string spliceDropStmt(){
 	cout<<"spliceDropStmt"<<endl;
 	if(NULL == tb_name){
@@ -131,8 +217,8 @@ string spliceCondStmt(int cond_count, Condition* cond_list){
 		return "";
 	string cond_stmt = " WHERE ";
 	if(cond_list[0].tb_name != NULL){
-		cond_count.append(cond_list[0].tb_name);
-		cond_count += ".";
+		cond_stmt.append(cond_list[0].tb_name);
+		cond_stmt += ".";
 	}
 	cond_stmt.append(cond_list[0].col_name);
 	string type_string = GetTypeString(cond_list[0].op);
@@ -141,8 +227,8 @@ string spliceCondStmt(int cond_count, Condition* cond_list){
 	for(int i = 1;i < cond_count;i++){
 		cond_stmt.append(" AND ");
 		if(cond_list[i].tb_name != NULL){
-			cond_count.append(cond_list[i].tb_name);
-			cond_count += ".";
+			cond_stmt.append(cond_list[i].tb_name);
+			cond_stmt += ".";
 		}
 		cond_stmt.append(cond_list[i].col_name);
 		string type_string = GetTypeString(cond_list[i].op);
@@ -151,7 +237,14 @@ string spliceCondStmt(int cond_count, Condition* cond_list){
 	}
 	return cond_stmt;
 }
-
+bool checkIsDStmtValid(){
+	string tmp_tb_name = delete_query->tb_name;
+	if(!isTableExists(tmp_tb_name)){
+		cout<<"Table "<<tmp_tb_name<<" not exists."<<endl;
+		return false;
+	}
+	return true;
+}
 string spliceDeleteStmt(){
 	if(NULL == delete_query){
 		cout<<"spliceDeleteStmt error. no delete stmt."<<endl;
@@ -165,12 +258,29 @@ string spliceDeleteStmt(){
 	string cond_stmt = spliceCondStmt(delete_query->cond_count,delete_query->CondList);
 	if(cond_stmt != "")
 		tmp_stmt.append(cond_stmt);
-		tmp_stmt.append(";");
-		cout<< tmp_stmt <<endl;
-		return tmp_stmt;
+	tmp_stmt.append(";");
+	cout<< tmp_stmt <<endl;
+	return tmp_stmt;
 }
 
-string spliceUpdateStmt(){
+bool checkIsUStmtValid(){
+	string tmp_tb_name = update_query->tb_name;
+	if(!isTableExists(tmp_tb_name)){
+		cout<<"Table "<<tmp_tb_name<<" not exists."<<endl;
+		return false;
+	}
+	for (int i = 0; i < update_query->col_count; ++i)
+	{
+		AttrInfo attr_info;
+		attr_info.table_name = update_query->tb_name;
+		attr_info.attr_name = update_query->col_name[i];
+		attr_info.type = update_query->type[i];
+		if(!isAttrFitsMeta(attr_info,attr_info.table_name))
+			return false;
+	}
+	return true;
+}
+string spliceUpdateStmt(){	
 	if((NULL == update_query)|(update_query->col_count ==0)){
 		cout<<"spliceUpdateStmt error. no update stmt."<<endl;
 		return "";
@@ -195,6 +305,70 @@ string spliceUpdateStmt(){
 	return tmp_stmt;
 }
 
+bool checkIsCondValid(int cond_count, Condition* cond_list){
+	string tmp_name = tb_name;
+	for (int i = 0; i < cond_count; ++i)
+	{
+		AttrInfo attr_info;
+		if(cond_list[i].tb_name!=NULL)
+			attr_info.table_name = cond_list[i].tb_name;
+		attr_info.table_name = tb_name;
+		attr_info.attr_name = cond_list[i].col_name;
+		attr_info.type = cond_list[i].value_type;
+		if(!isAttrFitsMeta(attr_info,attr_info.table_name))
+			return false;
+		return true;
+
+	}
+}
+bool checkIsSelStmtValid(){
+	cout<<"enter checkIsSelStmtValid"<<endl;
+	for(int i=0; i<query->from_count;i++){
+		if(!isTableExists(query->FromList[i].tb_name))
+			return false;
+	}
+	for (int i = 0; i < query->sel_count; ++i)
+	{
+		if(query->SelList[i].table_name!=NULL){
+			string tmp_name = query->SelList[i].table_name;
+			if(!isTableExists(tmp_name)){
+				cout<<"ERROR: table not exists."<<endl;
+				cout<< query->SelList[i].table_name<<"."<<query->SelList[i].col_name<<"is not valid."<<endl;
+				return false;
+			}
+		}
+		if(!isAttrExists(query->SelList[i].col_name,query->SelList[i].table_name)){
+			cout<<"ERROR: attribute not exists."<<endl;
+			cout<<query->SelList[i].col_name;
+			return false;
+		}
+	}
+	if(query->cond_count!=0){
+		if(!checkIsCondValid(query->cond_count,query->CondList))
+			return false;
+	}
+	return true;
+}
+/*
+TODO: add site check.
+ */
+bool checkIsFragStmtValid(){
+	for (int i = 0; i < frag_count; ++i)
+	{
+		for (int j = 0; j < frag_list[i].attr_count; ++j)
+		{
+			string tmp_attr_name = frag_list[i].attr_names[j];
+			if(!isAttrExists(tmp_attr_name,frag_tb_name)){
+				cout<<"ERROR: attribute not exists."<<endl;
+				cout<<tmp_attr_name<<endl;
+				return false;
+			}
+		}
+		if(!checkIsCondValid(frag_list[i].cond_count,frag_list[i].CondList))
+			return false;
+	}
+	return true;
+}
 string spliceSelectStmt(){
 		cout<<"spliceSelectStmt"<<endl;
 		if(NULL == query){
@@ -209,6 +383,10 @@ string spliceSelectStmt(){
 			tmp_stmt.append("* ");
 		if(query->sel_count!=0){
 			for(int i = 0; i<query->sel_count-1;i++){
+				if(query->SelList[i].table_name!= NULL){
+					tmp_stmt.append(query->SelList[i].table_name);
+					tmp_stmt += ".";
+				}
 				tmp_stmt.append(query->SelList[i].col_name);
 				tmp_stmt.append(", ");
 			}
@@ -260,6 +438,7 @@ void spliceFragToSelect(){
 			frag_select_stmt[i] = tmp_stmt;
 			cout<<frag_select_stmt[i]<<endl;
 		}
+		return;
 	}	
 	if(frag_type == VER){
 		for(int i = 0; i < frag_count; i++){
@@ -288,7 +467,9 @@ void spliceFragToSelect(){
 			frag_select_stmt[i] = tmp_stmt;
 			cout<<frag_select_stmt[i]<<endl;
 		}
+		return;
 	} 
+	return;
 }
 
 void printFragInfo(){

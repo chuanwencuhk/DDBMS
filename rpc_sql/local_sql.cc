@@ -1,5 +1,6 @@
 #include "local_sql.h"
 #include "mylog.h"
+#include <stdio.h>
 
 string getMySQLIp(){
 	return "tcp://127.0.0.1:3306";

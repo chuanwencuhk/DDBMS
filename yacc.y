@@ -1,7 +1,7 @@
 %{
 #include <string.h>
 #include <string>
-#include "parser.h"
+#include "../include/parser.h"
 
 extern "C"{
 	extern int yylex(void);
@@ -295,6 +295,7 @@ set_expr:
 			if(strcmp("=",$2)==0){
 				cout << "string comp"<<endl;
 				cout << "update_count"<<update_col_count<<endl;
+				update_query->type[update_col_count] = C;
 				update_query->col_name[update_col_count] = (char*)malloc(20);
 				memcpy(update_query->col_name[update_col_count],$1,20);
 				update_query->col_value[update_col_count]=(char*)malloc(256);
@@ -311,6 +312,7 @@ set_expr:
 		{
 			if(strcmp("=",$2)==0){
 				cout << "comp"<<endl;
+				update_query->type[update_col_count] = I;
 				update_query->col_name[update_col_count] = (char*)malloc(20);
 				memcpy(update_query->col_name[update_col_count],$1,20);
 				update_query->col_value[update_col_count]=(char*)malloc(sizeof(int)*8);
@@ -394,8 +396,8 @@ data_type:
 table_drop:
 		DROP TABLE table ';'
 		{
-			cout<<"DROP TABLE"<< tb_name << endl;
-			cout<<"exec_drop_table_stmt"<<endl;
+			cout<<"DROP TABLE "<< tb_name << endl;
+			//cout<<"exec_drop_table_stmt"<<endl;
 			exec_drop_table_stmt();
 		}
 	;

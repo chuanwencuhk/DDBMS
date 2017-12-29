@@ -7,9 +7,9 @@
  */
 #include <string.h>
 #include <iostream>
-#include "yacc.tab.h"
-#include "parser.h"
-#include "rpc_sql/rpc_sql.h"
+#include "../include/yacc.tab.h"
+#include "../include/parser.h"
+#include "../rpc_sql/rpc_sql.h"
 using namespace std;
 
 int main(){

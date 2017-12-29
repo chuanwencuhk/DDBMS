@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include "../include/metadatamanager.h"
+
 using namespace std;
 
 #define MAX_SELITEM_NUM 20
@@ -26,9 +28,6 @@ using namespace std;
 enum FRAG_TYPE
 {
 	HOR=1,VER,M,N
-};
-enum TYPE{
-	I=1,C,V,F,D
 };
 enum OP{
 	E=1,GE,G,LE,L,NE
@@ -121,6 +120,7 @@ struct UpdateQuery{
 	char* tb_name;
 	char* col_name[256];
 	char* col_value[256];
+	TYPE type[256];
 	int col_count;
 	int cond_count;
 	Condition	CondList[MAX_COND_NUM];
@@ -174,6 +174,20 @@ string spliceCreateStmt();
 string spliceDropStmt();
 string spliceDeleteStmt();
 string spliceUpdateStmt();
+/*
+	funcs related to Meta
+ */
+bool insertIntoTableMeta();
+bool deleteFromMeta(string tb_name);
+// bool isTableExists(string table_name);
+// bool isAttrExists(string col_name, string table_name);
+bool isAttrFitsMeta(AttrInfo attr_info,string table_name);
+bool checkIsUStmtValid();
+bool checkIsDStmtValid();
+bool checkIsCStmtValid();
+bool checkIsFragStmtValid();
+bool checkIsSelStmtValid();
+bool checkIsDtStmtValid();
 
 /*
 	funcs called in yacc.y

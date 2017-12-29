@@ -66,7 +66,7 @@
 
 #include <string.h>
 #include <string>
-#include "parser.h"
+#include "../include/parser.h"
 
 extern "C"{
 	extern int yylex(void);
@@ -539,12 +539,12 @@ static const yytype_uint16 yyrline[] =
        0,   101,   101,   113,   119,   123,   124,   125,   126,   127,
      128,   129,   130,   131,   134,   140,   148,   157,   165,   175,
      194,   195,   198,   217,   218,   221,   226,   232,   233,   236,
-     262,   263,   266,   276,   289,   290,   293,   310,   329,   340,
-     348,   349,   352,   359,   365,   370,   375,   381,   387,   395,
-     404,   414,   423,   431,   443,   458,   474,   479,   494,   499,
-     506,   513,   517,   522,   527,   534,   535,   538,   542,   548,
-     549,   552,   558,   562,   567,   569,   572,   573,   576,   580,
-     584,   588,   592,   597,   599,   602,   606
+     262,   263,   266,   276,   289,   290,   293,   311,   331,   342,
+     350,   351,   354,   361,   367,   372,   377,   383,   389,   397,
+     406,   416,   425,   433,   445,   460,   476,   481,   496,   501,
+     508,   515,   519,   524,   529,   536,   537,   540,   544,   550,
+     551,   554,   560,   564,   569,   571,   574,   575,   578,   582,
+     586,   590,   594,   599,   601,   604,   608
 };
 #endif
 
@@ -1641,6 +1641,7 @@ yyreduce:
 			if(strcmp("=",(yyvsp[-1].strval))==0){
 				cout << "string comp"<<endl;
 				cout << "update_count"<<update_col_count<<endl;
+				update_query->type[update_col_count] = C;
 				update_query->col_name[update_col_count] = (char*)malloc(20);
 				memcpy(update_query->col_name[update_col_count],(yyvsp[-2].strval),20);
 				update_query->col_value[update_col_count]=(char*)malloc(256);
@@ -1653,14 +1654,15 @@ yyreduce:
 			}
 			
 		}
-#line 1657 "yacc.tab.c" /* yacc.c:1646  */
+#line 1658 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 311 "yacc.y" /* yacc.c:1646  */
+#line 312 "yacc.y" /* yacc.c:1646  */
     {
 			if(strcmp("=",(yyvsp[-1].strval))==0){
 				cout << "comp"<<endl;
+				update_query->type[update_col_count] = I;
 				update_query->col_name[update_col_count] = (char*)malloc(20);
 				memcpy(update_query->col_name[update_col_count],(yyvsp[-2].strval),20);
 				update_query->col_value[update_col_count]=(char*)malloc(sizeof(int)*8);
@@ -1672,11 +1674,11 @@ yyreduce:
 				cout<<"syntax error"<<endl;
 			}
 		}
-#line 1676 "yacc.tab.c" /* yacc.c:1646  */
+#line 1678 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 330 "yacc.y" /* yacc.c:1646  */
+#line 332 "yacc.y" /* yacc.c:1646  */
     {
 			cout<<"Create Table "<< tb_name << endl;
 			PrintAttrList();
@@ -1684,93 +1686,93 @@ yyreduce:
 			exec_create_stmt();
 			//parser_init();	
 		}
-#line 1688 "yacc.tab.c" /* yacc.c:1646  */
+#line 1690 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 341 "yacc.y" /* yacc.c:1646  */
+#line 343 "yacc.y" /* yacc.c:1646  */
     {
 			tb_name = (yyvsp[0].strval);
 			attr_list[attr_count].table_name = (yyvsp[0].strval);
 			//printf("tb_name %s \n",tb_name);
 		}
-#line 1698 "yacc.tab.c" /* yacc.c:1646  */
+#line 1700 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 353 "yacc.y" /* yacc.c:1646  */
+#line 355 "yacc.y" /* yacc.c:1646  */
     {
 			attr_count++;
 			
 		}
-#line 1707 "yacc.tab.c" /* yacc.c:1646  */
+#line 1709 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 360 "yacc.y" /* yacc.c:1646  */
+#line 362 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].attr_name = (yyvsp[0].strval);
 		}
-#line 1715 "yacc.tab.c" /* yacc.c:1646  */
+#line 1717 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 366 "yacc.y" /* yacc.c:1646  */
+#line 368 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].type = C;
 			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1724 "yacc.tab.c" /* yacc.c:1646  */
+#line 1726 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 371 "yacc.y" /* yacc.c:1646  */
+#line 373 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].type= I;
 			attr_list[attr_count].used_size = 1;
 		}
-#line 1733 "yacc.tab.c" /* yacc.c:1646  */
+#line 1735 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 376 "yacc.y" /* yacc.c:1646  */
+#line 378 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].type= D;
 			attr_list[attr_count].used_size = 1;
 		}
-#line 1742 "yacc.tab.c" /* yacc.c:1646  */
+#line 1744 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 382 "yacc.y" /* yacc.c:1646  */
+#line 384 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].type= V;
 			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1751 "yacc.tab.c" /* yacc.c:1646  */
+#line 1753 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 388 "yacc.y" /* yacc.c:1646  */
+#line 390 "yacc.y" /* yacc.c:1646  */
     {
 			attr_list[attr_count].type= F;
 			attr_list[attr_count].used_size = (int)atoi((yyvsp[-1].strval));
 		}
-#line 1760 "yacc.tab.c" /* yacc.c:1646  */
+#line 1762 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 396 "yacc.y" /* yacc.c:1646  */
+#line 398 "yacc.y" /* yacc.c:1646  */
     {
-			cout<<"DROP TABLE"<< tb_name << endl;
-			cout<<"exec_drop_table_stmt"<<endl;
+			cout<<"DROP TABLE "<< tb_name << endl;
+			//cout<<"exec_drop_table_stmt"<<endl;
 			exec_drop_table_stmt();
 		}
-#line 1770 "yacc.tab.c" /* yacc.c:1646  */
+#line 1772 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 405 "yacc.y" /* yacc.c:1646  */
+#line 407 "yacc.y" /* yacc.c:1646  */
     {
 			cout << "Call Insert Func() here."<<endl;
 			cout << "INSERT INTO " << tb_name << " " << recordstr <<endl;
@@ -1778,11 +1780,11 @@ yyreduce:
 				cout<<i<<" "<<insert_record[i]<<endl;
 			}			
 		}
-#line 1782 "yacc.tab.c" /* yacc.c:1646  */
+#line 1784 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 415 "yacc.y" /* yacc.c:1646  */
+#line 417 "yacc.y" /* yacc.c:1646  */
     {
 			insert_record[insert_count] = (char*)malloc(sizeof(int)*MAX_INT_LENGTH);
 			memcpy(insert_record[insert_count],(yyvsp[0].strval), MAX_INT_LENGTH);
@@ -1791,11 +1793,11 @@ yyreduce:
 			strcpy(recordstr+curPos, (yyvsp[0].strval));
 			curPos+=strlen((yyvsp[0].strval));
 		}
-#line 1795 "yacc.tab.c" /* yacc.c:1646  */
+#line 1797 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 424 "yacc.y" /* yacc.c:1646  */
+#line 426 "yacc.y" /* yacc.c:1646  */
     {
 			insert_record[insert_count] = (char*)malloc(256);
 			memcpy(insert_record[insert_count],(yyvsp[0].strval), 256);
@@ -1803,11 +1805,11 @@ yyreduce:
 			strcpy(recordstr+curPos, (yyvsp[0].strval));
 			curPos+=strlen((yyvsp[0].strval));
 		}
-#line 1807 "yacc.tab.c" /* yacc.c:1646  */
+#line 1809 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 432 "yacc.y" /* yacc.c:1646  */
+#line 434 "yacc.y" /* yacc.c:1646  */
     {
 			insert_record[insert_count] = (char*)malloc(sizeof(int)*MAX_INT_LENGTH);
 			memcpy(insert_record[insert_count],(yyvsp[0].strval), MAX_INT_LENGTH);
@@ -1819,11 +1821,11 @@ yyreduce:
 			strcpy(recordstr+curPos, (yyvsp[0].strval));
 			curPos += strlen((yyvsp[0].strval));
 		}
-#line 1823 "yacc.tab.c" /* yacc.c:1646  */
+#line 1825 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 444 "yacc.y" /* yacc.c:1646  */
+#line 446 "yacc.y" /* yacc.c:1646  */
     {
 			insert_record[insert_count] = (char*)malloc(256);
 			memcpy(insert_record[insert_count],(yyvsp[0].strval),256);
@@ -1835,11 +1837,11 @@ yyreduce:
 			strcpy(recordstr+curPos, (yyvsp[0].strval));
 			curPos += strlen((yyvsp[0].strval));
 		}
-#line 1839 "yacc.tab.c" /* yacc.c:1646  */
+#line 1841 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 459 "yacc.y" /* yacc.c:1646  */
+#line 461 "yacc.y" /* yacc.c:1646  */
     {
 			cout << "DELETE FROM\n"<<endl;
 			delete_query->tb_name = tb_name;
@@ -1850,18 +1852,18 @@ yyreduce:
 			//cout << "Call delete() function here."<<endl;
 			
 		}
-#line 1854 "yacc.tab.c" /* yacc.c:1646  */
+#line 1856 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 475 "yacc.y" /* yacc.c:1646  */
+#line 477 "yacc.y" /* yacc.c:1646  */
     {
 		}
-#line 1861 "yacc.tab.c" /* yacc.c:1646  */
+#line 1863 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 480 "yacc.y" /* yacc.c:1646  */
+#line 482 "yacc.y" /* yacc.c:1646  */
     {
 			FillSelectCond();
 			PrintSelectQuery();
@@ -1874,162 +1876,162 @@ yyreduce:
 			cout<<"cond "<<query->cond_count<<"sel "<<query->sel_count<<"join "<<query->join_count<<"from "<<query->from_count<<endl;
 			exec_select_stmt();
 		}
-#line 1878 "yacc.tab.c" /* yacc.c:1646  */
+#line 1880 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 495 "yacc.y" /* yacc.c:1646  */
+#line 497 "yacc.y" /* yacc.c:1646  */
     {
 			query->all = 0;
 			cout<<"all "<<query->all<<endl;
 		}
-#line 1887 "yacc.tab.c" /* yacc.c:1646  */
+#line 1889 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 500 "yacc.y" /* yacc.c:1646  */
+#line 502 "yacc.y" /* yacc.c:1646  */
     {
 			query->all = 1;
 			cout<<"all "<<query->all<<endl;
 		}
-#line 1896 "yacc.tab.c" /* yacc.c:1646  */
+#line 1898 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 507 "yacc.y" /* yacc.c:1646  */
+#line 509 "yacc.y" /* yacc.c:1646  */
     {
 			printf("-----one sub selection begin----\n");
 		}
-#line 1904 "yacc.tab.c" /* yacc.c:1646  */
+#line 1906 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 513 "yacc.y" /* yacc.c:1646  */
+#line 515 "yacc.y" /* yacc.c:1646  */
     {
 			query->distinct = 0;
 			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1913 "yacc.tab.c" /* yacc.c:1646  */
+#line 1915 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 518 "yacc.y" /* yacc.c:1646  */
+#line 520 "yacc.y" /* yacc.c:1646  */
     {
 			query->distinct = 0;
 			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1922 "yacc.tab.c" /* yacc.c:1646  */
+#line 1924 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 523 "yacc.y" /* yacc.c:1646  */
+#line 525 "yacc.y" /* yacc.c:1646  */
     {
 			query->distinct = 1;
 			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1931 "yacc.tab.c" /* yacc.c:1646  */
+#line 1933 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 528 "yacc.y" /* yacc.c:1646  */
+#line 530 "yacc.y" /* yacc.c:1646  */
     {
 			query->distinct = 1;
 			cout<<"distinct "<<query->distinct<<endl;
 		}
-#line 1940 "yacc.tab.c" /* yacc.c:1646  */
+#line 1942 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 539 "yacc.y" /* yacc.c:1646  */
+#line 541 "yacc.y" /* yacc.c:1646  */
     {
 			SaveSelItem(NULL,(yyvsp[0].strval));
 		}
-#line 1948 "yacc.tab.c" /* yacc.c:1646  */
+#line 1950 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 543 "yacc.y" /* yacc.c:1646  */
+#line 545 "yacc.y" /* yacc.c:1646  */
     {
 			SaveSelItem((yyvsp[-2].strval),(yyvsp[0].strval));
 		}
-#line 1956 "yacc.tab.c" /* yacc.c:1646  */
+#line 1958 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 553 "yacc.y" /* yacc.c:1646  */
+#line 555 "yacc.y" /* yacc.c:1646  */
     {	
 			SaveFromItem((yyvsp[0].strval));
 			
 		}
-#line 1965 "yacc.tab.c" /* yacc.c:1646  */
+#line 1967 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 559 "yacc.y" /* yacc.c:1646  */
+#line 561 "yacc.y" /* yacc.c:1646  */
     {	
 			cout << "Sorry, Our DB Cannnot Support Nested Select Now."<<endl;
 		}
-#line 1973 "yacc.tab.c" /* yacc.c:1646  */
+#line 1975 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 563 "yacc.y" /* yacc.c:1646  */
+#line 565 "yacc.y" /* yacc.c:1646  */
     {	
 			cout << "Sorry, Our DB Cannnot Support Nested Select Now."<<endl;
 		}
-#line 1981 "yacc.tab.c" /* yacc.c:1646  */
+#line 1983 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 577 "yacc.y" /* yacc.c:1646  */
+#line 579 "yacc.y" /* yacc.c:1646  */
     {
 			SaveJoin((yyvsp[-6].strval), (yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), Operator((yyvsp[-3].strval)));	
 		}
-#line 1989 "yacc.tab.c" /* yacc.c:1646  */
+#line 1991 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 581 "yacc.y" /* yacc.c:1646  */
+#line 583 "yacc.y" /* yacc.c:1646  */
     {
 			SaveCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), I, Operator((yyvsp[-1].strval)));	
 		}
-#line 1997 "yacc.tab.c" /* yacc.c:1646  */
+#line 1999 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 585 "yacc.y" /* yacc.c:1646  */
+#line 587 "yacc.y" /* yacc.c:1646  */
     {
 			SaveCondition("", (yyvsp[-2].strval), (yyvsp[0].strval), C, Operator((yyvsp[-1].strval)));
 		}
-#line 2005 "yacc.tab.c" /* yacc.c:1646  */
+#line 2007 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 589 "yacc.y" /* yacc.c:1646  */
+#line 591 "yacc.y" /* yacc.c:1646  */
     {
 			SaveCondition((yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), I, Operator((yyvsp[-1].strval)));
 		}
-#line 2013 "yacc.tab.c" /* yacc.c:1646  */
+#line 2015 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 593 "yacc.y" /* yacc.c:1646  */
+#line 595 "yacc.y" /* yacc.c:1646  */
     {
 			SaveCondition((yyvsp[-4].strval), (yyvsp[-2].strval), (yyvsp[0].strval), C, Operator((yyvsp[-1].strval)));
 		}
-#line 2021 "yacc.tab.c" /* yacc.c:1646  */
+#line 2023 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 603 "yacc.y" /* yacc.c:1646  */
+#line 605 "yacc.y" /* yacc.c:1646  */
     {
 			SaveOrderbyItem((yyvsp[0].strval));
 		}
-#line 2029 "yacc.tab.c" /* yacc.c:1646  */
+#line 2031 "yacc.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2033 "yacc.tab.c" /* yacc.c:1646  */
+#line 2035 "yacc.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2257,33 +2259,34 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 608 "yacc.y" /* yacc.c:1906  */
+#line 610 "yacc.y" /* yacc.c:1906  */
 
 
 void parser_init()
 {
 	lex_init();
-	tb_name = NULL;
-	frag_tb_name = NULL;
-	for(int i = 0; i<insert_count;i++)
-		memset(insert_record[i],0,MAX_TUPLE_SIZE);
 
-	memset(delete_query,0,sizeof(DeleteQuery));
-	memset(update_query,0,sizeof(UpdateQuery));
-	memset(attr_list,0,sizeof(AttrInfo)*MAX_ATTR_NUM);
-	memset(cond_list,0,sizeof(Condition)*MAX_COND_NUM);
-	memset(query,0,sizeof(SelectQuery));
-	
 	funcRnt = 0;
 	curPos = 0;
-	
-	update_col_count = 0;
 	cond_count = 0;
 	join_count = 0;
 	attr_count = 0;
 	sel_count = 0;
 	from_count = 0;
 
+	tb_name = NULL;
+
+	memset(attr_list,0,sizeof(AttrInfo)*MAX_ATTR_NUM);
+	memset(cond_list,0,sizeof(Condition)*MAX_COND_NUM);
+	memset(query,0,sizeof(SelectQuery));
+	for(int i = 0; i<insert_count;i++)
+		memset(insert_record[i],0,MAX_TUPLE_SIZE);
+
+	memset(delete_query,0,sizeof(DeleteQuery));
+	
+	update_col_count = 0;
+	memset(update_query,0,sizeof(UpdateQuery));
+	
 	frag_count = 0;
 	frag_cond_count = 0;
 	frag_attr_count = 0;

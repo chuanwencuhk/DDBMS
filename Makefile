@@ -1,38 +1,38 @@
-LEX=flex
-YACC=bison
-CC=g++
-OBJECT=parser			
+DIR_INC = ./include
+DIR_SRC = ./src
+DIR_OBJ = ./obj
+DIR_BIN = ./bin
+LEX		= flex
+YACC 	= bison
+CC 		= g++
+SRC = $(wildcard ${DIR_SRC}/*.cpp)
+OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC}))
 
-$(OBJECT): lex.yy.o  yacc.tab.o parser.o conn_mysql.o main.o
-	$(CC)  lex.yy.o yacc.tab.o parser.o conn_mysql.o main.o -I/usr/include/mysql/ -lmysqlclient -lrpc_sql -pthread -lrpc -lmysqlcppconn -o $(OBJECT)
+#yacc.tab.c -> yacc.tab.o 
+#lex.yy.c -> lex.yy.o
 
-main.o: yacc.tab.h main.cpp
-	$(CC) -c main.cpp
+TARGET = main
+BIN_TARGET = ${DIR_BIN}/${TARGET}
+CFLAGSs =  -g -I/usr/include/mysql/ -lmysqlclient -lrpc_sql -pthread -lrpc -lmysqlcppconn -lconfig++
 
-conn_mysql.o: parser.h parser.cpp lex.yy.c yacc.tab.c  yacc.tab.h conn_mysql.cpp
-	$(CC) -c conn_mysql.cpp 
+${BIN_TARGET}: ${DIR_OBJ}/yacc.tab.o ${DIR_OBJ}/lex.yy.o ${OBJ}
+	$(CC) $(DIR_OBJ)/yacc.tab.o $(DIR_OBJ)/lex.yy.o $(OBJ) -o $@ $(CFLAGSs)
 
-parser.o: parser.h parser.cpp lex.yy.c yacc.tab.c  yacc.tab.h
-	$(CC) -c  parser.cpp
+${DIR_SRC}/yacc.tab.c ${DIR_SRC}/yacc.tab.h: yacc.y
+	$(YACC) -d yacc.y && mv yacc.tab.h ${DIR_INC} && mv yacc.tab.c ${DIR_SRC}
 
-lex.yy.o: lex.yy.c  yacc.tab.h  parser.h
-	$(CC) -c  lex.yy.c
+${DIR_SRC}/lex.yy.c:lex.l
+	$(LEX) lex.l && mv lex.yy.c ${DIR_SRC}
 
-yacc.tab.o: yacc.tab.c  parser.h
-	$(CC) -c  yacc.tab.c
-yacc.tab.c  yacc.tab.h: yacc.y
-	$(YACC) -d yacc.y
+${DIR_OBJ}/lex.yy.o: ${DIR_SRC}/lex.yy.c
+	$(CC) -c $< -o $@
+${DIR_OBJ}/yacc.tab.o:${DIR_SRC}/yacc.tab.c ${DIR_SRC}/yacc.tab.h
+	$(CC) -c $< -o $@
+${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
+	$(CC) -c $< -o $@ -I/usr/include/mysql/ $(CFLAGSs)
 
-lex.yy.c: lex.l
-	$(LEX) lex.l
-
-.PHONY:prepare
+.PHONY:clean
 clean:
-	rm -rf yacc.tab.* lex.yy.*
-	@rm -f $(OBJECT)  *.o
-prepare:
-	cd /home/wcw/ddb_parser/rpc_sql
-	g++ -c local_sql.cc rpc_server.cc rpc_sql.cc
-	ar -crv librpc_sql.a local_sql.o rpc_server.o rpc_sql.o
-	sudo cp librpc_sql.a /usr/local/lib/
-	g++ -o myserver rpc_server_test.cc -lrpc_sql -pthread -lrpc -lmysqlcppconn
+	cd ${DIR_SRC} && rm -rf yacc.tab.* lex.yy.*
+	cd ${DIR_INC} && rm -rf yacc.tab.*
+	cd ${DIR_OBJ} && rm -rf *
