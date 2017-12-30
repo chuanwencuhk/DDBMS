@@ -15,7 +15,7 @@
 	
 	</head>
 	<body>
-		<div id="container" style="width: 800px; height: 600px; margin: 0 auto"></div>
+		<div id="container" style="width: 2000px; height: 600px; margin: 0 auto"></div>
 		<script>
 		<%    
 			String path ="C:\\Users\\harpuia\\Documents\\Visual Studio 2017\\Projects\\query_tree\\query_tree";   // 这边文件目录需改成相对路径  
@@ -24,8 +24,12 @@
 			BufferedReader br = new BufferedReader(fr);  //使文件可按行读取并具有缓冲功能  
 			StringBuffer str = new StringBuffer();   //strB用来存储jsp.txt文件里的内容  
 			String strB = br.readLine();  
+		%>
+			root = <%= strB%>;
+		<%
+			strB = br.readLine();  
 			while (strB!=null) {  
-				str.append(strB).append("<br>");   //将读取的内容放入strB  
+				str.append(strB).append("<br>");   //将读取的内容放入str
 		%>
 				add_node("<%=strB %>");
 		<%

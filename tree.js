@@ -58,9 +58,8 @@ function get_fa(i)
 
 
 function draw_tree(ren,colors)
-{	root = get_fa(1);
-	var depth = get_depth(root);
-	var width = 800, height = 600, ow = 20, oh =30;
+{	var depth = get_depth(root);
+	var width = 2000, height = 600, ow = 20, oh =30;
 	var dh = (height - oh*2)/depth;
 	var dw;
 	

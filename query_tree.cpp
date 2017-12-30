@@ -416,6 +416,7 @@ void print_tree(query_tree tree)
 	ofstream out("tree.txt");
 	int q[maxtreenode], dep[maxtreenode], l = 1, r = 1;
 	int root = tree.root;
+	out << tree.root << endl;
 	q[l] = root; dep[l] = 1;
 	while (l<=r)
 	{
