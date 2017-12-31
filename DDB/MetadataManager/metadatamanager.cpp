@@ -5,14 +5,20 @@
 #include <iostream>
 #include <fstream>
 
+#include "tableMetadataInfo.h"
 #include <unistd.h>//for access() fuction
 using namespace std;
 using namespace libconfig;
+
+MetadataManager* MetadataManager::pmtr = NULL;
 MetadataManager::MetadataManager()
 {
     //string str = METADATA_CONFIG_FILE;
     initialize_from_config_file(METADATA_CONFIG_FILE);//initialize the MetadataManager
+
     initialize_database();//initialize DDB segment
+    load_tablemetadata_fromcfg();
+
     initialize_siteinfo();//initialzie site_info segment
     initialize_fragment();//initialize fragment segment
 
@@ -165,6 +171,8 @@ void MetadataManager::initialize_tablemetadata()
                   root.add(CONFIG_NAME_DATABASE, Setting::TypeGroup);
                   cout<<"initialize_tablemetadata no database"<<endl;
                 }
+
+
 //          //const Setting &tables = database["db1"]["supplier"];
 //          const Setting &tables = database["db1"]["SUPPLIER"];
 //          int count = tables.getLength();
@@ -208,10 +216,16 @@ void MetadataManager::initialize_tablemetadata()
 
 }
 
+
 void MetadataManager::set_tablemetadata(TableMedata &Tbm)
 {
+
+
+
     string str = Tbm.table_name;
     tableMetadataInfo.set_table_metadata(Tbm);
+
+    add_tablename_intolist(str);
 
     Setting& root = cfg.getRoot();
     Setting& ddb_cfg = root[CONFIG_NAME_DATABASE];
@@ -224,6 +238,7 @@ void MetadataManager::set_tablemetadata(TableMedata &Tbm)
     //int pos = tableMetadataInfo.get_tablemetadata_pos_bystr(str);
     //TableMedata tmp =tableMetadataInfo.get_tablemetadata_bypos(pos);
     TableMedata tmp =tableMetadataInfo.get_tablemetadata_bystr(str);
+     tb_cfg.add(CONFIG_NAME_TALBE_ATTR_NUM,Setting::TypeInt) = tmp.table_attr_num;
 
     for(int i = 0; i<tmp.table_attr_num; i++)
     {
@@ -240,6 +255,187 @@ void MetadataManager::set_tablemetadata(TableMedata &Tbm)
     }
 
     write_to_config_file(METADATA_CONFIG_FILE);
+
+}
+//2017-12-30 addby yfchai
+void MetadataManager::delete_tablemetadata(string str)
+{
+    tableMetadataInfo.delete_tablemetadata_inmap(str);
+
+    delete_tablename_formlist(str);
+
+    Setting& root = cfg.getRoot();
+    Setting& ddb_cfg = root[CONFIG_NAME_DATABASE];
+    if(ddb_cfg.exists(str.c_str()))
+    {
+        ddb_cfg.remove(str.c_str());
+        cout<<"delete_tablemetadata: "<<str<<endl;
+        write_to_config_file(METADATA_CONFIG_FILE);
+        return;
+    }
+    cout<<"delete_tablemetadata: "<<str<<" table not exist, no need to delete!"<<endl;
+}
+
+//2017-12-30 addby yfchai
+void MetadataManager::add_tablename_intolist(string str)
+{
+
+
+    Setting& root = cfg.getRoot();
+    Setting& db_cfg = root[CONFIG_NAME_DATABASE];
+    Setting& tb_namelist = db_cfg[CONFIG_NAME_TABLE_LIST];
+    bool b = true;
+    int len = tb_namelist.getLength();
+    for(int i=0;i<len;i++)
+    {
+        string s = tb_namelist[i];
+        if(str == s) b = false;
+    }
+
+    if(b)
+    {
+
+        tb_namelist.add(Setting::TypeString) = str;
+        write_to_config_file(METADATA_CONFIG_FILE);
+    }
+
+}
+//2017-12-30 addby yfchai
+void MetadataManager::delete_tablename_formlist(string str)
+{
+
+    Setting& root = cfg.getRoot();
+    Setting& db_cfg = root[CONFIG_NAME_DATABASE];
+    Setting& tbname_list = db_cfg[CONFIG_NAME_TABLE_LIST];
+
+    bool b = false;
+    int len = tbname_list.getLength();
+    int pos;
+    for(int i=0;i<len;i++)
+    {
+        string s = tbname_list[i];
+        if(str == s)
+        {
+            b = true;
+            pos = i;
+            break;
+        }
+    }
+
+    if(b)
+    {
+
+        tbname_list.remove((unsigned)pos);
+        write_to_config_file(METADATA_CONFIG_FILE);
+    }
+
+}
+
+void MetadataManager::load_tablemetadata_fromcfg()
+{
+    Setting& root = cfg.getRoot();
+    Setting& db_cfg = root[CONFIG_NAME_DATABASE];
+    Setting& tb_namelist = db_cfg[CONFIG_NAME_TABLE_LIST];
+    int len = tb_namelist.getLength();
+    if(len == 0) return;//len==0 means no table in GDD
+
+    for(int i=0;i<len;i++)
+    {
+        TableMedata tmp;
+        string tbname = tb_namelist[i];
+        Setting& table_cfg = db_cfg[tbname];
+        int attr_num;
+        table_cfg.lookupValue(CONFIG_NAME_TALBE_ATTR_NUM,attr_num);
+
+        tmp.table_name = tbname;
+        tmp.table_attr_num = attr_num;
+
+           for(int j=0;j<attr_num;j++)
+           {
+               Setting& attr_cfg = table_cfg[CONFIG_NAME_TABLE_ATTR_SLICE+to_string(j)];
+
+               attr_cfg.lookupValue(CONFIG_NAME_TABLE_ATTR_NAME, tmp.Attr[j].attr_name);
+               attr_cfg.lookupValue(CONFIG_NAME_TABLE_ATTR_DATATYPE,tmp.Attr[j].attr_datatype);
+               attr_cfg.lookupValue(CONFIG_NAME_TABLE_ATTR_LENGTH,tmp.Attr[j].attr_length);
+               attr_cfg.lookupValue(CONFIG_NAME_TABLE_ATTR_RULESTYPE,tmp.Attr[j].attr_rulestype);
+            }
+
+           set_tablemetadata(tmp);
+    }
+
+
+
+
+}
+
+void MetadataManager::add_fragment_name_intolist(string str)
+{
+    Setting& root = cfg.getRoot();
+    Setting& frg_cfg = root[CONFIG_NAME_FRAGMENT];
+    Setting& frg_namelist = frg_cfg[CONFIG_NAME_FRAGMENT_LIST];
+    bool b = true;
+    int len = frg_namelist.getLength();
+    for(int i=0;i<len;i++)
+    {
+        string s = frg_namelist[i];
+        if(str == s) b = false;
+    }
+
+    if(b)
+    {
+
+        frg_namelist.add(Setting::TypeString) = str;
+        write_to_config_file(METADATA_CONFIG_FILE);
+    }
+
+}
+
+void MetadataManager::delete_fragment_name_fromlist(string str)
+{
+    Setting& root = cfg.getRoot();
+    Setting& frg_cfg = root[CONFIG_NAME_FRAGMENT];
+    Setting& frg_list = frg_cfg[CONFIG_NAME_FRAGMENT_LIST];
+
+    bool b = false;
+    int len = frg_list.getLength();
+    int pos;
+    for(int i=0;i<len;i++)
+    {
+        string s = frg_list[i];
+        if(str == s)
+        {
+            b = true;
+            pos = i;
+            break;
+        }
+    }
+
+    if(b)
+    {
+
+        frg_list.remove((unsigned)pos);
+        write_to_config_file(METADATA_CONFIG_FILE);
+    }
+
+
+}
+
+void MetadataManager::load_fragmentmetadata_fromcfg()
+{
+    Setting& root = cfg.getRoot();
+    Setting& frg_cfg = root[CONFIG_NAME_FRAGMENT];
+    Setting& frg_list = frg_cfg[CONFIG_NAME_FRAGMENT_LIST];
+    int len = frg_list.getLength();
+    if(len == 0) return;//len==0 means no fragment in GDD
+
+    for(int i=0;i<len;i++)
+    {
+        Fragment tmp;
+        string frg_name = frg_cfg[i];
+        Setting& frg_info = frg_cfg[frg_name];
+
+
+    }
 
 }
 
@@ -285,6 +481,14 @@ void MetadataManager::setMetadataVer(string str)
     this->version = s;
 }
 
+MetadataManager *MetadataManager::getInstance()
+{
+    if(pmtr == NULL )
+        pmtr = new MetadataManager();
+
+    return pmtr;
+}
+
 
 
 
@@ -318,6 +522,20 @@ void MetadataManager::initialize_database()
     if(! root.exists(CONFIG_NAME_DATABASE))
     {
       root.add(CONFIG_NAME_DATABASE, Setting::TypeGroup);
+      Setting& db_cfg = root[CONFIG_NAME_DATABASE];
+
+      db_cfg.add(CONFIG_NAME_TABLE_LIST, Setting::TypeArray);
+      //Setting& array_cfg = db_cfg[CONFIG_NAME_TABLE_LIST];
+
+//      array_cfg.add(Setting::TypeString) = "EMP";
+//      array_cfg.add(Setting::TypeString) = "ASG";
+//      array_cfg.add(Setting::TypeString) = "SAL";
+//      if(!array_cfg.exists("ASG"))
+//          cout<<"ASG is in table name list"<<endl;
+//      array_cfg.remove((unsigned)0);
+//      string ss = array_cfg[0];
+//      cout<<"ss is: "<<ss<<endl;
+
       write_to_config_file(METADATA_CONFIG_FILE);
       cout<<"initialize_database:"<<CONFIG_NAME_DATABASE<<endl;
     }
@@ -339,6 +557,8 @@ void MetadataManager::initialize_fragment()
     if(! root.exists(CONFIG_NAME_FRAGMENT))
     {
       root.add(CONFIG_NAME_FRAGMENT, Setting::TypeGroup);
+      Setting& frag_list = root[CONFIG_NAME_FRAGMENT];
+      frag_list.add(CONFIG_NAME_FRAGMENT_LIST,Setting::TypeArray);
       cout<<"initialize_fragment no fragment"<<endl;
       write_to_config_file(METADATA_CONFIG_FILE);
     }
@@ -351,6 +571,9 @@ void MetadataManager::set_fargment_info(Fragment &frg)
 {
     string str = frg.frag_talbe_name;
     fragInfo.set_fragment_info(frg);
+
+    add_fragment_name_intolist(str);
+
     Setting &root = cfg.getRoot();
     Setting& frg_tb_cfg = root[CONFIG_NAME_FRAGMENT];
     if(frg_tb_cfg.exists(str.c_str()))
@@ -362,11 +585,12 @@ void MetadataManager::set_fargment_info(Fragment &frg)
     //int pos = fragInfo.get_fragment_pos(str);
     //Fragment tmp = fragInfo.get_frag_bypos(pos);
     Fragment tmp = fragInfo.get_frag_bystr(str);
+
     for(int i =0;i<MAX_FRAGMENT_NUM;i++)
     {
-        if(!tmp.condtion_slice[i].isValid )
+        //if(!tmp.condtion_slice[i].isValid )
         {
-            continue;
+            //continue;
         }
 
         frg_slc_cfg.add(CONFIG_NAME_FRAGMENT_SLICE+to_string(i),Setting::TypeGroup);
@@ -374,44 +598,80 @@ void MetadataManager::set_fargment_info(Fragment &frg)
         frg_i_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) = frg.condtion_slice[i].isValid;
 
 
-          if(frg.condtion_slice[i].con_A.isValid)
+          //if(frg.condtion_slice[i].con_H1.isValid)
           {
-              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_A,Setting::TypeGroup);
-              Setting& frg_conA_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_A];
-              frg_conA_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
-                      = frg.condtion_slice[i].con_A.isValid;
+              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_H1,Setting::TypeGroup);
+              Setting& frg_conH1_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_H1];
+              frg_conH1_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
+                      = frg.condtion_slice[i].con_H1.isValid;
 
-              frg_conA_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_NAME,Setting::TypeString) \
-                      = frg.condtion_slice[i].con_A.attr_name;
+              frg_conH1_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_NAME,Setting::TypeString) \
+                      = frg.condtion_slice[i].con_H1.attr_name;
 
-              frg_conA_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_CONDITION,Setting::TypeString)\
-                      =frg.condtion_slice[i].con_A.attr_condition;
+              frg_conH1_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_CONDITION,Setting::TypeString)\
+                      =frg.condtion_slice[i].con_H1.attr_condition;
 
-              frg_conA_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
-                      =frg.condtion_slice[i].con_A.attr_value;
+              frg_conH1_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
+                      =frg.condtion_slice[i].con_H1.attr_value;
               //write_to_config_file(METADATA_CONFIG_FILE);
 
           }
 
-          if(frg.condtion_slice[i].con_B.isValid)
+          //if(frg.condtion_slice[i].con_H2.isValid)
           {
-              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_B,Setting::TypeGroup);
-              Setting& frg_conB_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_B];
-              frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
-                      = frg.condtion_slice[i].con_B.isValid;
+              frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_H2,Setting::TypeGroup);
+              Setting& frg_conH2_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_H2];
+              frg_conH2_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
+                      = frg.condtion_slice[i].con_H2.isValid;
 
-              frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_NAME,Setting::TypeString) \
-                      = frg.condtion_slice[i].con_B.attr_name;
+              frg_conH2_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_NAME,Setting::TypeString) \
+                      = frg.condtion_slice[i].con_H2.attr_name;
 
-              frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_CONDITION,Setting::TypeString)\
-                      =frg.condtion_slice[i].con_B.attr_condition;
+              frg_conH2_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_CONDITION,Setting::TypeString)\
+                      =frg.condtion_slice[i].con_H2.attr_condition;
 
-              frg_conB_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
-                      =frg.condtion_slice[i].con_B.attr_value;
+              frg_conH2_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_VALUE,Setting::TypeString)\
+                      =frg.condtion_slice[i].con_H2.attr_value;
 
               //write_to_config_file(METADATA_CONFIG_FILE);
 
           }
+          //for vertical fragment slice metadata store
+          {
+            frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_V1,Setting::TypeGroup);
+            Setting& frg_conV1_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_V1];
+
+            frg_conV1_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
+                    = frg.condtion_slice[i].con_V1.isValid;
+
+            frg_conV1_cfg.add(CONFIG_NAME_FRAGMENT_V_ATTR_NUM,Setting::TypeInt) \
+                    = frg.condtion_slice[i].con_V1.attr_num;
+
+            frg_conV1_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_PRIKEY,Setting::TypeString) \
+                    = frg.condtion_slice[i].con_V1.attr_prikey;
+            frg_conV1_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_FRAG_STRLIST,Setting::TypeArray);
+
+            Setting& list_cfg = frg_conV1_cfg[CONFIG_NAME_FRAGMENT_ATTR_FRAG_STRLIST];
+            for(int j=0;j<frg.condtion_slice[i].con_V1.attr_num;j++)
+                list_cfg.add(Setting::TypeString) = frg.condtion_slice[i].con_V1.attr_frag_strlist[j];
+          }
+
+//        {
+//          frg_i_cfg.add(CONFIG_NAME_FRAGMENT_CON_V2,Setting::TypeGroup);
+//          Setting& frg_conV2_cfg = frg_i_cfg[CONFIG_NAME_FRAGMENT_CON_V2];
+
+//          frg_conV2_cfg.add(CONFIG_NAME_FRAGMENT_ISVALID,Setting::TypeBoolean) \
+//                  = frg.condtion_slice[i].con_V2.isValid;
+
+//          frg_conV2_cfg.add(CONFIG_NAME_FRAGMENT_V_ATTR_NUM,Setting::TypeInt) \
+//                  = frg.condtion_slice[i].con_V2.attr_num;
+
+//          frg_conV2_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_PRIKEY,Setting::TypeString) \
+//                  = frg.condtion_slice[i].con_V2.attr_prikey;
+//          frg_conV2_cfg.add(CONFIG_NAME_FRAGMENT_ATTR_FRAG_STRLIST,Setting::TypeArray);
+//          for(int j=0;j<frg.condtion_slice[i].con_V2.attr_num;j++)
+//              frg_conV2_cfg.add(Setting::TypeString) = frg.condtion_slice[i].con_V2.attr_frag_strlist[j];
+//        }
       }
 
 
@@ -421,6 +681,20 @@ void MetadataManager::set_fargment_info(Fragment &frg)
 
 
 
+}
+//2017-12-30 addby yfchai
+void MetadataManager::delete_fragmemt_info(string str)
+{
+        Setting& root = cfg.getRoot();
+        Setting& ddb_cfg = root[CONFIG_NAME_FRAGMENT];
+        if(ddb_cfg.exists(str.c_str()))
+        {
+            ddb_cfg.remove(str.c_str());
+            cout<<"delete_fragmemt_info: "<<str<<endl;
+            write_to_config_file(METADATA_CONFIG_FILE);
+            return;
+        }
+        cout<<"delete_fragmemt_info: "<<str<<" table fragment info not exist, no need to delete!"<<endl;
 }
 
 

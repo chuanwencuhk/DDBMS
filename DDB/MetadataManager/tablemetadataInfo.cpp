@@ -92,3 +92,21 @@ TableMedata TableMetadataInfo::get_tablemetadata_bystr(string str)
     return tableMetaArray[pos];
 
 }
+//2017-12-30 add by yfchai
+void TableMetadataInfo::delete_tablemetadata_inmap(string str)
+{
+    if(map_str_topos.count(str)== 0)
+    {
+        cout<<"delete_tablemetadata_inmap: "<<"table "<<str<<"not exist!"<<endl;
+        return;
+    }
+
+    int pos = map_str_topos[str];
+    tableMetaArray_bitmap[pos] = true;
+    if(map_str_topos.erase(str))
+    {
+        cout<<"delete_tablemetadata_inmap: "<<"table "<<str<<"deleted!"<<endl;
+    }
+
+
+}

@@ -10,9 +10,11 @@
 typedef struct _Attribution
 {
       std::string attr_name ="";
-      DataType attr_datatype = INTEGER;
+      //enum TYPE attr_datatype = I;
+      int attr_datatype = 1;
       int attr_length = 0;
-      RulesType attr_rulestype = NOT_NULL;
+      //RulesType attr_rulestype = NOT_NULL;
+      int attr_rulestype = 1;
 
 }Attribution;
 
@@ -43,6 +45,7 @@ public:
     int get_tablemetadata_pos_bystr(std::string str);
 
     TableMedata get_tablemetadata_bystr(std::string str);
+    void delete_tablemetadata_inmap(std::string str);
 
     //TableMedata get_tablemetadata_bypos(int i){return tableMetaArray[i];}
 

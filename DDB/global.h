@@ -22,17 +22,26 @@
 #define CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE "is_control_site"
 
 #define MAX_FRAGMENT_NUM 4
+#define MAX_VERTICAL_FRAGMENT_NUM 20
 #define CONFIG_NAME_FRAGMENT "fragment"
 #define CONFIG_NAME_FRAGMENT_ISVALID "isvalid"
 #define CONFIG_NAME_FRAGMENT_SLICE "db"
-#define CONFIG_NAME_FRAGMENT_CON_A "con_A"
-#define CONFIG_NAME_FRAGMENT_CON_B "con_B"
+#define CONFIG_NAME_FRAGMENT_CON_H1 "con_H1"
+#define CONFIG_NAME_FRAGMENT_CON_H2 "con_H2"
+#define CONFIG_NAME_FRAGMENT_CON_V1 "con_V1"
+#define CONFIG_NAME_FRAGMENT_CON_V2 "con_V2"
 #define CONFIG_NAME_FRAGMENT_ATTR_NAME "attr_name"
 #define CONFIG_NAME_FRAGMENT_ATTR_CONDITION "attr_condition"
 #define CONFIG_NAME_FRAGMENT_ATTR_VALUE "attr_value"
+#define CONFIG_NAME_FRAGMENT_LIST "fragment_name_list"
+#define CONFIG_NAME_FRAGMENT_V_ATTR_NUM "attr_num"
+#define CONFIG_NAME_FRAGMENT_ATTR_PRIKEY "attr_prikey"
+#define CONFIG_NAME_FRAGMENT_ATTR_FRAG_STRLIST "attr_frag_strlist"
 
 #define CONFIG_NAME_VERSION "version"
 
+#define CONFIG_NAME_TABLE_LIST "table_name_list"
+#define CONFIG_NAME_TALBE_ATTR_NUM "attr_num"
 #define CONFIG_NAME_TABLE_ATTR_NAME "attr_name"
 #define CONFIG_NAME_TABLE_ATTR_DATATYPE "attr_datatype"
 #define CONFIG_NAME_TABLE_ATTR_LENGTH "attr_length"
@@ -42,11 +51,11 @@
 
 
 
-typedef enum _DataTYpe
+ enum TYPE
 {
-    INTEGER = 0, CHAR, VARCHAR, LONG, FLOAT, DOUBLE, DATE, TYPE_NULL
+     I=1,C,V,F,D
+};
 
-}DataType;
 
 
 typedef enum _RulesType

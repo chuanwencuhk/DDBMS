@@ -30,29 +30,47 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
     frag_array[i].frag_talbe_name = str;
     for(int j = 0; j<MAX_FRAGMENT_NUM;j++)
     {
-        cout<<i<<endl;
-        if(!frg.condtion_slice[j].isValid)
-            continue;
+        //cout<<i<<endl;
+        //if(!frg.condtion_slice[j].isValid)
+            //continue;
 
         frag_array[i].condtion_slice[j].isValid = frg.condtion_slice[j].isValid;
 
-        if(frg.condtion_slice[j].con_A.isValid)
+        //if(frg.condtion_slice[j].con_H1.isValid)
         {
-            frag_array[i].condtion_slice[j].con_A.isValid = frg.condtion_slice[j].con_A.isValid;
-            frag_array[i].condtion_slice[j].con_A.attr_condition = frg.condtion_slice[j].con_A.attr_condition;
-            frag_array[i].condtion_slice[j].con_A.attr_name = frg.condtion_slice[j].con_A.attr_name;
-            frag_array[i].condtion_slice[j].con_A.attr_value = frg.condtion_slice[j].con_A.attr_value;
+            frag_array[i].condtion_slice[j].con_H1.isValid = frg.condtion_slice[j].con_H1.isValid;
+            frag_array[i].condtion_slice[j].con_H1.attr_condition = frg.condtion_slice[j].con_H1.attr_condition;
+            frag_array[i].condtion_slice[j].con_H1.attr_name = frg.condtion_slice[j].con_H1.attr_name;
+            frag_array[i].condtion_slice[j].con_H1.attr_value = frg.condtion_slice[j].con_H1.attr_value;
 
         }
 
-        if(frg.condtion_slice[j].con_B.isValid)
+        //if(frg.condtion_slice[j].con_H2.isValid)
         {
-            frag_array[i].condtion_slice[j].con_B.isValid = frg.condtion_slice[j].con_B.isValid;
-            frag_array[i].condtion_slice[j].con_B.attr_condition = frg.condtion_slice[j].con_B.attr_condition;
-            frag_array[i].condtion_slice[j].con_B.attr_name = frg.condtion_slice[j].con_B.attr_name;
-            frag_array[i].condtion_slice[j].con_B.attr_value = frg.condtion_slice[j].con_B.attr_value;
+            frag_array[i].condtion_slice[j].con_H2.isValid = frg.condtion_slice[j].con_H2.isValid;
+            frag_array[i].condtion_slice[j].con_H2.attr_condition = frg.condtion_slice[j].con_H2.attr_condition;
+            frag_array[i].condtion_slice[j].con_H2.attr_name = frg.condtion_slice[j].con_H2.attr_name;
+            frag_array[i].condtion_slice[j].con_H2.attr_value = frg.condtion_slice[j].con_H2.attr_value;
 
         }
+
+        {
+            frag_array[i].condtion_slice[j].con_V1.isValid = frg.condtion_slice[j].con_V1.isValid;
+            frag_array[i].condtion_slice[j].con_V1.attr_num = frg.condtion_slice[j].con_V1.attr_num;
+            frag_array[i].condtion_slice[j].con_V1.attr_prikey = frg.condtion_slice[j].con_V1.attr_prikey;
+            //frag_array[i].condtion_slice[j].con_V1.attr_frag_strlist
+            for(int k=0;k<frg.condtion_slice[j].con_V1.attr_num;k++)
+                frag_array[i].condtion_slice[j].con_V1.attr_frag_strlist[k] = frg.condtion_slice[j].con_V1.attr_frag_strlist[k];
+        }
+
+//        {
+//            frag_array[i].condtion_slice[j].con_V2.isValid = frg.condtion_slice[j].con_V2.isValid;
+//            frag_array[i].condtion_slice[j].con_V2.attr_num = frg.condtion_slice[j].con_V2.attr_num;
+//            frag_array[i].condtion_slice[j].con_V2.attr_prikey = frg.condtion_slice[j].con_V2.attr_prikey;
+//            //frag_array[i].condtion_slice[j].con_V2.attr_frag_strlist
+//            for(int q=0;q<frg.condtion_slice[j].con_V2.attr_num;q++)
+//                frag_array[i].condtion_slice[j].con_V2.attr_frag_strlist[q] = frg.condtion_slice[j].con_V2.attr_frag_strlist[q];
+//        }
 
     }
 
@@ -94,6 +112,24 @@ int FragmentInfo::get_fragment_pos(string str)
         return 0;
 
     return (int)map_tablename_to_pos[str];
+}
+
+
+//2017-12-30 addby yfchai
+void FragmentInfo::delete_fragment_inmap(string str)
+{
+    if(map_tablename_to_pos.count(str)== 0)
+        {
+            cout<<"delete_fragment_inmap: "<<"table fragment "<<str<<"not exist!"<<endl;
+            return;
+        }
+    int pos = map_tablename_to_pos[str];
+    fragarray_bitmap[pos] = true;
+        if(map_tablename_to_pos.erase(str))
+        {
+            cout<<"delete_fragment_inmap: "<<"table fragment "<<str<<"deleted!"<<endl;
+        }
+
 }
 
 Fragment FragmentInfo::get_frag_bystr(string str)

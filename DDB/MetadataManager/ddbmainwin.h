@@ -18,7 +18,7 @@ public:
     void show_info_in_listView();
 
     Ui::DDBMainWin *ui;
-    MetadataManager mtr;
+    MetadataManager* mtr;
 private slots:
     void on_button_show_DDB_clicked();
 
