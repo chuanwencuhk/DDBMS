@@ -21,6 +21,7 @@ MetadataManager::MetadataManager()
 
     initialize_siteinfo();//initialzie site_info segment
     initialize_fragment();//initialize fragment segment
+    load_fragmentmetadata_fromcfg();
 
     //initialize_tablemetadata();//initialize the tablemetadata
     //read_config_file(str);
@@ -360,7 +361,7 @@ void MetadataManager::load_tablemetadata_fromcfg()
                attr_cfg.lookupValue(CONFIG_NAME_TABLE_ATTR_RULESTYPE,tmp.Attr[j].attr_rulestype);
             }
 
-           set_tablemetadata(tmp);
+           tableMetadataInfo.set_table_metadata(tmp);
     }
 
 
@@ -431,9 +432,50 @@ void MetadataManager::load_fragmentmetadata_fromcfg()
     for(int i=0;i<len;i++)
     {
         Fragment tmp;
-        string frg_name = frg_cfg[i];
+        string frg_name = frg_list[i];
         Setting& frg_info = frg_cfg[frg_name];
+        tmp.frag_talbe_name = frg_name;
+        for(int j = 0; j<MAX_FRAGMENT_NUM;j++)
+        {
+            Setting& frgi_cfg = frg_info[CONFIG_NAME_FRAGMENT_SLICE+to_string(j)];
+            frgi_cfg.lookupValue(CONFIG_NAME_FRAGMENT_ISVALID,tmp.condtion_slice[j].isValid);
 
+            {//for con_H1
+                Setting& frg_conH1 = frgi_cfg[CONFIG_NAME_FRAGMENT_CON_H1];
+                frg_conH1.lookupValue(CONFIG_NAME_FRAGMENT_ISVALID, tmp.condtion_slice[j].con_H1.isValid);
+                frg_conH1.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_NAME, tmp.condtion_slice[j].con_H1.attr_name);
+                frg_conH1.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_CONDITION, tmp.condtion_slice[j].con_H1.attr_condition);
+                frg_conH1.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_VALUE, tmp.condtion_slice[j].con_H1.attr_value);
+
+            }
+
+            {//for con_H2
+                Setting& frg_conH2 = frgi_cfg[CONFIG_NAME_FRAGMENT_CON_H2];
+                frg_conH2.lookupValue(CONFIG_NAME_FRAGMENT_ISVALID, tmp.condtion_slice[j].con_H2.isValid);
+                frg_conH2.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_NAME, tmp.condtion_slice[j].con_H2.attr_name);
+                frg_conH2.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_CONDITION, tmp.condtion_slice[j].con_H2.attr_condition);
+                frg_conH2.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_VALUE, tmp.condtion_slice[j].con_H2.attr_value);
+
+            }
+
+            {//for con_V1
+                 Setting& frg_conV1 = frgi_cfg[CONFIG_NAME_FRAGMENT_CON_V1];
+                 frg_conV1.lookupValue(CONFIG_NAME_FRAGMENT_ISVALID, tmp.condtion_slice[j].con_V1.isValid);
+                 frg_conV1.lookupValue(CONFIG_NAME_FRAGMENT_V_ATTR_NUM, tmp.condtion_slice[j].con_V1.attr_num);
+                 frg_conV1.lookupValue(CONFIG_NAME_FRAGMENT_ATTR_PRIKEY, tmp.condtion_slice[j].con_V1.attr_prikey);
+
+                 Setting& list_cfg = frg_conV1[CONFIG_NAME_FRAGMENT_ATTR_FRAG_STRLIST];
+                 int num = list_cfg.getLength();
+                 for(int k=0;k<num;k++)
+                 {
+                     string s = list_cfg[k];
+                     tmp.condtion_slice[j].con_V1.attr_frag_strlist[k] = s;
+                 }
+
+
+            }
+        }
+        fragInfo.set_fragment_info(tmp);
 
     }
 

@@ -14,7 +14,6 @@ LIBS += -L /usr/local/lib/ -lconfig++
 
 SOURCES += main.cpp \
     MetadataManager/metadatamanager.cpp \
-    MysqlConnector/mysqlconnector.cpp \
     MetadataManager/siteinfo.cpp \
     MetadataManager/ddbmainwin.cpp \
     MetadataManager/fragmentinfo.cpp \
@@ -33,7 +32,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     MetadataManager/metadatamanager.h \
-    MysqlConnector/mysqlconnector.h \
     global.h \
     MetadataManager/siteinfo.h \
     MetadataManager/ddbmainwin.h \

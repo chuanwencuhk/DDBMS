@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
      for(int j=0;j<3;j++)
         frg.condtion_slice[i].con_V1.attr_frag_strlist[j] = "hello"+to_string(j);
      }
-   dm.mtr->set_fargment_info(frg);
+   //dm.mtr->set_fargment_info(frg);
    //dm.mtr.delete_fragment_name_fromlist("EMP");
 
 //emulated input table metadata
