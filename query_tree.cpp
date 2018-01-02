@@ -764,7 +764,10 @@ void push_condition_down(query_tree &tree)
 	}
 	for (int i = 1;i <= en;i++)
 	{	if (tree.node[i].type == 3) //遇到条件就下推
-		{	//判断是否要插入到分片上
+		{	//先把条件的表名去掉
+			int pos = tree.node[i].str.find(".");
+			if (pos >= 0) tree.node[i].str = tree.node[i].str.substr(pos + 1, tree.node[i].str.length() - pos - 1);
+			//判断是否要插入到分片上
 			for (int j = 1;j <= r;j++)
 			{	
 				if (q[j] == -1) continue;
@@ -811,7 +814,7 @@ void push_condition_down(query_tree &tree)
 void push_select_down(query_tree &tree)
 {
 	if (tree.node[tree.root].str.compare("*") == 0)
-	{	cout << "不用下推\n";
+	{	//cout << "不用下推\n";
 	}
 	else
 	{	//则要使用投影下推
@@ -875,7 +878,7 @@ void push_select_down(query_tree &tree)
 						}
 						//判断tmp是否应该加入
 						bool frag_has_attr = false;//分片是否有这个属性
-						if (tree.node[i].type == -1 || tree.node[i].type == 0)
+						if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
 						{	//水平分片和不分片看对应的表是否有属性
 							for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
 								if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
@@ -890,7 +893,11 @@ void push_select_down(query_tree &tree)
 							frag_has_attr = false;
 							for (int j = 1;j <= frag_attr_num;j++)
 								if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
-							if (!frag_has_attr) frag_attr[++frag_attr_num] = tmp;
+							if (!frag_has_attr)
+							{
+								frag_attr[++frag_attr_num] = tmp;
+								//cout << "add" << tmp << endl;
+							}
 						}
 					}
 					//cout << "aaa\n" << endl;
@@ -901,7 +908,7 @@ void push_select_down(query_tree &tree)
 				{
 					bool frag_has_attr = false;
 					string tmp = attr[j];
-					if (tree.node[i].type == -1 || tree.node[i].type == 0)
+					if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
 					{	//水平分片和不分片看对应的表是否有属性
 						for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
 							if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
@@ -943,10 +950,10 @@ void push_select_down(query_tree &tree)
 
 	}
 	//把最上面的投影操作删除
-	tree.node[tree.root].type = -1;
+	/*tree.node[tree.root].type = -1;
 	tree.node[tree.node[tree.root].child[1]].fa = -1;
 	tree.root = tree.node[tree.root].child[1];
-	
+	*/
 	
 }
 
@@ -991,7 +998,6 @@ int dfs_push(query_tree &tree, int x)
 		else
 		{	
 			//cout << x<<" "<<l << " " << r << "需要下推\n";
-			
 			//两两join
 			int q[100], num = 0, newjoin;//保存新join的头节点
 			int lroot = tree.node[x].child[1], rroot = tree.node[x].child[2];
@@ -1097,9 +1103,9 @@ bool join_frag(query_tree &tree, string frag1, string frag2)
 	if (sch.table[pos2].type == 0 || sch.table[pos2].type == 2)
 	{	//只有水平或者混合才能通过条件判断是否有交集，仅通过属性是判断不出的
 		//cout << "比较" << frag1 << " " << frag2 << endl;
-		for (int i=1;i<=sch.table[pos1].site[site1].hcon_list_len;i++)
-		for (int j = 1;j <= sch.table[pos1].site[site2].hcon_list_len;j++)
-		if (sch.table[pos1].site[site1].hcon_list[i].attr.compare(sch.table[pos2].site[site2].hcon_list[i].attr) == 0)
+		for (int i = 1;i <= sch.table[pos1].site[site1].hcon_list_len;i++)
+		for (int j = 1;j <= sch.table[pos2].site[site2].hcon_list_len;j++)
+		if (sch.table[pos1].site[site1].hcon_list[i].attr.compare(sch.table[pos2].site[site2].hcon_list[j].attr) == 0)
 		{	//属性相同时，看条件是否有交集
 			if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
 			{
@@ -1113,13 +1119,17 @@ bool join_frag(query_tree &tree, string frag1, string frag2)
 
 string dfs_delete(query_tree &tree, int x)
 {
-	string str = "";
+	string str = ""; int child = 0;
 	if (tree.node[x].type == 0) return tree.node[x].str;
 	else
 	{
 		for (int i = 1;i <= tree.node[x].child[0];i++)
-		{	if (str.compare("") ==0) str += dfs_delete(tree, tree.node[x].child[i]);
-			else str += " "+dfs_delete(tree, tree.node[x].child[i]);
+		{
+			string tmp = dfs_delete(tree, tree.node[x].child[i]);
+			if (tmp.compare("") == 0) continue;//被删除的枝就跳过
+			child++; 
+			if (str.compare("") ==0) str += tmp;
+			else str += " "+tmp;
 		}
 	}
 	//cout << x << " " << str << endl;
@@ -1140,15 +1150,16 @@ string dfs_delete(query_tree &tree, int x)
 		
 		//看两两分片是否无结果
 		bool have_res = true;
-		for (int i=1;i<=num;i++)
-		for (int j = i+1;j <= num;j++)
+		for (int i = 1;i <= num;i++)
+		for (int j = i + 1;j <= num;j++)
 		{
 			if (!join_frag(tree, frag[i], frag[j])) have_res = false;
 		}
-		if (!have_res)
+		if (!have_res || child <= 1)
 		{	//删除这个节点
-			//cout << "删除" << x << endl;
+			//cout << "删除" << x << " " << str << endl;
 			tree.node[x].type = -1;
+			str = "";
 		}
 	}
 	return str;

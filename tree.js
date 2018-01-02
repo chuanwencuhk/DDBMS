@@ -15,7 +15,7 @@ function node()
 }
 
 function add_node(str)
-{	document.write(str+"<br>");
+{	//document.write(str+"<br>");
 	var num_con = str.split("/");
 	//将节点内容加入
 	node_num++;
@@ -32,7 +32,7 @@ function add_node(str)
 	{	node_list[num[0]].child[i] = num[3+i];	
 	}
 	node_list[num[0]].dep = num[3+parseInt(num[3])+1];
-	document.write("dep:"+node_list[num[0]].dep+"<br>");
+	//document.write("dep:"+node_list[num[0]].dep+"<br>");
 }
 
 function max(a,b)
@@ -52,8 +52,8 @@ function get_depth(i)
 }
 
 function get_fa(i)
-{	if (node_list[i].fa!=-1)	return get_fa(node_list[i].fa);
-	else	return i; 
+{	if (node_list[i].fa!=-1) return get_fa(node_list[i].fa);
+	else return i; 
 }
 
 
@@ -66,7 +66,7 @@ function draw_tree(ren,colors)
 	var sth = oh+dh/2,stw;
 	var l=1,r=1,curdep=1,st=1,en=1;
 	queue[l] = root;
-	document.write(queue[l]+"<br>");
+	//document.write(queue[l]+"<br>");
 	
 	
 	//广度优先遍历树，画出图像
@@ -80,7 +80,7 @@ function draw_tree(ren,colors)
 				queue[r] = node_list[cur].child[j];
 			}
 			//将节点画在stw,sth处
-			document.write(cur+"画在:"+stw+" "+sth+"<br>");
+			//document.write(cur+"画在:"+stw+" "+sth+"<br>");
 			ren.label(str[node_list[cur].type]+" "+node_list[cur].str, stw -(str[node_list[cur].type].length+node_list[cur].str.length+1)*3.3, sth-8)//横坐标减去文本长度的一半(估计) 纵坐标-8
 	            .attr({
 	            r: 5,
@@ -96,7 +96,7 @@ function draw_tree(ren,colors)
 			//如果有父节点，画一条与父节点连接的直线
 			var fa = node_list[cur].fa;
 			if (fa!=-1)
-			{	document.write(stw+" "+sth+"连接:"+x[fa]+" "+y[fa]+"<br>");
+			{	//document.write(stw+" "+sth+"连接:"+x[fa]+" "+y[fa]+"<br>");
 				ren.path(['M', stw, sth-16, 'L', x[fa], y[fa]+20])
 		            .attr({
 		            'stroke-width': 2,
@@ -119,50 +119,5 @@ function draw_tree(ren,colors)
 		sth += dh;
 		l=st;
 	}
-	
-//	$(function () {
-//	    $('#container').highcharts({
-//	        chart: {
-//	            backgroundColor: 'white',
-//	            events: {
-//	                load: function () {
-//	                    // Draw the flow chart
-//	                    var ren = this.renderer,
-//	                        colors = Highcharts.getOptions().colors,
-//	                        rightArrow = ['M', 0, 0, 'L', 100, 0, 'L', 95, 5, 'M', 100, 0, 'L', 95, -5],
-//	                        leftArrow = ['M', 100, 0, 'L', 0, 0, 'L', 5, 5, 'M', 0, 0, 'L', 5, -5];
-//	                    // Separator, client from service
-//	                    ren.path(['M', 120, 40, 'L', 120, 330])
-//	                        .attr({
-//	                        'stroke-width': 2,
-//	                        stroke: 'silver',
-//	                        dashstyle: 'dash'
-//	                    })
-//	                        .add();
-//	                    // Separator, CLI from service
-//	                    ren.path(['M', 420, 40, 'L', 420, 330])
-//	                        .attr({
-//	                        'stroke-width': 2,
-//	                        stroke: 'silver',
-//	                        dashstyle: 'dash'
-//	                    })
-//	                        .add();
-//	                    // Headers
-//	                    ren.label('Web 客户端', 20, 40)
-//	                        .css({
-//	                        fontWeight: 'bold'
-//	                    })
-//	                        .add();
-//	                }
-//	            }
-//	        },
-//	        title: {
-//	            text: 'Highcharts导出服务器概述',
-//	            style: {
-//	                color: 'black'
-//	            }
-//	        }
-//	    });
-//	});
 }
 

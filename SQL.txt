@@ -1,0 +1,13 @@
+//以下为benchmark里支持水平划分＋垂直划分部分的语句
+select * from emp where (eno<'E0010')
+select * from asg where (eno<'E1020') and (eno>='E0990')
+select jno,jname from job where (jno<'J0300')
+select jno,jname from job
+select * from job where (jno<'J0100')
+select * from emp,sal where (emp.title=sal.title) and (eno<'E0300') and (eno>'E0100')
+select * from emp,asg where (emp.eno=asg.eno)
+select * from asg,job where (asg.jno=job.jno) and (asg.jno<'J0200')
+select eno,jno from asg,job where (asg.jno=job.jno) and (budget>1000)
+select * from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (emp.eno<'E0010')
+//我自己写的
+select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')
