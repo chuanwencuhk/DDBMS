@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1148</width>
+    <height>692</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="button_show_DDB">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>40</y>
+      <x>990</x>
+      <y>480</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -30,10 +30,10 @@
    <widget class="QTextEdit" name="DDB_textEdit">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>40</y>
-      <width>511</width>
-      <height>451</height>
+      <x>830</x>
+      <y>20</y>
+      <width>301</width>
+      <height>461</height>
      </rect>
     </property>
    </widget>
@@ -43,10 +43,16 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>28</height>
+     <width>1148</width>
+     <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuDDBMS_V0_1">
+    <property name="title">
+     <string>DDBMS V0.1</string>
+    </property>
+   </widget>
+   <addaction name="menuDDBMS_V0_1"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

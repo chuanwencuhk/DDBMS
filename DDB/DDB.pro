@@ -1,7 +1,7 @@
 QT += core
 QT += gui
 QT += widgets
-
+QT += webenginewidgets
 CONFIG += c++11
 
 TARGET = DDB
@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     MetadataManager/siteinfo.cpp \
     MetadataManager/ddbmainwin.cpp \
     MetadataManager/fragmentinfo.cpp \
-    MetadataManager/tablemetadataInfo.cpp
+    MetadataManager/tablemetadataInfo.cpp \
+    QueryTree/query_tree.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -36,7 +37,8 @@ HEADERS += \
     MetadataManager/siteinfo.h \
     MetadataManager/ddbmainwin.h \
     MetadataManager/fragmentinfo.h \
-    MetadataManager/tableMetadataInfo.h
+    MetadataManager/tableMetadataInfo.h \
+    QueryTree/query_tree.h
 
 FORMS += \
     MetadataManager/ddbmainwin.ui

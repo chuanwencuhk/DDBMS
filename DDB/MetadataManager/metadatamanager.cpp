@@ -534,6 +534,8 @@ MetadataManager *MetadataManager::getInstance()
 
 
 
+
+
 void MetadataManager::initialize_siteinfo()
 {
     cfg.setOptions(Config::OptionFsync
@@ -783,5 +785,17 @@ void MetadataManager::write_to_config_file(std::string filename)
       //return(EXIT_FAILURE);
     }
     cout<<"write_to_config file:"<<filename;
+
+}
+
+
+void MetadataManager::set_metadata_toquerytree(schema &sch)
+{
+
+}
+
+
+query_tree MetadataManager::get_querytree(string sql)
+{
 
 }

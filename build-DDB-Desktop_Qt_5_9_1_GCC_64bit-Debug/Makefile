@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WEBENGINEWIDGETS_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_WEBENGINECORE_LIB -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_WEBCHANNEL_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_POSITIONING_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../DDB -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../DDB -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtPrintSupport -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtQuick -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebChannel -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtQml -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtPositioning -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.9.1/5.9.1/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,8 +37,8 @@ COMPRESS      = gzip -9f
 DISTNAME      = DDB1.0.0
 DISTDIR = /home/yfchai/DDBMS/build-DDB-Desktop_Qt_5_9_1_GCC_64bit-Debug/.tmp/DDB1.0.0
 LINK          = g++
-LFLAGS        = -Wl,-rpath,/opt/Qt5.9.1/5.9.1/gcc_64/lib
-LIBS          = $(SUBLIBS) -L /usr/local/lib/ -lconfig++ -L/opt/Qt5.9.1/5.9.1/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LFLAGS        = -Wl,-rpath,/opt/Qt5.9.1/5.9.1/gcc_64/lib -Wl,-rpath-link,/opt/Qt5.9.1/5.9.1/gcc_64/lib
+LIBS          = $(SUBLIBS) -L /usr/local/lib/ -lconfig++ -L/opt/Qt5.9.1/5.9.1/gcc_64/lib -lQt5WebEngineWidgets -lQt5PrintSupport -lQt5Widgets -lQt5WebEngineCore -lQt5Quick -lQt5Gui -lQt5WebChannel -lQt5Qml -lQt5Network -lQt5Positioning -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -55,13 +55,15 @@ SOURCES       = ../DDB/main.cpp \
 		../DDB/MetadataManager/siteinfo.cpp \
 		../DDB/MetadataManager/ddbmainwin.cpp \
 		../DDB/MetadataManager/fragmentinfo.cpp \
-		../DDB/MetadataManager/tablemetadataInfo.cpp moc_ddbmainwin.cpp
+		../DDB/MetadataManager/tablemetadataInfo.cpp \
+		../DDB/QueryTree/query_tree.cpp moc_ddbmainwin.cpp
 OBJECTS       = main.o \
 		metadatamanager.o \
 		siteinfo.o \
 		ddbmainwin.o \
 		fragmentinfo.o \
 		tablemetadataInfo.o \
+		query_tree.o \
 		moc_ddbmainwin.o
 DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/unix.conf \
@@ -247,12 +249,14 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../DDB/MetadataManager/siteinfo.h \
 		../DDB/MetadataManager/ddbmainwin.h \
 		../DDB/MetadataManager/fragmentinfo.h \
-		../DDB/MetadataManager/tableMetadataInfo.h ../DDB/main.cpp \
+		../DDB/MetadataManager/tableMetadataInfo.h \
+		../DDB/QueryTree/query_tree.h ../DDB/main.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
 		../DDB/MetadataManager/siteinfo.cpp \
 		../DDB/MetadataManager/ddbmainwin.cpp \
 		../DDB/MetadataManager/fragmentinfo.cpp \
-		../DDB/MetadataManager/tablemetadataInfo.cpp
+		../DDB/MetadataManager/tablemetadataInfo.cpp \
+		../DDB/QueryTree/query_tree.cpp
 QMAKE_TARGET  = DDB
 DESTDIR       = 
 TARGET        = DDB
@@ -444,8 +448,16 @@ Makefile: ../DDB/DDB.pro /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf 
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/yacc.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf \
 		../DDB/DDB.pro \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebEngineWidgets.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5PrintSupport.prl \
 		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Widgets.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebEngineCore.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Quick.prl \
 		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Gui.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebChannel.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Qml.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Network.prl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Positioning.prl \
 		/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Core.prl
 	$(QMAKE) -o Makefile ../DDB/DDB.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf:
@@ -628,8 +640,16 @@ Makefile: ../DDB/DDB.pro /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf 
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/yacc.prf:
 /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf:
 ../DDB/DDB.pro:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebEngineWidgets.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5PrintSupport.prl:
 /opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Widgets.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebEngineCore.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Quick.prl:
 /opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Gui.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5WebChannel.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Qml.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Network.prl:
+/opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Positioning.prl:
 /opt/Qt5.9.1/5.9.1/gcc_64/lib/libQt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ../DDB/DDB.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
@@ -646,8 +666,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/MetadataManager/metadatamanager.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h ../DDB/MetadataManager/fragmentinfo.h ../DDB/MetadataManager/tableMetadataInfo.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/tablemetadataInfo.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/metadatamanager.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h ../DDB/MetadataManager/fragmentinfo.h ../DDB/MetadataManager/tableMetadataInfo.h ../DDB/QueryTree/query_tree.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/tablemetadataInfo.cpp ../DDB/QueryTree/query_tree.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../DDB/MetadataManager/ddbmainwin.ui $(DISTDIR)/
 
 
@@ -786,6 +806,44 @@ moc_ddbmainwin.cpp: /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/QWebEngineView \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebengineview.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QString \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QUrl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVariant \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVector \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QFlags \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qtwebenginewidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginepage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginecertificateerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginedownloaditem.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginecallback.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qtwebenginecoreglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginehttprequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagelayout.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagesize.h \
 		../DDB/MetadataManager/metadatamanager.h \
 		../DDB/global.h \
 		../DDB/MetadataManager/tableMetadataInfo.h \
@@ -794,7 +852,7 @@ moc_ddbmainwin.cpp: /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		../DDB/MetadataManager/ddbmainwin.h \
 		moc_predefs.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc
-	/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/yfchai/DDBMS/DDB -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../DDB/MetadataManager/ddbmainwin.h -o moc_ddbmainwin.cpp
+	/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/yfchai/DDBMS/DDB -I/opt/Qt5.9.1/5.9.1/gcc_64/include -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtPrintSupport -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtQuick -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebChannel -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtQml -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtPositioning -I/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../DDB/MetadataManager/ddbmainwin.h -o moc_ddbmainwin.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -930,7 +988,46 @@ main.o: ../DDB/main.cpp /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QApplication
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/QWebEngineView \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebengineview.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QString \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QUrl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVariant \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVector \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QFlags \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qtwebenginewidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginepage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginecertificateerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginedownloaditem.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginecallback.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qtwebenginecoreglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginehttprequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagelayout.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagesize.h \
+		../DDB/QueryTree/query_tree.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../DDB/main.cpp
 
 metadatamanager.o: ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/metadatamanager.h \
@@ -1048,13 +1145,50 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/QWebEngineView \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebengineview.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpainter.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextoption.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QString \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QUrl \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVariant \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVector \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QFlags \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qtwebenginewidgetsglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginepage.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginecertificateerror.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineWidgets/qwebenginedownloaditem.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginecallback.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qtwebenginecoreglobal.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginehttprequest.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagelayout.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagesize.h \
 		../DDB/MetadataManager/metadatamanager.h \
 		../DDB/global.h \
 		../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/MetadataManager/siteinfo.h \
 		../DDB/MetadataManager/fragmentinfo.h \
 		ui_ddbmainwin.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QVariant \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QAction \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qaction.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qactiongroup.h \
@@ -1095,10 +1229,8 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QTextEdit \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtextedit.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextdocument.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextcursor.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextformat.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpen.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ddbmainwin.o ../DDB/MetadataManager/ddbmainwin.cpp
 
@@ -1109,6 +1241,9 @@ fragmentinfo.o: ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/f
 tablemetadataInfo.o: ../DDB/MetadataManager/tablemetadataInfo.cpp ../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/global.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tablemetadataInfo.o ../DDB/MetadataManager/tablemetadataInfo.cpp
+
+query_tree.o: ../DDB/QueryTree/query_tree.cpp ../DDB/QueryTree/query_tree.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o query_tree.o ../DDB/QueryTree/query_tree.cpp
 
 moc_ddbmainwin.o: moc_ddbmainwin.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ddbmainwin.o moc_ddbmainwin.cpp

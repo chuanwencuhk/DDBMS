@@ -6,10 +6,10 @@
 #include "siteinfo.h"
 #include "fragmentinfo.h"
 #include "tableMetadataInfo.h"
-
+#include "../QueryTree/query_tree.h"
 #include <libconfig.h++>
 
-
+//extern struct schema sch;
 class MetadataManager
 {
 public:
@@ -58,6 +58,13 @@ public:
     //Interface for ohter user///////////////////////////////////////////////////////
 
     static MetadataManager* getInstance();
+
+    //for Wang Hongyang's schema/////////////////////
+    void set_metadata_toquerytree(struct schema& sch);
+    struct query_tree get_querytree(std::string sql);
+
+    //for Wang Hongyang's schema/////////////////////
+
 private:
     MetadataManager();
    ~MetadataManager();

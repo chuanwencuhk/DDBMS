@@ -1,5 +1,8 @@
 
 #include <QApplication>
+#include <string>
+#include <iostream>
+#include <fstream>
 
 #include "global.h"
 #include "MetadataManager/metadatamanager.h"
@@ -9,16 +12,19 @@
 #include "MetadataManager/siteinfo.h"
 #include "MetadataManager/fragmentinfo.h"
 #include "MetadataManager/tableMetadataInfo.h"
+#include "QueryTree/query_tree.h"
 
 
 #include <stdlib.h>
 using namespace std;
 using namespace libconfig;
+void queryTree();
 
 int test_code();
 int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     DDBMainWin dm;
     dm.mtr = MetadataManager::getInstance();
 //emulated input site info
@@ -73,7 +79,9 @@ int main(int argc, char *argv[])
     //dm.mtr.delete_tablemetadata("ASG");
     //dm.mtr.delete_fragmemt_info("EMP");
 
-    //dm.show();
+    dm.show();
+    //generate querytree to tree.txt
+    queryTree();
     cout<<endl<<rand()%100<<"the random num is"<<endl;
     return app.exec();
 
@@ -129,4 +137,17 @@ int test_code()
      cout << str2<< endl;
 
      return 0;
+}
+
+void queryTree()
+{
+    //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
+    string input = "select * from emp,asg where (emp.eno=asg.eno)";
+    //string input = "select * from emp where (eno<'E1000') and (title>='N')";
+    init_schema();
+    query_tree original_tree = get_original_tree(input);
+    cout << "original tree build complete\n";
+    get_basic_opt_tree(original_tree, 3);//使用前3种优化
+    cout << "basic optimize tree complete\n";
+    print_tree(original_tree);
 }

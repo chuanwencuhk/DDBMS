@@ -2,6 +2,7 @@
 #define DDBMAINWIN_H
 
 #include <QMainWindow>
+#include <QWebEngineView>
 #include "metadatamanager.h"
 namespace Ui {
 class DDBMainWin;
@@ -16,9 +17,12 @@ public:
     ~DDBMainWin();
 
     void show_info_in_listView();
+    void set_textEdit_GDD();
 
     Ui::DDBMainWin *ui;
     MetadataManager* mtr;
+    QWebEngineView* pwebview;
+
 private slots:
     void on_button_show_DDB_clicked();
 
