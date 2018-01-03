@@ -56,7 +56,8 @@ SOURCES       = ../DDB/main.cpp \
 		../DDB/MetadataManager/ddbmainwin.cpp \
 		../DDB/MetadataManager/fragmentinfo.cpp \
 		../DDB/MetadataManager/tablemetadataInfo.cpp \
-		../DDB/QueryTree/query_tree.cpp moc_ddbmainwin.cpp
+		../DDB/QueryTree/query_tree.cpp \
+		../DDB/Dispather/dispather.cpp moc_ddbmainwin.cpp
 OBJECTS       = main.o \
 		metadatamanager.o \
 		siteinfo.o \
@@ -64,6 +65,7 @@ OBJECTS       = main.o \
 		fragmentinfo.o \
 		tablemetadataInfo.o \
 		query_tree.o \
+		dispather.o \
 		moc_ddbmainwin.o
 DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/common/unix.conf \
@@ -250,13 +252,15 @@ DIST          = /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../DDB/MetadataManager/ddbmainwin.h \
 		../DDB/MetadataManager/fragmentinfo.h \
 		../DDB/MetadataManager/tableMetadataInfo.h \
-		../DDB/QueryTree/query_tree.h ../DDB/main.cpp \
+		../DDB/QueryTree/query_tree.h \
+		../DDB/Dispather/dispather.h ../DDB/main.cpp \
 		../DDB/MetadataManager/metadatamanager.cpp \
 		../DDB/MetadataManager/siteinfo.cpp \
 		../DDB/MetadataManager/ddbmainwin.cpp \
 		../DDB/MetadataManager/fragmentinfo.cpp \
 		../DDB/MetadataManager/tablemetadataInfo.cpp \
-		../DDB/QueryTree/query_tree.cpp
+		../DDB/QueryTree/query_tree.cpp \
+		../DDB/Dispather/dispather.cpp
 QMAKE_TARGET  = DDB
 DESTDIR       = 
 TARGET        = DDB
@@ -666,8 +670,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/MetadataManager/metadatamanager.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h ../DDB/MetadataManager/fragmentinfo.h ../DDB/MetadataManager/tableMetadataInfo.h ../DDB/QueryTree/query_tree.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/tablemetadataInfo.cpp ../DDB/QueryTree/query_tree.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/MetadataManager/metadatamanager.h ../DDB/global.h ../DDB/MetadataManager/siteinfo.h ../DDB/MetadataManager/ddbmainwin.h ../DDB/MetadataManager/fragmentinfo.h ../DDB/MetadataManager/tableMetadataInfo.h ../DDB/QueryTree/query_tree.h ../DDB/Dispather/dispather.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../DDB/main.cpp ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/tablemetadataInfo.cpp ../DDB/QueryTree/query_tree.cpp ../DDB/Dispather/dispather.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../DDB/MetadataManager/ddbmainwin.ui $(DISTDIR)/
 
 
@@ -849,6 +853,7 @@ moc_ddbmainwin.cpp: /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/MetadataManager/siteinfo.h \
 		../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/QueryTree/query_tree.h \
 		../DDB/MetadataManager/ddbmainwin.h \
 		moc_predefs.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/bin/moc
@@ -984,6 +989,7 @@ main.o: ../DDB/main.cpp /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QApplication
 		../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/MetadataManager/siteinfo.h \
 		../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/QueryTree/query_tree.h \
 		../DDB/MetadataManager/ddbmainwin.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
@@ -1026,15 +1032,15 @@ main.o: ../DDB/main.cpp /opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QApplication
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qtwebenginecoreglobal.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWebEngineCore/qwebenginehttprequest.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagelayout.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagesize.h \
-		../DDB/QueryTree/query_tree.h
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qpagesize.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../DDB/main.cpp
 
 metadatamanager.o: ../DDB/MetadataManager/metadatamanager.cpp ../DDB/MetadataManager/metadatamanager.h \
 		../DDB/global.h \
 		../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/MetadataManager/siteinfo.h \
-		../DDB/MetadataManager/fragmentinfo.h
+		../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/QueryTree/query_tree.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o metadatamanager.o ../DDB/MetadataManager/metadatamanager.cpp
 
 siteinfo.o: ../DDB/MetadataManager/siteinfo.cpp ../DDB/MetadataManager/siteinfo.h \
@@ -1188,6 +1194,7 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		../DDB/MetadataManager/tableMetadataInfo.h \
 		../DDB/MetadataManager/siteinfo.h \
 		../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/QueryTree/query_tree.h \
 		ui_ddbmainwin.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QAction \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qaction.h \
@@ -1218,9 +1225,10 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qstyle.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qtabbar.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMenu \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmenu.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QMenuBar \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmenubar.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qmenu.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/qabstractbutton.h \
@@ -1231,7 +1239,10 @@ ddbmainwin.o: ../DDB/MetadataManager/ddbmainwin.cpp ../DDB/MetadataManager/ddbma
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextdocument.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextcursor.h \
 		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtGui/qtextformat.h \
-		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QWidget
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtWidgets/QWidget \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/QDir \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdir.h \
+		/opt/Qt5.9.1/5.9.1/gcc_64/include/QtCore/qfileinfo.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ddbmainwin.o ../DDB/MetadataManager/ddbmainwin.cpp
 
 fragmentinfo.o: ../DDB/MetadataManager/fragmentinfo.cpp ../DDB/MetadataManager/fragmentinfo.h \
@@ -1244,6 +1255,15 @@ tablemetadataInfo.o: ../DDB/MetadataManager/tablemetadataInfo.cpp ../DDB/Metadat
 
 query_tree.o: ../DDB/QueryTree/query_tree.cpp ../DDB/QueryTree/query_tree.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o query_tree.o ../DDB/QueryTree/query_tree.cpp
+
+dispather.o: ../DDB/Dispather/dispather.cpp ../DDB/Dispather/dispather.h \
+		../DDB/global.h \
+		../DDB/MetadataManager/metadatamanager.h \
+		../DDB/MetadataManager/tableMetadataInfo.h \
+		../DDB/MetadataManager/siteinfo.h \
+		../DDB/MetadataManager/fragmentinfo.h \
+		../DDB/QueryTree/query_tree.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dispather.o ../DDB/Dispather/dispather.cpp
 
 moc_ddbmainwin.o: moc_ddbmainwin.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ddbmainwin.o moc_ddbmainwin.cpp

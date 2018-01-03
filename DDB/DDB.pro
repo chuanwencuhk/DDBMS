@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     MetadataManager/ddbmainwin.cpp \
     MetadataManager/fragmentinfo.cpp \
     MetadataManager/tablemetadataInfo.cpp \
-    QueryTree/query_tree.cpp
+    QueryTree/query_tree.cpp \
+    Dispather/dispather.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -38,7 +39,8 @@ HEADERS += \
     MetadataManager/ddbmainwin.h \
     MetadataManager/fragmentinfo.h \
     MetadataManager/tableMetadataInfo.h \
-    QueryTree/query_tree.h
+    QueryTree/query_tree.h \
+    Dispather/dispather.h
 
 FORMS += \
     MetadataManager/ddbmainwin.ui

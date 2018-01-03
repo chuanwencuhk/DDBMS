@@ -11,8 +11,9 @@ DDBMainWin::DDBMainWin(QWidget *parent) :
     //mtr = MetadataManager::getInstance();
     pwebview = new QWebEngineView(this);
     pwebview->setUrl(QUrl(QStringLiteral("http://127.0.0.1:8080/tree.jsp")));
-    //this->resize(QSize(1080,800));
-    pwebview->resize(800, 650);
+    this->resize(QSize(1600,800));
+    pwebview->resize(1150, 700);
+    ui->DDB_textEdit->setGeometry(1160,0,430,700);
     pwebview->show();
     //resize(1024, 750);
 
