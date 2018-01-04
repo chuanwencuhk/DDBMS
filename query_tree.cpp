@@ -735,18 +735,23 @@ void copy_node(query_tree &tree, int x, treenode &node)
 //删除树中的一个节点，同时更新指针
 void delete_node(query_tree &tree, int x)
 {	int child_pos;
-	for (int i = 1;i <= tree.node[tree.node[x].fa].child[0];i++)
-	{	if (tree.node[tree.node[x].fa].child[i] == x) child_pos = i;
-	}
-	//更新父节点的儿子列表
-	for (int i = child_pos; i < tree.node[tree.node[x].fa].child[0]; i++)
-	{	tree.node[tree.node[x].fa].child[i] = tree.node[tree.node[x].fa].child[i + 1];
-	}
-	tree.node[tree.node[x].fa].child[0]--;
-	//如果这个节点有儿子，则只能有一个儿子，否则这个节点不能删除
-	if (tree.node[x].child[0] == 1)
-	{	tree.node[tree.node[x].fa].child[++tree.node[tree.node[x].fa].child[0]] = tree.node[x].child[1];
-		tree.node[tree.node[x].child[1]].fa = tree.node[x].fa;
+	if (tree.node[x].fa != -1)
+	{
+		for (int i = 1;i <= tree.node[tree.node[x].fa].child[0];i++)
+		{
+			if (tree.node[tree.node[x].fa].child[i] == x) child_pos = i;
+		}
+		//更新父节点的儿子列表
+		for (int i = child_pos; i < tree.node[tree.node[x].fa].child[0]; i++)
+		{
+			tree.node[tree.node[x].fa].child[i] = tree.node[tree.node[x].fa].child[i + 1];
+		}
+		tree.node[tree.node[x].fa].child[0]--;
+		//如果这个节点有儿子，则只能有一个儿子，或者没有儿子否则这个节点不能删除
+		if (tree.node[x].child[0] == 1)
+		{	tree.node[tree.node[x].fa].child[++tree.node[tree.node[x].fa].child[0]] = tree.node[x].child[1];
+			tree.node[tree.node[x].child[1]].fa = tree.node[x].fa;
+		}
 	}
 	//删掉这个节点
 	tree.node[x].type = -1;
@@ -809,6 +814,32 @@ void push_condition_down(query_tree &tree)
 		}
 	}
 
+}
+
+void clear_frag(query_tree &tree)
+{	for (int i=1;i<=tree.num;i++)
+	{
+		if (tree.node[i].type == 2 && tree.node[i].str.compare("")==0)
+		{	//看这个是否需要删除
+			bool l = false, r = false;
+			int pos;
+			pos = tree.node[tree.node[i].child[1]].str.find(",");
+			if (pos >= 0) l = true;
+			pos = tree.node[tree.node[i].child[2]].str.find(",");
+			if (pos >= 0) r = true;
+			if (l == false)
+			{	//删除左子树
+				tree.node[i].child[1] = tree.node[i].child[2];
+				tree.node[i].child[0] = 1;
+				delete_node(tree, i);
+			}
+			else if (r == false)
+			{	//删除右子树
+				tree.node[i].child[0] = 1;
+				delete_node(tree, i);
+			}
+		}
+	}
 }
 
 void push_select_down(query_tree &tree)
@@ -945,10 +976,12 @@ void push_select_down(query_tree &tree)
 				for (int j = 1;j <= frag_attr_num;j++) 
 					if (j==1) tree.node[tree.num].str += frag_attr[j];
 					else tree.node[tree.num].str += ","+frag_attr[j];
+				
 			}
 		}
 
 	}
+	clear_frag(tree);
 	//把最上面的投影操作删除
 	/*tree.node[tree.root].type = -1;
 	tree.node[tree.node[tree.root].child[1]].fa = -1;
