@@ -789,13 +789,126 @@ void MetadataManager::write_to_config_file(std::string filename)
 }
 
 
-void MetadataManager::set_metadata_toquerytree(schema &sch)
+void MetadataManager::set_table_metadata_toquerytree(schema &sch)
 {
+    Setting& root = cfg.getRoot();
+    Setting& db_cfg = root[CONFIG_NAME_DATABASE];
+    Setting& tb_namelist = db_cfg[CONFIG_NAME_TABLE_LIST];
+    int len = tb_namelist.getLength();
+
+    sch.table_num = len;
+    if(len == 0) return;//len==0 means no table in GDD
+
+    for(int i=0;i<len;i++)
+    {
+        string tb_name = tb_namelist[i];
+        TableMedata tmp = tableMetadataInfo.get_tablemetadata_bystr(tb_name);
+        if(tmp.table_name =="")
+            cout<<"MetadataManager::set_table_metadata_toquerytree(schema &sch) "<<"empty tablemetadata"<<endl;
+
+        sch.table[i+1].table_name = tmp.table_name;
+        sch.table[i+1].col_num = tmp.table_attr_num;
+
+        for(int j = 0;j<tmp.table_attr_num;j++)
+        {
+            sch.table[i+1].col_name[j+1] = tmp.Attr[j].attr_name;
+        }
+
+
+
+
+
+    }
+
+
+
+}
+
+void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
+{
+    Setting& root = cfg.getRoot();
+    Setting& frg_cfg = root[CONFIG_NAME_FRAGMENT];
+    Setting& frg_list = frg_cfg[CONFIG_NAME_FRAGMENT_LIST];
+    int len = frg_list.getLength();
+    if(len == 0) return;//len==0 means no fragment in GDD
+
+    for(int i=0;i<len;i++)
+    {
+        string frg_name = frg_list[i];
+        Fragment tmp = fragInfo.get_frag_bystr(frg_name);
+        if(tmp.frag_talbe_name =="")
+            cout<<"MetadataManager::set_fragment_metadata_toquerytree(schmea &sch) "<<"empty Fragment"<<endl;
+
+        int pos_sch;//get the pos the fragment should store in
+        for(int j=1;j<sch.table_num;j++)
+        {
+            if(sch.table[j].table_name == frg_name)
+            {
+                pos_sch = j;
+                break;
+            }
+        }
+
+        int frag_type = 0;
+        int frag_num = 0;
+        for(int k=0;k<MAX_FRAGMENT_NUM;k++)
+        {
+            if(tmp.condtion_slice[k].isValid) frag_num++;
+
+            if(tmp.condtion_slice[k].con_H1.isValid )
+            {
+
+                frag_type = frag_type | 0x1;
+
+                sch.table[pos_sch].site[k+1].hcon_list_len =1;
+
+                sch.table[pos_sch].site[k+1].condition[0] = tmp.condtion_slice[k].con_H1.attr_name + \
+                        tmp.condtion_slice[k].con_H1.attr_condition + tmp.condtion_slice[k].con_H1.attr_value;
+
+                sch.table[pos_sch].site[k+1].hcon_list[1].attr = tmp.condtion_slice[k].con_H1.attr_name;
+                sch.table[pos_sch].site[k+1].hcon_list[1].op = tmp.condtion_slice[k].con_H1.attr_condition;
+                sch.table[pos_sch].site[k+1].hcon_list[1].section = tmp.condtion_slice[k].con_H1.attr_value;
+
+
+
+            }
+            if(tmp.condtion_slice[k].con_H2.isValid )
+            {
+                frag_type = frag_type | 0x1;
+
+                sch.table[pos_sch].site[k+1].hcon_list_len =2;
+
+                sch.table[pos_sch].site[k+1].condition[0] += "&" + tmp.condtion_slice[k].con_H2.attr_name + \
+                        tmp.condtion_slice[k].con_H2.attr_condition + tmp.condtion_slice[k].con_H2.attr_value;
+
+                sch.table[pos_sch].site[k+1].hcon_list[2].attr = tmp.condtion_slice[k].con_H2.attr_name;
+                sch.table[pos_sch].site[k+1].hcon_list[2].op = tmp.condtion_slice[k].con_H2.attr_condition;
+                sch.table[pos_sch].site[k+1].hcon_list[2].section = tmp.condtion_slice[k].con_H2.attr_value;
+            }
+
+            if(tmp.condtion_slice[k].con_V1.isValid)
+            {
+                frag_type = frag_type | 0x2;
+
+                int v_num = tmp.condtion_slice[k].con_V1.attr_num;
+                for(int p=0; p<v_num;p++)
+                {
+                    sch.table[pos_sch].site[k+1].condition[1] += tmp.condtion_slice[k].con_V1.attr_frag_strlist[p];
+                    if(p < (v_num-1)) sch.table[pos_sch].site[k+1].condition[1] += ",";
+                }
+            }
+
+
+
+
+        }
+        if(frag_num == 0) sch.table[pos_sch].site_num = 1;
+        if(frag_type == 0) sch.table[pos_sch].type = -1;
+
+
+    }
+
 
 }
 
 
-query_tree MetadataManager::get_querytree(string sql)
-{
-
-}

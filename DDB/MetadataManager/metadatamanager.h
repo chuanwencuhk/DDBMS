@@ -60,8 +60,10 @@ public:
     static MetadataManager* getInstance();
 
     //for Wang Hongyang's schema/////////////////////
-    void set_metadata_toquerytree(struct schema& sch);
-    struct query_tree get_querytree(std::string sql);
+    void set_table_metadata_toquerytree(struct schema& sch);
+    void set_fragment_metadata_toquerytree(struct schema &sch);
+
+
 
     //for Wang Hongyang's schema/////////////////////
 

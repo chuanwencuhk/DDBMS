@@ -71,12 +71,12 @@ int main(int argc, char *argv[])
          //tmd.Attr[i].attr_rulestype = (RulesType)0;
      }
 
-    //dm.mtr.set_tablemetadata(tmd);
+    dm.mtr->set_tablemetadata(tmd);
     //dm.mtr.delete_tablename_formlist("ASG");
     //dm.mtr.load_tablemetadata_fromcfg();
 
     dm.mtr->setMetadataVer("0.0.1");
-    //dm.mtr.delete_tablemetadata("ASG");
+    //dm.mtr->delete_tablemetadata("ASG");
     //dm.mtr.delete_fragmemt_info("EMP");
 
     dm.show();
