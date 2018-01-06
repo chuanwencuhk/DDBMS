@@ -63,14 +63,6 @@ void FragmentInfo:: set_fragment_info(Fragment &frg)
                 frag_array[i].condtion_slice[j].con_V1.attr_frag_strlist[k] = frg.condtion_slice[j].con_V1.attr_frag_strlist[k];
         }
 
-//        {
-//            frag_array[i].condtion_slice[j].con_V2.isValid = frg.condtion_slice[j].con_V2.isValid;
-//            frag_array[i].condtion_slice[j].con_V2.attr_num = frg.condtion_slice[j].con_V2.attr_num;
-//            frag_array[i].condtion_slice[j].con_V2.attr_prikey = frg.condtion_slice[j].con_V2.attr_prikey;
-//            //frag_array[i].condtion_slice[j].con_V2.attr_frag_strlist
-//            for(int q=0;q<frg.condtion_slice[j].con_V2.attr_num;q++)
-//                frag_array[i].condtion_slice[j].con_V2.attr_frag_strlist[q] = frg.condtion_slice[j].con_V2.attr_frag_strlist[q];
-//        }
 
     }
 
@@ -90,8 +82,8 @@ int FragmentInfo::get_availble_fragarray_pos()
     int i;
     while(1)
     {
-        i = (rand()%(MAX_FRAGMENT_NUM-1))+1;
-        cout<<"i is: "<<i<<endl;
+        i = (rand()%(MAX_TABLE_NUM-1))+1;
+        cout<<"FragmentInfo::get_availble_fragarray_pos() :i is: "<<i<<endl;
         if(fragarray_bitmap[i] == true)
         {
             fragarray_bitmap[i] = false;

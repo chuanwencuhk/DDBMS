@@ -60,8 +60,8 @@ public:
     static MetadataManager* getInstance();
 
     //for Wang Hongyang's schema/////////////////////
-    void set_table_metadata_toquerytree(struct schema& sch);
-    void set_fragment_metadata_toquerytree(struct schema &sch);
+    void set_table_metadata_toquerytree();
+    void set_fragment_metadata_toquerytree();
 
 
 

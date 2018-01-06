@@ -6,7 +6,7 @@
 
 using namespace std;
 
-schema sch;
+struct schema sch;
 
 //SAL(title char(20) primary key, sal float not null)
 //EMP(eno char(20) primary key, ename char(20) not null, title char(20))

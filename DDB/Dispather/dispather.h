@@ -8,7 +8,7 @@
 //to use LHH's RPC interface
 extern bool RPCExecute(string host_ip, string sql_statement);
 
-extern string RPCExecuteQuery(string host_ip, string sql_statement);
+extern string RPCExecuteQuery(string host_ip, string sql_statement);//use for exec sql
 
 extern int RPCExecuteUpdate(string host_ip, string sql_statement);
 
@@ -19,6 +19,8 @@ class Dispather
 public:
     Dispather();
 
+private:
+    MetadataManager* pmtr;
 
 };
 

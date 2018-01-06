@@ -14,13 +14,12 @@
 #include "MetadataManager/tableMetadataInfo.h"
 #include "QueryTree/query_tree.h"
 
-
+#define TEST_SWITCH 1
 #include <stdlib.h>
 using namespace std;
 using namespace libconfig;
 void queryTree();
-
-int test_code();
+extern struct schema sch;
 int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
@@ -38,116 +37,306 @@ int main(int argc, char *argv[])
     sf.set_control_site(true);
     //dm.mtr.set_siteinfo(sf);
     }
-//emulated input fragment info
-    Fragment frg;
-     frg.frag_talbe_name = "EMP";
-     for(int i=0;i<4;i++)
-     {
-     frg.condtion_slice[i].isValid =true;
-     frg.condtion_slice[i].con_H1.isValid =true;
-     frg.condtion_slice[i].con_H1.attr_name ="attr"+to_string(i);
-     frg.condtion_slice[i].con_H2.isValid =true;
-     frg.condtion_slice[i].con_H2.attr_name ="attr"+to_string(i);
 
-     frg.condtion_slice[i].con_V1.isValid =true;
+if(TEST_SWITCH ==1)
+{
+//emulated input table metadata info enum TYPE{I=1,C,V,F,D};
+         TableMedata SAL;
+         SAL.table_name = "sal";
+         SAL.table_attr_num = 2;
 
-     frg.condtion_slice[i].con_V1.attr_num =3;
-     frg.condtion_slice[i].con_V1.attr_prikey = to_string(i);
-     for(int j=0;j<3;j++)
-        frg.condtion_slice[i].con_V1.attr_frag_strlist[j] = "hello"+to_string(j);
-     }
-   //dm.mtr->set_fargment_info(frg);
-   //dm.mtr.delete_fragment_name_fromlist("EMP");
+         SAL.Attr[0].attr_name = "title";
+         SAL.Attr[0].attr_length = 20;
+         SAL.Attr[0].attr_datatype = 2;
 
-//emulated input table metadata
-     TableMedata tmd;
-     tmd.table_name = "ASG";
-     tmd.table_attr_num = 5;
-     for(int i =0; i<tmd.table_attr_num;i++)
-     {
-         tmd.Attr[i].attr_name = "attr"+to_string(i);
-         tmd.Attr[i].attr_length = i;
-         //tmd.Attr[i].attr_datatype = ( enum TYPE)1;
-         //tmd.Attr[i].attr_rulestype = (RulesType)0;
-     }
+         SAL.Attr[1].attr_name = "sal";
+         SAL.Attr[1].attr_length = 4;
+         SAL.Attr[1].attr_datatype = 4;
 
-    dm.mtr->set_tablemetadata(tmd);
-    //dm.mtr.delete_tablename_formlist("ASG");
-    //dm.mtr.load_tablemetadata_fromcfg();
+         TableMedata EMP;
+         EMP.table_name = "emp";
+         EMP.table_attr_num = 3;
+
+         EMP.Attr[0].attr_name = "eno";
+         EMP.Attr[0].attr_length = 20;
+         EMP.Attr[0].attr_datatype = 2;
+
+         EMP.Attr[1].attr_name = "ename";
+         EMP.Attr[1].attr_length = 20;
+         EMP.Attr[1].attr_datatype = 2;
+
+         EMP.Attr[2].attr_name = "title";
+         EMP.Attr[2].attr_length = 20;
+         EMP.Attr[2].attr_datatype = 2;
+
+         TableMedata JOB;
+         JOB.table_name = "job";
+         JOB.table_attr_num = 4;
+
+         JOB.Attr[0].attr_name = "jno";
+         JOB.Attr[0].attr_length = 20;
+         JOB.Attr[0].attr_datatype = 2;
+
+         JOB.Attr[1].attr_name = "jname";
+         JOB.Attr[1].attr_length = 20;
+         JOB.Attr[1].attr_datatype = 2;
+
+         JOB.Attr[2].attr_name = "budget";
+         JOB.Attr[2].attr_length = 4;
+         JOB.Attr[2].attr_datatype = 4;
+
+         JOB.Attr[3].attr_name = "loc";
+         JOB.Attr[3].attr_length = 20;
+         JOB.Attr[3].attr_datatype = 2;
+
+         TableMedata ASG;
+         ASG.table_name = "asg";
+         ASG.table_attr_num = 4;
+
+         ASG.Attr[0].attr_name = "eno";
+         ASG.Attr[0].attr_length = 20;
+         ASG.Attr[0].attr_datatype = 2;
+
+         ASG.Attr[1].attr_name = "jno";
+         ASG.Attr[1].attr_length = 20;
+         ASG.Attr[1].attr_datatype = 2;
+
+         ASG.Attr[2].attr_name = "resp";
+         ASG.Attr[2].attr_length = 20;
+         ASG.Attr[2].attr_datatype = 2;
+
+         ASG.Attr[3].attr_name = "dur";
+         ASG.Attr[3].attr_length = 4;
+         ASG.Attr[3].attr_datatype = 1;
+//set emulation table metadata
+         dm.mtr->set_tablemetadata(SAL);
+         dm.mtr->set_tablemetadata(EMP);
+         dm.mtr->set_tablemetadata(JOB);
+         dm.mtr->set_tablemetadata(ASG);
+//emulated input table metadata info enum TYPE{I=1,C,V,F,D};
+
+//emulated input fragment metadata
+//////////////////////////////////////////////////////////////EMP///////////////////////
+         Fragment FRAG_EMP;
+         FRAG_EMP.frag_talbe_name = "emp";
+//db1
+         FRAG_EMP.condtion_slice[0].isValid =true;
+         FRAG_EMP.condtion_slice[0].con_H1.isValid =true;
+         FRAG_EMP.condtion_slice[0].con_H1.attr_name ="eno";
+         FRAG_EMP.condtion_slice[0].con_H1.attr_condition = "<";
+         FRAG_EMP.condtion_slice[0].con_H1.attr_value = "'E1000'";
+
+         FRAG_EMP.condtion_slice[0].con_H2.isValid =true;
+         FRAG_EMP.condtion_slice[0].con_H2.attr_name ="title";
+         FRAG_EMP.condtion_slice[0].con_H2.attr_condition = "<";
+         FRAG_EMP.condtion_slice[0].con_H2.attr_value = "'N'";
+
+         FRAG_EMP.condtion_slice[0].con_V1.isValid =false;
+//db2
+         FRAG_EMP.condtion_slice[1].isValid =true;
+         FRAG_EMP.condtion_slice[1].con_H1.isValid =true;
+         FRAG_EMP.condtion_slice[1].con_H1.attr_name ="eno";
+         FRAG_EMP.condtion_slice[1].con_H1.attr_condition = "<";
+         FRAG_EMP.condtion_slice[1].con_H1.attr_value = "'E1000'";
+
+         FRAG_EMP.condtion_slice[1].con_H2.isValid =true;
+         FRAG_EMP.condtion_slice[1].con_H2.attr_name ="title";
+         FRAG_EMP.condtion_slice[1].con_H2.attr_condition = ">=";
+         FRAG_EMP.condtion_slice[1].con_H2.attr_value = "'N'";
+
+         FRAG_EMP.condtion_slice[1].con_V1.isValid =false;
+//db3
+         FRAG_EMP.condtion_slice[2].isValid =true;
+         FRAG_EMP.condtion_slice[2].con_H1.isValid =true;
+         FRAG_EMP.condtion_slice[2].con_H1.attr_name ="eno";
+         FRAG_EMP.condtion_slice[2].con_H1.attr_condition = ">=";
+         FRAG_EMP.condtion_slice[2].con_H1.attr_value = "'E1000'";
+
+         FRAG_EMP.condtion_slice[2].con_H2.isValid =true;
+         FRAG_EMP.condtion_slice[2].con_H2.attr_name ="title";
+         FRAG_EMP.condtion_slice[2].con_H2.attr_condition = "<";
+         FRAG_EMP.condtion_slice[2].con_H2.attr_value = "'N'";
+
+         FRAG_EMP.condtion_slice[2].con_V1.isValid =false;
+//db4
+         FRAG_EMP.condtion_slice[3].isValid =true;
+         FRAG_EMP.condtion_slice[3].con_H1.isValid =true;
+         FRAG_EMP.condtion_slice[3].con_H1.attr_name ="eno";
+         FRAG_EMP.condtion_slice[3].con_H1.attr_condition = ">=";
+         FRAG_EMP.condtion_slice[3].con_H1.attr_value = "'E1000'";
+
+         FRAG_EMP.condtion_slice[3].con_H2.isValid =true;
+         FRAG_EMP.condtion_slice[3].con_H2.attr_name ="title";
+         FRAG_EMP.condtion_slice[3].con_H2.attr_condition = ">=";
+         FRAG_EMP.condtion_slice[3].con_H2.attr_value = "'N'";
+
+         FRAG_EMP.condtion_slice[3].con_V1.isValid =false;
+//////////////////////////////////////////////////////////////ASG///////////////////////
+         Fragment FRAG_ASG;
+         FRAG_ASG.frag_talbe_name = "asg";
+//db1
+         FRAG_ASG.condtion_slice[0].isValid =true;
+         FRAG_ASG.condtion_slice[0].con_H1.isValid =true;
+         FRAG_ASG.condtion_slice[0].con_H1.attr_name ="eno";
+         FRAG_ASG.condtion_slice[0].con_H1.attr_condition = "<";
+         FRAG_ASG.condtion_slice[0].con_H1.attr_value = "'E1000'";
+
+         FRAG_ASG.condtion_slice[0].con_H2.isValid =true;
+         FRAG_ASG.condtion_slice[0].con_H2.attr_name ="jno";
+         FRAG_ASG.condtion_slice[0].con_H2.attr_condition = "<";
+         FRAG_ASG.condtion_slice[0].con_H2.attr_value = "'J0500'";
+
+         FRAG_ASG.condtion_slice[0].con_V1.isValid =false;
+//db2
+         FRAG_ASG.condtion_slice[1].isValid =true;
+         FRAG_ASG.condtion_slice[1].con_H1.isValid =true;
+         FRAG_ASG.condtion_slice[1].con_H1.attr_name ="eno";
+         FRAG_ASG.condtion_slice[1].con_H1.attr_condition = "<";
+         FRAG_ASG.condtion_slice[1].con_H1.attr_value = "'E1000'";
+
+         FRAG_ASG.condtion_slice[1].con_H2.isValid =true;
+         FRAG_ASG.condtion_slice[1].con_H2.attr_name ="jno";
+         FRAG_ASG.condtion_slice[1].con_H2.attr_condition = ">=";
+         FRAG_ASG.condtion_slice[1].con_H2.attr_value = "'J0500'";
+
+         FRAG_ASG.condtion_slice[1].con_V1.isValid =false;
+//db3
+         FRAG_ASG.condtion_slice[2].isValid =true;
+         FRAG_ASG.condtion_slice[2].con_H1.isValid =true;
+         FRAG_ASG.condtion_slice[2].con_H1.attr_name ="eno";
+         FRAG_ASG.condtion_slice[2].con_H1.attr_condition = ">=";
+         FRAG_ASG.condtion_slice[2].con_H1.attr_value = "'E1000'";
+
+         FRAG_ASG.condtion_slice[2].con_H2.isValid =true;
+         FRAG_ASG.condtion_slice[2].con_H2.attr_name ="jno";
+         FRAG_ASG.condtion_slice[2].con_H2.attr_condition = "<";
+         FRAG_ASG.condtion_slice[2].con_H2.attr_value = "'J0500'";
+
+         FRAG_ASG.condtion_slice[2].con_V1.isValid =false;
+//db4
+         FRAG_ASG.condtion_slice[3].isValid =true;
+         FRAG_ASG.condtion_slice[3].con_H1.isValid =true;
+         FRAG_ASG.condtion_slice[3].con_H1.attr_name ="eno";
+         FRAG_ASG.condtion_slice[3].con_H1.attr_condition = ">=";
+         FRAG_ASG.condtion_slice[3].con_H1.attr_value = "'E1000'";
+
+         FRAG_ASG.condtion_slice[3].con_H2.isValid =true;
+         FRAG_ASG.condtion_slice[3].con_H2.attr_name ="jno";
+         FRAG_ASG.condtion_slice[3].con_H2.attr_condition = ">=";
+         FRAG_ASG.condtion_slice[3].con_H2.attr_value = "'J0500'";
+
+         FRAG_ASG.condtion_slice[3].con_V1.isValid =false;
+
+//////////////////////////////////////////////////////////////JOB///////////////////////
+                  Fragment FRAG_JOB;
+                  FRAG_JOB.frag_talbe_name = "job";
+//db1
+                  FRAG_JOB.condtion_slice[0].isValid =true;
+                  FRAG_JOB.condtion_slice[0].con_H1.isValid =true;
+                  FRAG_JOB.condtion_slice[0].con_H1.attr_name ="jno";
+                  FRAG_JOB.condtion_slice[0].con_H1.attr_condition = "<";
+                  FRAG_JOB.condtion_slice[0].con_H1.attr_value = "'J0500'";
+
+                  FRAG_JOB.condtion_slice[0].con_H2.isValid =false;
+
+                  FRAG_JOB.condtion_slice[0].con_V1.isValid =true;
+                  FRAG_JOB.condtion_slice[0].con_V1.attr_num =3;
+                  FRAG_JOB.condtion_slice[0].con_V1.attr_frag_strlist[0] = "jno";
+                  FRAG_JOB.condtion_slice[0].con_V1.attr_frag_strlist[1] = "jname";
+                  FRAG_JOB.condtion_slice[0].con_V1.attr_frag_strlist[2] = "budget";
+
+
+//db2
+                  FRAG_JOB.condtion_slice[1].isValid =true;
+                  FRAG_JOB.condtion_slice[1].con_H1.isValid =true;
+                  FRAG_JOB.condtion_slice[1].con_H1.attr_name ="jno";
+                  FRAG_JOB.condtion_slice[1].con_H1.attr_condition = "<";
+                  FRAG_JOB.condtion_slice[1].con_H1.attr_value = "'J0500'";
+
+                  FRAG_JOB.condtion_slice[1].con_H2.isValid =false;
+
+                  FRAG_JOB.condtion_slice[1].con_V1.isValid =true;
+                  FRAG_JOB.condtion_slice[1].con_V1.attr_num =2;
+                  FRAG_JOB.condtion_slice[1].con_V1.attr_frag_strlist[0] = "jno";
+                  FRAG_JOB.condtion_slice[1].con_V1.attr_frag_strlist[1] = "loc";
+//db3
+                  FRAG_JOB.condtion_slice[2].isValid =true;
+                  FRAG_JOB.condtion_slice[2].con_H1.isValid =true;
+                  FRAG_JOB.condtion_slice[2].con_H1.attr_name ="jno";
+                  FRAG_JOB.condtion_slice[2].con_H1.attr_condition = ">=";
+                  FRAG_JOB.condtion_slice[2].con_H1.attr_value = "'J0500'";
+
+                  FRAG_JOB.condtion_slice[2].con_H2.isValid =false;
+
+                  FRAG_JOB.condtion_slice[2].con_V1.isValid =true;
+                  FRAG_JOB.condtion_slice[2].con_V1.attr_num =3;
+                  FRAG_JOB.condtion_slice[2].con_V1.attr_frag_strlist[0] = "jno";
+                  FRAG_JOB.condtion_slice[2].con_V1.attr_frag_strlist[1] = "jname";
+                  FRAG_JOB.condtion_slice[2].con_V1.attr_frag_strlist[2] = "budget";
+
+         //db4
+                  FRAG_JOB.condtion_slice[3].isValid =true;
+                  FRAG_JOB.condtion_slice[3].con_H1.isValid =true;
+                  FRAG_JOB.condtion_slice[3].con_H1.attr_name ="jno";
+                  FRAG_JOB.condtion_slice[3].con_H1.attr_condition = ">=";
+                  FRAG_JOB.condtion_slice[3].con_H1.attr_value = "'J0500'";
+
+                  FRAG_JOB.condtion_slice[3].con_H2.isValid =false;
+
+                  FRAG_JOB.condtion_slice[3].con_V1.isValid =true;
+                  FRAG_JOB.condtion_slice[3].con_V1.attr_num =2;
+                  FRAG_JOB.condtion_slice[3].con_V1.attr_frag_strlist[0] = "jno";
+                  FRAG_JOB.condtion_slice[3].con_V1.attr_frag_strlist[1] = "loc";
+
+//////////////////////////////////////////////////////////////SAL///////////////////////
+                  Fragment FRAG_SAL;
+                  FRAG_SAL.frag_talbe_name = "sal";
+                  FRAG_SAL.condtion_slice[0].isValid =false;
+                  FRAG_SAL.condtion_slice[1].isValid =false;
+                  FRAG_SAL.condtion_slice[2].isValid =false;
+                  FRAG_SAL.condtion_slice[3].isValid =false;
+
+                  dm.mtr->set_fargment_info(FRAG_SAL);
+                  dm.mtr->set_fargment_info(FRAG_EMP);
+                  dm.mtr->set_fargment_info(FRAG_JOB);
+                  dm.mtr->set_fargment_info(FRAG_ASG);
+
+                  dm.mtr->set_table_metadata_toquerytree();
+                  dm.mtr->set_fragment_metadata_toquerytree();
+
+
+}
+
+//emulated input fragment metadata
 
     dm.mtr->setMetadataVer("0.0.1");
-    //dm.mtr->delete_tablemetadata("ASG");
-    //dm.mtr.delete_fragmemt_info("EMP");
-
+    queryTree();
+    struct schema* p = NULL;
+    p = &sch;
+    printf("the sch's address is: %p\n",p);
     dm.show();
     //generate querytree to tree.txt
-    queryTree();
-    cout<<endl<<rand()%100<<"the random num is"<<endl;
+
+
     return app.exec();
-
-
-     //MetadataManager mtr;
-     //cout<<sizeof(int)<<" int,"<<sizeof(float)<<" float,"<<sizeof(DATE)<<" is DATE";
-     cout << "Hello World!" << endl;
-     //mtr.setMetadataVer("0.0.2");
-     //mtr.initialize_siteinfo();
-     //mtr.initialize_database("my_db");
-     //getchar();
-     //test_code();
     return 0;
 }
 
-int test_code()
-{
 
-    libconfig::Config cfg;
-     //cfg.readFile("my.conf");
-
-     try
-     {
-       //cfg.readFile("my.conf");
-       cfg.readFile("metadata.cfg");
-     }
-     catch(const FileIOException &fioex)
-     {
-       std::cerr << "I/O error while reading file." << std::endl;
-       return(EXIT_FAILURE);
-     }
-     catch(const ParseException &pex)
-     {
-       std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-                 << " - " << pex.getError() << std::endl;
-       return(EXIT_FAILURE);
-     }
-
-     string str = cfg.lookup("version");
-     cout << str << endl;
-
-     //const Setting& set = cfg.lookup("table");
-     const Setting& set = cfg.lookup("database");
-     string str1 = "";
-     set.lookupValue("database",str1);
-     cout << str1<< endl;
-
-     string str2 = "";
-     const Setting& set2 = cfg.lookup("database.supplier");
-     set2[1].lookupValue("attr_name",str2);
-     cout << str2<< endl;
-     set2[1].lookupValue("attr_datatype",str2);
-     cout << str2<< endl;
-
-     return 0;
-}
 
 void queryTree()
 {
     //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
     string input = "select * from emp,asg where (emp.eno=asg.eno)";
+    //string input = "select * from emp,sal where (emp.title=sal.title)";
     //string input = "select * from emp where (eno<'E1000') and (title>='N')";
-    init_schema();
+    //string input = "select * from asg";
+    //init_schema();
     query_tree original_tree = get_original_tree(input);
     cout << "original tree build complete\n";
     get_basic_opt_tree(original_tree, 3);//使用前3种优化
     cout << "basic optimize tree complete\n";
     print_tree(original_tree);
 }
+
+

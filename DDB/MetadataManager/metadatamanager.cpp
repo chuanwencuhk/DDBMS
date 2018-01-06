@@ -4,12 +4,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-
+//#include "QueryTree/query_tree.h"
 #include "tableMetadataInfo.h"
 #include <unistd.h>//for access() fuction
 using namespace std;
 using namespace libconfig;
-
+extern struct schema sch;
 MetadataManager* MetadataManager::pmtr = NULL;
 MetadataManager::MetadataManager()
 {
@@ -789,7 +789,7 @@ void MetadataManager::write_to_config_file(std::string filename)
 }
 
 
-void MetadataManager::set_table_metadata_toquerytree(schema &sch)
+void MetadataManager::set_table_metadata_toquerytree()
 {
     Setting& root = cfg.getRoot();
     Setting& db_cfg = root[CONFIG_NAME_DATABASE];
@@ -824,7 +824,7 @@ void MetadataManager::set_table_metadata_toquerytree(schema &sch)
 
 }
 
-void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
+void MetadataManager::set_fragment_metadata_toquerytree()
 {
     Setting& root = cfg.getRoot();
     Setting& frg_cfg = root[CONFIG_NAME_FRAGMENT];
@@ -840,7 +840,7 @@ void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
             cout<<"MetadataManager::set_fragment_metadata_toquerytree(schmea &sch) "<<"empty Fragment"<<endl;
 
         int pos_sch;//get the pos the fragment should store in
-        for(int j=1;j<sch.table_num;j++)
+        for(int j=1;j<sch.table_num+1;j++)
         {
             if(sch.table[j].table_name == frg_name)
             {
@@ -855,7 +855,7 @@ void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
         {
             if(tmp.condtion_slice[k].isValid) frag_num++;
 
-            if(tmp.condtion_slice[k].con_H1.isValid )
+            if(tmp.condtion_slice[k].con_H1.isValid && tmp.condtion_slice[k].isValid)
             {
 
                 frag_type = frag_type | 0x1;
@@ -872,7 +872,7 @@ void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
 
 
             }
-            if(tmp.condtion_slice[k].con_H2.isValid )
+            if(tmp.condtion_slice[k].con_H2.isValid && tmp.condtion_slice[k].isValid)
             {
                 frag_type = frag_type | 0x1;
 
@@ -886,12 +886,12 @@ void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
                 sch.table[pos_sch].site[k+1].hcon_list[2].section = tmp.condtion_slice[k].con_H2.attr_value;
             }
 
-            if(tmp.condtion_slice[k].con_V1.isValid)
+            if(tmp.condtion_slice[k].con_V1.isValid && tmp.condtion_slice[k].isValid)
             {
                 frag_type = frag_type | 0x2;
 
                 int v_num = tmp.condtion_slice[k].con_V1.attr_num;
-                for(int p=0; p<v_num;p++)
+                for(int p=0; p<v_num; p++)
                 {
                     sch.table[pos_sch].site[k+1].condition[1] += tmp.condtion_slice[k].con_V1.attr_frag_strlist[p];
                     if(p < (v_num-1)) sch.table[pos_sch].site[k+1].condition[1] += ",";
@@ -902,8 +902,22 @@ void MetadataManager::set_fragment_metadata_toquerytree(struct schema &sch)
 
 
         }
-        if(frag_num == 0) sch.table[pos_sch].site_num = 1;
-        if(frag_type == 0) sch.table[pos_sch].type = -1;
+        if(frag_num == 0)
+        {
+            sch.table[pos_sch].site_num = 1;
+            sch.table[pos_sch].site[1].condition[0] = "null";
+        }
+        else
+        {
+            sch.table[pos_sch].site_num = frag_num;
+        }
+
+        if(frag_type == 0)  sch.table[pos_sch].type = -1;
+        else if(frag_type == 1) sch.table[pos_sch].type = 0;
+        else if(frag_type == 2) sch.table[pos_sch].type =1;
+        else if(frag_type == 3) sch.table[pos_sch].type = 2;
+
+
 
 
     }
