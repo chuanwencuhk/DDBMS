@@ -13,6 +13,7 @@
 #include "MetadataManager/fragmentinfo.h"
 #include "MetadataManager/tableMetadataInfo.h"
 #include "QueryTree/query_tree.h"
+#include "Dispather/dispather.h"
 
 #define TEST_SWITCH 1
 #include <stdlib.h>
@@ -333,6 +334,8 @@ void queryTree()
     //string input = "select * from asg";
     //init_schema();
     query_tree original_tree = get_original_tree(input);
+    Dispather dis;
+    dis.set_treevector_from_querytree(original_tree);
     cout << "original tree build complete\n";
     get_basic_opt_tree(original_tree, 3);//使用前3种优化
     cout << "basic optimize tree complete\n";

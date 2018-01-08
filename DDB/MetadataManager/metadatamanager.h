@@ -7,6 +7,8 @@
 #include "fragmentinfo.h"
 #include "tableMetadataInfo.h"
 #include "../QueryTree/query_tree.h"
+#include "Dispather/dispather.h"
+
 #include <libconfig.h++>
 
 //extern struct schema sch;
@@ -87,18 +89,16 @@ private:
 
     SiteInfo siteinfo[MAX_SITE_NUM];
 
-    //TableMetadata tablemetadata[MAX_TABLE_NUM];
-    //TableMetadata* ptablemetadata;
     TableMetadataInfo tableMetadataInfo;
     FragmentInfo fragInfo;
 
-    //int num_of_tables;
-    //database info
     std::string database_name;
     std::string version;
     std::string database_path;
 
     libconfig::Config cfg;
+
+    //Dispather dpather;//for exec sql
 
 
 };

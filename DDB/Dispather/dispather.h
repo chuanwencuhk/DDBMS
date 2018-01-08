@@ -23,10 +23,10 @@ public:
     void set_treevector_from_querytree(struct query_tree& qtree);
 
 private:
-    MetadataManager* pmtr;
+    //MetadataManager* pmtr;
 
     set<std::string> tree_set;
-    vector<struct treenode> tree_vector;
+    vector<int> tree_vector;
 
 };
 
