@@ -523,6 +523,16 @@ void MetadataManager::setMetadataVer(string str)
     this->version = s;
 }
 
+void MetadataManager::execute_SQL(string SQL)
+{
+    set_table_metadata_toquerytree();
+    set_fragment_metadata_toquerytree();
+    cout<<"set_table_metadata and set_fragment_metadata in WHY's schema ok"<<endl;
+
+    dpather.exec_SQL_query(SQL);
+
+}
+
 MetadataManager *MetadataManager::getInstance()
 {
     if(pmtr == NULL )
@@ -767,6 +777,12 @@ void MetadataManager::set_siteinfo(SiteInfo& sti)
     write_to_config_file(METADATA_CONFIG_FILE);
     cout<<"set_siteinfo() ok"<<endl;
 
+
+}
+
+string MetadataManager::get_IP_by_siteID(int site_ID)
+{
+    return get_siteinfo_byID(site_ID).get_site_ip();
 
 }
 

@@ -16,11 +16,6 @@ class MetadataManager
 {
 public:
 
-    //MetadataManager();
-   //~MetadataManager();
-
-    //void set_num_of_table(int num){num_of_tables = num;}
-    //int get_num_of_table(){return num_of_tables;}
 
     void read_config_file(const std::string &filename);
     void initialize_from_config_file(const std::string& str);
@@ -39,17 +34,16 @@ public:
     void delete_fragment_name_fromlist(std::string str);
     void load_fragmentmetadata_fromcfg();
 
-    //Fragment* get_fragment_info(std::string table_name);//To-do
-    //TableMetadata* get_tablemetadata_pointer(){return ptablemetadata;}
-    //SiteInfo* get_siteinfo(){return siteinfo;}//get the siteinfo pointer
 
-    //Interface for ohter user///////////////////////////////////////////////////////
+
+    //Interface for ohter Wang Chuanwen///////////////////////////////////////////////////////
     Fragment get_fragment_bystr(std::string str){return fragInfo.get_frag_bystr(str);}
     void set_fargment_info(Fragment &frg);
     void delete_fragmemt_info(std::string str);
 
     void set_siteinfo(SiteInfo &sti);
     SiteInfo get_siteinfo_byID(int site_ID){return siteinfo[site_ID];}
+    std::string get_IP_by_siteID(int site_ID);
 
     void set_tablemetadata(TableMedata &Tbm);
     TableMedata get_tablemetadata(std::string str){return tableMetadataInfo.get_tablemetadata_bystr(str);}
@@ -57,16 +51,15 @@ public:
 
     void setMetadataVer(std::string str);//set the version of DDB
     std::string get_metadata_version(){return version;}//get the version info
-    //Interface for ohter user///////////////////////////////////////////////////////
+
+    void execute_SQL(std::string SQL);
+    //Interface for Wang Chuanwen///////////////////////////////////////////////////////
 
     static MetadataManager* getInstance();
 
     //for Wang Hongyang's schema/////////////////////
     void set_table_metadata_toquerytree();
     void set_fragment_metadata_toquerytree();
-
-
-
     //for Wang Hongyang's schema/////////////////////
 
 private:
@@ -98,7 +91,7 @@ private:
 
     libconfig::Config cfg;
 
-    //Dispather dpather;//for exec sql
+    Dispatcher dpather;//for exec sql
 
 
 };

@@ -275,7 +275,7 @@ if(TEST_SWITCH ==1)
                   FRAG_JOB.condtion_slice[2].con_V1.attr_frag_strlist[1] = "jname";
                   FRAG_JOB.condtion_slice[2].con_V1.attr_frag_strlist[2] = "budget";
 
-         //db4
+//db4
                   FRAG_JOB.condtion_slice[3].isValid =true;
                   FRAG_JOB.condtion_slice[3].con_H1.isValid =true;
                   FRAG_JOB.condtion_slice[3].con_H1.attr_name ="jno";
@@ -302,8 +302,6 @@ if(TEST_SWITCH ==1)
                   dm.mtr->set_fargment_info(FRAG_JOB);
                   dm.mtr->set_fargment_info(FRAG_ASG);
 
-                  dm.mtr->set_table_metadata_toquerytree();
-                  dm.mtr->set_fragment_metadata_toquerytree();
 
 
 }
@@ -311,7 +309,15 @@ if(TEST_SWITCH ==1)
 //emulated input fragment metadata
 
     dm.mtr->setMetadataVer("0.0.1");
-    queryTree();
+//////////////////////////test for SQL query///////////////////////////////////
+    //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
+    //string input = "select * from emp,asg where (emp.eno=asg.eno)";
+    //string input = "select * from emp,sal where (emp.title=sal.title)";
+    //string input = "select * from emp where (eno<'E1000') and (title>='N')";
+    string input = "select * from asg";
+//////////////////////////test for SQL query///////////////////////////////////
+    dm.mtr->execute_SQL(input);
+    //queryTree();
     struct schema* p = NULL;
     p = &sch;
     printf("the sch's address is: %p\n",p);
@@ -324,7 +330,7 @@ if(TEST_SWITCH ==1)
 }
 
 
-
+//not to use anymore
 void queryTree()
 {
     //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
@@ -334,7 +340,7 @@ void queryTree()
     //string input = "select * from asg";
     //init_schema();
     query_tree original_tree = get_original_tree(input);
-    Dispather dis;
+    Dispatcher dis;
     dis.set_treevector_from_querytree(original_tree);
     cout << "original tree build complete\n";
     get_basic_opt_tree(original_tree, 3);//使用前3种优化

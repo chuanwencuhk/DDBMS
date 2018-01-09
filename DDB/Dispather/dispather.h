@@ -1,8 +1,7 @@
-#ifndef DISPATHER_H
-#define DISPATHER_H
+#ifndef Dispatcher_H
+#define Dispatcher_H
 
 #include "global.h"
-#include "../MetadataManager/metadatamanager.h"
 #include "../QueryTree/query_tree.h"
 #include <set>
 #include <vector>
@@ -14,13 +13,16 @@ extern int RPCExecuteUpdate(string host_ip, string sql_statement);
 extern bool RPCInsertFileToTable(string host_ip, string sql_file, string table_name);
 
 //to use WHY's query tree
+extern struct schema sch;//global definition for his metadata
 extern struct query_tree get_original_tree(string s);
 
-class Dispather
+class Dispatcher
 {
 public:
-    Dispather();
-    void set_treevector_from_querytree(struct query_tree& qtree);
+    Dispatcher();
+    void set_treevector_from_querytree(query_tree &qtree);
+    struct query_tree get_querytree_fromSQL(string sql);
+    void exec_SQL_query(std::string SQL);
 
 private:
     //MetadataManager* pmtr;
@@ -30,4 +32,4 @@ private:
 
 };
 
-#endif // DISPATHER_H
+#endif // Dispatcher_H

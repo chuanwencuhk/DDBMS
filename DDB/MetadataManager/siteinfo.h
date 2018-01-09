@@ -3,17 +3,17 @@
 
 #include "../global.h"
 
+//use it later version
+//typedef struct _SiteMetadata
+//{
+//    int site_ID = 0;
+//    int site_port = 0;
+//    bool isControlSite = false;
+//    std::string site_name = "";
+//    std::string site_ip = "";
 
-typedef struct _SiteMetadata
-{
-    int site_ID = 0;
-    int site_port = 0;
-    bool isControlSite = false;
-    std::string site_name = "";
-    std::string site_ip = "";
 
-
-}SiteMetadata;
+//}SiteMetadata;
 
 
 class SiteInfo

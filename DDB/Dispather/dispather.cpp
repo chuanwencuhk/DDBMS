@@ -2,14 +2,14 @@
 #include "../QueryTree/query_tree.h"
 #include <deque>
 
-Dispather::Dispather()
+Dispatcher::Dispatcher()
 {
 //    if(pmtr == NULL)
 //        pmtr = MetadataManager::getInstance();
 
 }
 
-void Dispather::set_treevector_from_querytree(struct query_tree& qtree)
+void Dispatcher::set_treevector_from_querytree(struct query_tree& qtree)
 {
     int root_pos = qtree.root;
     deque<int> q1,q2;
@@ -39,6 +39,37 @@ void Dispather::set_treevector_from_querytree(struct query_tree& qtree)
 
 
     cout<<"Dispather::set_treevector_from_querytree(struct query_tree& qtree)"<<endl;
+
+
+}
+
+query_tree Dispatcher::get_querytree_fromSQL(string sql)
+{
+
+    query_tree original_tree = get_original_tree(sql);
+    cout << "Dispatcher::get_querytree_fromSQL(string sql): original tree build complete!"<<endl;
+    get_basic_opt_tree(original_tree, 3);//使用前3种优化
+    cout << "Dispatcher::get_querytree_fromSQL(string sql): basic optimize tree complete!"<<endl;
+    print_tree(original_tree);
+    return original_tree;
+
+}
+
+void Dispatcher::exec_SQL_query(string SQL)
+{
+    tree_vector.clear();
+    tree_set.clear();
+
+    struct query_tree qtree = get_querytree_fromSQL(SQL);
+    set_treevector_from_querytree(qtree);
+
+
+
+
+
+
+
+
 
 
 }
