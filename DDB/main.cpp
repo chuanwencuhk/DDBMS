@@ -49,10 +49,12 @@ if(TEST_SWITCH ==1)
          SAL.Attr[0].attr_name = "title";
          SAL.Attr[0].attr_length = 20;
          SAL.Attr[0].attr_datatype = 2;
+         SAL.Attr[0].attr_rulestype = 0;
 
          SAL.Attr[1].attr_name = "sal";
          SAL.Attr[1].attr_length = 4;
          SAL.Attr[1].attr_datatype = 4;
+         SAL.Attr[1].attr_rulestype = 1;
 
          TableMedata EMP;
          EMP.table_name = "emp";
@@ -61,6 +63,7 @@ if(TEST_SWITCH ==1)
          EMP.Attr[0].attr_name = "eno";
          EMP.Attr[0].attr_length = 20;
          EMP.Attr[0].attr_datatype = 2;
+         EMP.Attr[0].attr_rulestype = 0;
 
          EMP.Attr[1].attr_name = "ename";
          EMP.Attr[1].attr_length = 20;
@@ -77,6 +80,7 @@ if(TEST_SWITCH ==1)
          JOB.Attr[0].attr_name = "jno";
          JOB.Attr[0].attr_length = 20;
          JOB.Attr[0].attr_datatype = 2;
+         JOB.Attr[0].attr_rulestype = 0;
 
          JOB.Attr[1].attr_name = "jname";
          JOB.Attr[1].attr_length = 20;
@@ -310,11 +314,11 @@ if(TEST_SWITCH ==1)
 
     dm.mtr->setMetadataVer("0.0.1");
 //////////////////////////test for SQL query///////////////////////////////////
-    //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
+    string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
     //string input = "select * from emp,asg where (emp.eno=asg.eno)";
     //string input = "select * from emp,sal where (emp.title=sal.title)";
     //string input = "select * from emp where (eno<'E1000') and (title>='N')";
-    string input = "select * from asg";
+    //string input = "select * from emp";
 //////////////////////////test for SQL query///////////////////////////////////
     dm.mtr->execute_SQL(input);
     //queryTree();

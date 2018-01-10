@@ -24,11 +24,18 @@ public:
     struct query_tree get_querytree_fromSQL(string sql);
     void exec_SQL_query(std::string SQL);
 
+    //to create tmp data file's name without sepcial char like "+-=<*..."
+    std::string get_hash_fromstr(std::string str);
+    std::string get_attr_ruletypestring(int rule_type);
+    std::string get_attr_typestring(int type);
+
 private:
     //MetadataManager* pmtr;
 
     set<std::string> tree_set;
     vector<int> tree_vector;
+
+    std::hash<std::string> hash_function;
 
 };
 

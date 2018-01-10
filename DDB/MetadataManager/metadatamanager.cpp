@@ -103,11 +103,11 @@ void MetadataManager::initialize_from_config_file(const string &str)
       string database_path = cfg.lookup("db1.database_path");
 
       this->database_path = database_path;//get database path info
-      cout << "database_path: " << this->database_path << endl;
+      //cout << "database_path: " << this->database_path << endl;
     }
     catch(const SettingNotFoundException &nfex)
     {
-      cerr << "No 'database_path' setting in configuration file." << endl;
+      //cerr << "No 'database_path' setting in configuration file." << endl;
     }
 
 
@@ -116,41 +116,15 @@ void MetadataManager::initialize_from_config_file(const string &str)
       string database_name = cfg.lookup("db1.database");
 
       this->database_name = database_name;//get database name info
-      cout << "database_name: " << this->database_name << endl;
+      //cout << "database_name: " << this->database_name << endl;
     }
     catch(const SettingNotFoundException &nfex)
     {
-      cerr << "No 'database_name' setting in configuration file." << endl;
+      //cerr << "No 'database_name' setting in configuration file." << endl;
     }
 
 
-//    try
-//    {
-//      int num_of_tables = cfg.lookup("db1.table_num");
 
-//      this->num_of_tables = num_of_tables;//get tables' num
-//      cout << "num_of_tables: " << this->num_of_tables << endl;
-//    }
-//    catch(const SettingNotFoundException &nfex)
-//    {
-//      cerr << "No 'table_num' setting in configuration file." << endl;
-//    }
-
-
-//    const Setting& database = cfg.getRoot();
-//    try
-//    {
-//      //const Setting &tables = database["database"]["supplier"];
-//      const Setting &tables = database["database"]["supplier"];
-//      int count = tables.getLength();
-//      cout<<"the tables'num is "<<count<<endl;
-
-//    }
-//    catch(const SettingNotFoundException &nfex)
-//    {
-//      //Ignore.
-//      cout<<"error"<<endl;
-//    }
 
 }
 
@@ -172,38 +146,6 @@ void MetadataManager::initialize_tablemetadata()
                   root.add(CONFIG_NAME_DATABASE, Setting::TypeGroup);
                   cout<<"initialize_tablemetadata no database"<<endl;
                 }
-
-
-//          //const Setting &tables = database["db1"]["supplier"];
-//          const Setting &tables = database["db1"]["SUPPLIER"];
-//          int count = tables.getLength();
-//          cout<<"the table own attr num is "<<count<<endl;
-//          string str_table_name;
-//          string str_path;
-//          int attr_num = 0;
-
-//          string attr_name;
-//          string attr_datatype;
-//          int attr_length;
-//          string attr_rulestype;
-
-//          tables[0].lookupValue("table_attr_num",attr_num);
-//          tables[0].lookupValue("table_name",str_table_name);
-//          tables[0].lookupValue("table_path",str_path);
-//          cout<<"tables[0].table_name is: "<<str_table_name<<endl;
-//          cout<<"tables[0].table_attr_num is: "<<attr_num<<endl;
-//          cout<<"tables[0].table_path is: "<<str_path<<endl<<endl;
-//          for(int i =1;i < count;i++)
-//          {
-//           tables[i].lookupValue("attr_name",attr_name);
-//           tables[i].lookupValue("attr_datatype",attr_datatype);
-//           tables[i].lookupValue("attr_length",attr_length);
-//           tables[i].lookupValue("attr_rulestype",attr_rulestype);
-//           cout<<i<<" attr_name is: "<<attr_name<<endl;
-//           cout<<i<<" attr_datatype is: "<<attr_datatype<<endl;
-//           cout<<i<<" attr_length is: "<<attr_length<<endl;
-//           cout<<i<<" attr_rulestype is: "<<attr_rulestype<<endl<<endl;
-
 
           }
 

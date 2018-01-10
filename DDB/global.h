@@ -48,7 +48,8 @@
 #define CONFIG_NAME_TABLE_ATTR_RULESTYPE "attr_rulestype"
 #define CONFIG_NAME_TABLE_ATTR_SLICE "ATTR"
 
-
+#define CONFIG_TEMPFILE_PATH "./tmp/"
+#define LOCALHOST "127.0.0.1"
 
 
  enum TYPE
