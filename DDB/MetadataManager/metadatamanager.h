@@ -52,7 +52,7 @@ public:
     void setMetadataVer(std::string str);//set the version of DDB
     std::string get_metadata_version(){return version;}//get the version info
 
-    void execute_SQL(std::string SQL);
+    void execute_SQL(std::string SQL, int version);
     //Interface for Wang Chuanwen///////////////////////////////////////////////////////
 
     static MetadataManager* getInstance();
@@ -91,7 +91,7 @@ private:
 
     libconfig::Config cfg;
 
-    Dispatcher dpather;//for exec sql
+    Dispatcher dpatcher;//for exec sql
 
 
 };

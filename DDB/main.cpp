@@ -320,7 +320,7 @@ if(TEST_SWITCH ==1)
     //string input = "select * from emp where (eno<'E1000') and (title>='N')";
     //string input = "select * from emp";
 //////////////////////////test for SQL query///////////////////////////////////
-    dm.mtr->execute_SQL(input);
+    dm.mtr->execute_SQL(input,0);
     //queryTree();
     struct schema* p = NULL;
     p = &sch;

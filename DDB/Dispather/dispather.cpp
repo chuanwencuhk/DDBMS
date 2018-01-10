@@ -217,6 +217,129 @@ void Dispatcher::exec_SQL_query(string SQL)
 
 }
 
+void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
+{
+    tree_vector.clear();
+    tree_set.clear();
+
+    MetadataManager* pmgr = MetadataManager::getInstance();
+
+    struct query_tree qtree = get_querytree_fromSQL(SQL);
+    set_treevector_from_querytree(qtree);
+
+
+    while (!tree_vector.empty() )
+    {
+        int pos = tree_vector.back();
+        tree_vector.pop_back();
+        int node_type = qtree.node[pos].type;
+
+        switch (node_type) {
+
+        case 0:
+        {
+
+            string f_name = qtree.node[pos].str;
+            std::string::size_type n = f_name.find(":");
+            int site_ID = -1;
+            if(n != f_name.npos)
+            {
+                string s = f_name.substr(0,n);
+                string frag = f_name.substr(n+1,n+1);
+                site_ID = stoi(frag);
+                f_name = s;
+                cout<<"the table is:"<<s<<" the fragment is: "<<site_ID<<endl;
+
+            }
+                cout<<"table: "<<f_name<<" has no fragment!"<<endl;
+
+                if(site_ID == -1) site_ID =1;
+                string IP_address = pmgr->get_IP_by_siteID(site_ID-1);
+                string sql_stm = "select * from "+f_name+";" ;
+                cout<<"the SQL is: "<<sql_stm<<" to site: "<<site_ID<<" IP is: "<<IP_address<<endl;
+
+                //exec RPC query and save store result in ./tmp/
+                string res_str;
+                //res_str = RPCExecuteQuery(IP_address, sql_stm);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                ofstream fs_out(get_hash_fromstr(f_name)+".ttb");
+                fs_out<<res_str;
+                fs_out.close();
+
+                TableMedata tb = pmgr->get_tablemetadata(f_name);
+                string create_tmp_table = "create table "+get_hash_fromstr(f_name)+"(";
+
+                for(int i=0;i<tb.table_attr_num;i++)
+                {
+                    create_tmp_table += tb.Attr[i].attr_name + " " + get_attr_typestring(tb.Attr[i].attr_datatype) + \
+                            " " +get_attr_ruletypestring(tb.Attr[i].attr_rulestype);
+
+                    if(i<(tb.table_attr_num-1))
+                        create_tmp_table+=",";
+
+
+                }
+                create_tmp_table+=");";
+                cout<<"the SQL I made is: "<<create_tmp_table<<endl;
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //RPCExecute(LOCALHOST,create_tmp_table);
+                //RPCInsertFileToTable(LOCALHOST,get_hash_fromstr(f_name)+".ttb",get_hash_fromstr(f_name));
+
+                //qtree.node[pos].type = 5;//means the remote data has store in a tmp table with hashed name
+
+                SQL = replace_SQL_tablename_byhash(SQL,f_name,get_hash_fromstr(f_name));
+                cout<<SQL<<endl;
+                cout<<endl;
+
+
+        }
+
+            break;
+
+        case 1:
+        {
+
+
+        }
+
+            break;
+
+        case 2:
+
+
+            break;
+
+        case 3:
+
+            break;
+
+        case 4:
+
+
+
+            break;
+
+        default:
+            cout<<"get into the default switch option!"<<endl;
+            break;
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
 string Dispatcher::get_hash_fromstr(string str)
 {
     unsigned long hash_value = (unsigned long)hash_function(str);
@@ -263,4 +386,16 @@ string Dispatcher::get_attr_typestring(int type)
         return string("");
         break;
     }
+}
+
+string&  Dispatcher::replace_SQL_tablename_byhash(string&   str,const   string&   old_value,const   string&   new_value)
+{
+    while(1)
+    {
+        string::size_type pos(0);
+        if((pos=str.find(old_value))!=string::npos)
+            str.replace(pos,old_value.length(),new_value);
+        else break;
+    }
+    return str;
 }

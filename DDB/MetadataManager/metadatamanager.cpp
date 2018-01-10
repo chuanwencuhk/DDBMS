@@ -465,13 +465,21 @@ void MetadataManager::setMetadataVer(string str)
     this->version = s;
 }
 
-void MetadataManager::execute_SQL(string SQL)
+void MetadataManager::execute_SQL(string SQL, int version)
 {
     set_table_metadata_toquerytree();
     set_fragment_metadata_toquerytree();
     cout<<"set_table_metadata and set_fragment_metadata in WHY's schema ok"<<endl;
-
-    dpather.exec_SQL_query(SQL);
+    switch (version) {
+    case 0:
+        dpatcher.exec_SQL_query_poor_optimal(SQL);
+        break;
+    case 1:
+        dpatcher.exec_SQL_query(SQL);
+    default:
+        break;
+    }
+    //dpather.exec_SQL_query(SQL);
 
 }
 
