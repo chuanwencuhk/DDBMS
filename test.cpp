@@ -50,6 +50,7 @@ select * from emp where emp.eno > 'E0997' and emp.eno < 'E0999';
 select * from emp,asg where emp.eno = asg.eno;
 select * from emp,sal where emp.title=sal.title;
 select * from emp,sal where emp.title=sal.title and emp.title = 'IT Director';
+
 select emp.eno,job.jno,emp.title,job.loc from emp,job,sal,asg where emp.title=sal.title and emp.eno=asg.eno and job.jno=asg.jno and job.jno<='J0400' and emp.title = 'IT Director';
 
 

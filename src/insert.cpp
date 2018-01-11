@@ -214,7 +214,7 @@ void load_dataX(string table_name,vector<string> &stmts){
 		cout<<data_path_tmp[i]<<endl;
 		string buf_string = readFileIntoString(data_path_tmp[i]);
 		cout<<"abcde    "<<i<<" "<<buf_string.size()<<endl;
-		RPCInsertFileToTable(db_names1[i],ip_vec[i],buf_string,table_name);
+		RPCInsertFileToTable(ip_vec[i],db_names1[i],buf_string,table_name);
 	}
 	cout<<"load into "<<fcount<<" fragments."<<endl;
 	mysql_close(mysql_conn);

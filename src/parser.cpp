@@ -35,6 +35,8 @@ bool isAttrExists(string col_name, string table_name);
 
 //save one select sql for one db.
 string frag_select_stmt[MAX_FRAG_NUM];
+string frag_creat_stmt[MAX_FRAG_NUM];
+
 string data_path[MAX_FRAG_NUM];
 string dir = string("/var/lib/mysql-files/");
 
@@ -85,6 +87,28 @@ string GetTypeString(OP op_type){
 			return "";
 	}
 	return type_string;
+}
+string GetTypeStringF(TYPE type, int used_size){
+	string tmp_string = " ";
+	if(type == 1)
+		return " INTEGER";
+	if(type == C){
+		tmp_string = " CHAR";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
+		return tmp_string;
+	}
+	if(type == V){
+		tmp_string = " VARCHAR";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
+		return tmp_string;
+	}
+	if(type == F){
+		tmp_string = " FLOAT";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
+		return tmp_string;
+	}
+	if(type == D)
+		return " DATE";
 }
 
 string GetVTypeString(TYPE type, int i){
@@ -479,6 +503,10 @@ void spliceFragToSelect(){
 		cout << "there is no frag info."<<endl;
 		return;
 	}
+	for(int i = 0; i<MAX_FRAG_NUM;i++){
+		frag_creat_stmt[i] ="";
+		frag_select_stmt[i]="";
+	}
 	string tmp_stmt = string("SELECT ");
 	if(frag_type == HOR){
 		/*
@@ -541,6 +569,53 @@ void spliceFragToSelect(){
 			cout<<tmp_stmt<<endl;
 			frag_select_stmt[i] = tmp_stmt;
 			cout<<frag_select_stmt[i]<<endl;
+
+			/*splice Create Stmt*/
+			string f_name = frag_tb_name;
+			TableMedata tmp_tb_meta = MetadataManager::getInstance()->get_tablemetadata(f_name);
+			int meta_attr_num = tmp_tb_meta.table_attr_num;
+			cout<<"meta_attr_num "<<meta_attr_num<<endl;
+			string tmp_create_stmt = "";
+			tmp_create_stmt += "CREATE TABLE " + f_name + "(";
+
+			string tmp_attr_name = frag_list[i].attr_names[0];
+			tmp_create_stmt.append(frag_list[i].attr_names[0]);
+			bool flag = false;
+			for(int m=0; m<meta_attr_num;m++){
+				if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
+					string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
+					tmp_create_stmt += type_string;
+					flag = true;
+					break;
+				}
+			}
+			if(flag == false){
+				cout<<"error frag."<<endl;
+				return;
+			}
+			for (int j = 1; j < frag_list[i].attr_count; ++j)
+			{
+				tmp_create_stmt += ",";
+				tmp_attr_name = frag_list[i].attr_names[j];
+				tmp_create_stmt.append(frag_list[i].attr_names[j]);
+				flag = false;
+				for(int m=0; m<meta_attr_num;m++){
+					if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
+						string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
+						tmp_create_stmt += type_string;
+						flag = true;
+						break;
+					}
+				}
+				if(flag == false){
+					cout<<"error frag."<<endl;
+					return;
+				}
+
+			}
+			tmp_create_stmt += ");";
+			frag_creat_stmt[i] = tmp_create_stmt;
+			cout<<"frag_creat_stmt[i] "<<frag_creat_stmt[i]<<endl;
 		}
 		return;
 	} 
@@ -579,6 +654,53 @@ void spliceFragToSelect(){
 			tmp_stmt.append(";");
 			frag_select_stmt[i] = tmp_stmt;
 			cout<<frag_select_stmt[i]<<endl;
+
+			/*splice Create Stmt*/
+			string f_name = frag_tb_name;
+			TableMedata tmp_tb_meta = MetadataManager::getInstance()->get_tablemetadata(f_name);
+			int meta_attr_num = tmp_tb_meta.table_attr_num;
+			cout<<"meta_attr_num "<<meta_attr_num<<endl;
+			string tmp_create_stmt = "";
+			tmp_create_stmt += "CREATE TABLE " + f_name + "(";
+
+			string tmp_attr_name = frag_list[i].attr_names[0];
+			tmp_create_stmt.append(frag_list[i].attr_names[0]);
+			bool flag = false;
+			for(int m=0; m<meta_attr_num;m++){
+				if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
+					string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
+					tmp_create_stmt += type_string;
+					flag = true;
+					break;
+				}
+			}
+			if(flag == false){
+				cout<<"error frag."<<endl;
+				return;
+			}
+			for (int j = 1; j < frag_list[i].attr_count; ++j)
+			{
+				tmp_create_stmt += ",";
+				tmp_attr_name = frag_list[i].attr_names[j];
+				tmp_create_stmt.append(frag_list[i].attr_names[j]);
+				flag = false;
+				for(int m=0; m<meta_attr_num;m++){
+					if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
+						string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
+						tmp_create_stmt += type_string;
+						flag = true;
+						break;
+					}
+				}
+				if(flag == false){
+					cout<<"error frag."<<endl;
+					return;
+				}
+
+			}
+			tmp_create_stmt += ");";
+			frag_creat_stmt[i] = tmp_create_stmt;
+			cout<<"frag_creat_stmt[i] "<<frag_creat_stmt[i]<<endl;
 		}
 		return;
 	}

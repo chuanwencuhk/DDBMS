@@ -141,6 +141,8 @@ extern char* frag_tb_name;
 extern FRAG_TYPE frag_type;
 extern FragInfo frag_list[MAX_FRAG_NUM];
 extern string frag_select_stmt[MAX_FRAG_NUM];
+extern string frag_creat_stmt[MAX_FRAG_NUM];
+
 
 extern SelectQuery* query;
 extern DeleteQuery* delete_query;

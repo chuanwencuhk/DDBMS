@@ -1508,8 +1508,8 @@ yyreduce:
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
 			cout<<"load_data";
 			// insertFragMeta();
-			// spliceFragToSelect();
-			load_data();
+			 spliceFragToSelect();
+			//load_data();
 		}
 #line 1515 "yacc.tab.c" /* yacc.c:1646  */
     break;
@@ -1522,7 +1522,7 @@ yyreduce:
 			cout<<"frag type is " << frag_type <<" VERTICAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
 			// insertFragMeta();
-			// spliceFragToSelect();
+			 //spliceFragToSelect();
 			load_data();
 		}
 #line 1529 "yacc.tab.c" /* yacc.c:1646  */

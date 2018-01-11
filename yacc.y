@@ -164,8 +164,8 @@ frag_stat:
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
 			cout<<"load_data";
 			// insertFragMeta();
-			// spliceFragToSelect();
-			load_data();
+			 spliceFragToSelect();
+			//load_data();
 		}
 	|	FRAGMENT '-'VERTICAL  NAME frag_list_v ';'
 		{
@@ -174,7 +174,7 @@ frag_stat:
 			cout<<"frag type is " << frag_type <<" VERTICAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
 			// insertFragMeta();
-			// spliceFragToSelect();
+			 //spliceFragToSelect();
 			load_data();
 		}
 	|	FRAGMENT '-'MIXED		  NAME frag_list_m	';'

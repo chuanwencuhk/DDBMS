@@ -27,6 +27,8 @@ using namespace std;
 
 extern int frag_count;
 extern string frag_select_stmt[MAX_FRAG_NUM];
+extern string frag_creat_stmt[MAX_FRAG_NUM];
+
 extern string data_path[MAX_FRAG_NUM];
 extern char* frag_tb_name;
 extern char* tb_name;
@@ -173,6 +175,18 @@ void load_data(){
 		finish_with_error(NULL);
 
 	get_frag_data();
+
+	if(frag_creat_stmt[0]!=""){
+		cout<<"VERTICL OR MIXED. RECreate Table."<<endl;
+		for(int i = 0; i < frag_count; i++){
+			cout<<"tb_name"<<tb_name<<endl;
+			cout<<"executing drop table "<<i<<endl;
+			RPCExecute( ip_vec[i],db_names[i], "DROP TABLE "+tb_name);
+			cout<<"executing create table "<<i<<endl;
+			cout<<frag_creat_stmt[i]<<endl;
+			RPCExecute( ip_vec[i],db_names[i], frag_creat_stmt[i]);
+		}
+	}
 
 	fstream infile;
 	/*
