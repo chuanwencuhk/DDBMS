@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct schema sch;
+schema sch;
 
 //SAL(title char(20) primary key, sal float not null)
 //EMP(eno char(20) primary key, ename char(20) not null, title char(20))
@@ -979,9 +979,9 @@ void push_select_down(query_tree &tree)
 				
 			}
 		}
-
+		clear_frag(tree);
 	}
-	clear_frag(tree);
+	
 	//把最上面的投影操作删除
 	/*tree.node[tree.root].type = -1;
 	tree.node[tree.node[tree.root].child[1]].fa = -1;

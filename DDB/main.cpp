@@ -314,11 +314,12 @@ if(TEST_SWITCH ==1)
 
     dm.mtr->setMetadataVer("0.0.1");
 //////////////////////////test for SQL query///////////////////////////////////
-    string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
+    //string input = "select eno,jno,title,loc from emp,job,sal,asg where (emp.title=sal.title) and (emp.eno=asg.eno) and (job.jno=asg.jno) and (jno<='J0400') and (title<'N')";
     //string input = "select * from emp,asg where (emp.eno=asg.eno)";
     //string input = "select * from emp,sal where (emp.title=sal.title)";
     //string input = "select * from emp where (eno<'E1000') and (title>='N')";
     //string input = "select * from emp";
+    string input = "select * from job where (jno<'J0400')";
 //////////////////////////test for SQL query///////////////////////////////////
     dm.mtr->execute_SQL(input,0);
     //queryTree();

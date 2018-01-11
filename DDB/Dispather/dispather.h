@@ -36,6 +36,7 @@ private:
     //MetadataManager* pmtr;
 
     set<std::string> tree_set;
+    set<std::string> cplmnt_set;
     vector<int> tree_vector;
 
     std::hash<std::string> hash_function;
