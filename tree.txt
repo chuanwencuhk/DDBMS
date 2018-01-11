@@ -1,0 +1,33 @@
+10
+10 4 -1 1 9 1/emp.eno,job.jno,emp.title,loc
+9 1 10 2 91 136 2/
+91 2 9 2 92 103 3/job.jno=asg.jno
+136 2 9 2 137 148 3/job.jno=asg.jno
+92 2 91 2 93 100 4/emp.eno=asg.eno
+103 4 91 1 104 4/jno,loc
+137 2 136 2 138 145 4/emp.eno=asg.eno
+148 4 136 1 149 4/jno,loc
+93 2 92 2 94 97 5/emp.title=sal.title
+100 4 92 1 101 5/eno,jno
+104 3 103 1 105 5/jno<='J0400'
+138 2 137 2 139 142 5/emp.title=sal.title
+145 4 137 1 146 5/eno,jno
+149 3 148 1 150 5/jno<='J0400'
+94 4 93 1 95 6/title
+97 4 93 1 98 6/title,eno
+101 3 100 1 102 6/jno<='J0400'
+105 0 104 0 6/job:1
+139 4 138 1 140 6/title
+142 4 138 1 143 6/title,eno
+146 3 145 1 147 6/jno<='J0400'
+150 0 149 0 6/job:1
+95 3 94 1 96 7/title='IT Director'
+98 3 97 1 99 7/title='IT Director'
+102 0 101 0 7/asg:1
+140 3 139 1 141 7/title='IT Director'
+143 3 142 1 144 7/title='IT Director'
+147 0 146 0 7/asg:3
+96 0 95 0 8/sal
+99 0 98 0 8/emp:1
+141 0 140 0 8/sal
+144 0 143 0 8/emp:3

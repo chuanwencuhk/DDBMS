@@ -1,7 +1,11 @@
 1.frag
 frag -hor EMP POSITION < 'F' and NAME < 'K' db1 * POSITION <'F' and NAME >='K' db2 * POSITION >='F' and NAME  <'K' db3 * POSITION >= 'F' and NAME >= 'K' db4;
 
-frag -ver emp(EMP_NO,POSITION)	db1 * (EMP_NO,NAME) db2;
+frag -ver emp (eno,ename)	db1 * (eno,title) db2;
+
+
+
+frag -mix job jno < 'J0500' (jno,jname,budget) db1 * jno < 'j0500' (jno,loc) db2 * jno >= 'j0500' (jno,jname,budget) db3 * jno >= 'J0500' (jno,loc) db4;
 
 
 2.Create Table

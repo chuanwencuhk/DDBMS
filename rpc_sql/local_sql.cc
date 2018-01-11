@@ -13,7 +13,7 @@ string getPassword(){
 }
 
 
-bool localExecute(string sql_statement){
+bool localExecute(string dbname, string sql_statement){
 	cout << "sql_statement " << sql_statement << endl;
 	cout << "localExecute(string sql_statement)" << endl;
 	MySQL_Driver *driver;
@@ -22,7 +22,7 @@ bool localExecute(string sql_statement){
 	driver = sql::mysql::get_mysql_driver_instance();
 	cout << "	driver = sql::mysql::get_mysql_driver_instance();" << endl;
 	con = driver->connect(getMySQLIp(), getUsername(), getPassword());
-	con->setSchema("foo");
+	con->setSchema(dbname);
 	stmt = con->createStatement();
 	cout << "stmt = con->createStatement();" << endl;
 	bool ok = false;
@@ -36,13 +36,13 @@ bool localExecute(string sql_statement){
 	return ok;
 }
 
-int localExecuteUpdate(string sql_statement){
+int localExecuteUpdate(string dbname, string sql_statement){
 	MySQL_Driver *driver;
 	Connection *con;
 	Statement *stmt;
 	driver = sql::mysql::get_mysql_driver_instance();
 	con = driver->connect(getMySQLIp(), getUsername(), getPassword());
-	con->setSchema("foo");
+	con->setSchema(dbname);
 	stmt = con->createStatement();
 	int cnt = false;
 	assert(sql_statement.size() > 0);
@@ -54,14 +54,14 @@ int localExecuteUpdate(string sql_statement){
 
 
 
-string localExecuteQuery(string sql_statement){
+string localExecuteQuery(string dbname, string sql_statement){
 	MySQL_Driver *driver;
 	Connection *con;
 	Statement *stmt;
 	ResultSet  *res;
 	driver = sql::mysql::get_mysql_driver_instance();
 	con = driver->connect(getMySQLIp(), getUsername(), getPassword());
-	con->setSchema("foo");
+	con->setSchema(dbname);
 	stmt = con->createStatement();
 	res = stmt->executeQuery(sql_statement);
 	int columnCnt = res->getMetaData()->getColumnCount();
@@ -69,15 +69,17 @@ string localExecuteQuery(string sql_statement){
 	while (res->next()){
 		for (int i=1;i<=columnCnt;++i){
 			result.append(res->getString(i));
-			result.append(",");
+			result.append("\t");
 		}
 		result.append("\n");
 	}
+	if (!result.empty())
+		result.erase(result.size()-1, 1);
 	return result;
 }
 
 
-bool localInsertFileToTable(string sql_file, string table_name){
+bool localInsertFileToTable(string dbname, string sql_file, string table_name){
 	cout<<"localInsertFileToTable"<<endl;
 	string file_name = "tmp";
 	remove(file_name.c_str());
@@ -100,7 +102,7 @@ bool localInsertFileToTable(string sql_file, string table_name){
 	cout<< "	driver = sql::mysql::get_mysql_driver_instance();" << endl;
 	con = driver->connect(getMySQLIp(), getUsername(), getPassword());
 	cout << "con = driver->connect(getMySQLIp(), getUsername(), getPassword());" << endl;
-	con->setSchema("foo");
+	con->setSchema(dbname);
 	cout << "con->setSchema(\"foo\");" << endl;
 	stmt = con->createStatement();
 	cout << "stmt = con->createStatement();" << endl;

@@ -32,13 +32,26 @@ step 3. MAKE FRAGMENTS.
 cd /home/wcw/ddb_parser/rpc_sql
 rm tmp
 
-load 'sal.csv' into sal ;
+load 'sal.csv' into local table sal ;
+
+frag -none sal db1;
 
 frag -hor emp eno < 'E1000' and title < 'N' db1 * eno < 'E1000' and title >= 'N' db2 * eno >= 'E1000' and title < 'N' db3 * eno >= 'E1000' and title >= 'N' db4;
 
 frag -hor asg eno < 'E1000' and jno < 'J0500' db1 * eno < 'E1000' and jno >= 'J0500' db2 * eno >= 'E1000' and jno < 'J0500' db3 * eno >= 'E1000' and jno >= 'J0500' db4;
 
 frag -hor job jno < 'J0500' db1 * jno >= 'J0500' db2;
+
+frag -mix job jno < 'J0500' (jno,jname,budget) db1 * jno < 'j0500' (jno,loc) db2 * jno >= 'j0500' (jno,jname,budget) db3 * jno >= 'J0500' (jno,loc) db4;
+
+
+
+select * from emp where emp.eno > 'E0997' and emp.eno < 'E0999';
+select * from emp,asg where emp.eno = asg.eno;
+select * from emp,sal where emp.title=sal.title;
+select * from emp,sal where emp.title=sal.title and emp.title = 'IT Director';
+select emp.eno,job.jno,emp.title,job.loc from emp,job,sal,asg where emp.title=sal.title and emp.eno=asg.eno and job.jno=asg.jno and job.jno<='J0400' and emp.title = 'IT Director';
+
 
 
 
@@ -61,3 +74,4 @@ delete from emp;
 
 step 5. UPDATE
 update job set jname = 'Project #988' where jno = 'J0999';
+

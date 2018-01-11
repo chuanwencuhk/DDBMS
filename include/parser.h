@@ -1,5 +1,5 @@
 /*
- * paser.h *
+ * parser.h *
  *  Created on: Nov 30, 2017
  *      Author: wcw
  */
@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
-#include "../include/metadatamanager.h"
+#include "metadatamanager.h"
 
 using namespace std;
 
@@ -73,10 +73,10 @@ struct Condition{
 	 */
 	
 	OP op;
-	char* tb_name;
+	char* tb_name = NULL;
 	int tb_id;
-	char* col_name;
-	char* value;
+	char* col_name = NULL;
+	char* value = NULL;
 	TYPE value_type;
 //	struct Condition* next;
 };
@@ -151,20 +151,20 @@ extern AttrInfo attr_list[MAX_ATTR_NUM];
 
 extern UpdateQuery* update_query;
 
+extern int insert_count;
+extern char* insert_record[MAX_TUPLE_SIZE];
+
+extern string dir;
+
 
 
  /* if necessary, query stack for nested query.*/
-int PrintSelectQuery();
-int PrintAttrList();
-int PrintCondList();
+
 void InitQuery();
 void DestoryQuery();
 void parser_init();
-bool GetFragInfo(FragInfo *g_frag_list,char* g_tb_name, int g_frag_count,int g_frag_type);
-void printFraglist();
-void print();
 
-
+string GetVTypeString(TYPE type, int i);
 /*
 	funcs called in conn_mysql.cpp
 */
@@ -174,30 +174,12 @@ string spliceCreateStmt();
 string spliceDropStmt();
 string spliceDeleteStmt();
 string spliceUpdateStmt();
+string spliceInsertStmt();
 /*
 	funcs related to Meta
  */
 bool insertIntoTableMeta();
+bool insertFragMeta();
 bool deleteFromMeta(string tb_name);
-// bool isTableExists(string table_name);
-// bool isAttrExists(string col_name, string table_name);
-bool isAttrFitsMeta(AttrInfo attr_info,string table_name);
-bool checkIsUStmtValid();
-bool checkIsDStmtValid();
-bool checkIsCStmtValid();
-bool checkIsFragStmtValid();
-bool checkIsSelStmtValid();
-bool checkIsDtStmtValid();
 
-/*
-	funcs called in yacc.y
- */
-void exec_drop_table_stmt();
-void exec_create_stmt();
-void exec_select_stmt();
-void exec_delete_stmt();
-void exec_update_stmt();
-void exec_show_table_stmt();
-int load_data_into_local_db(string tb_name);
-void load_data();
 

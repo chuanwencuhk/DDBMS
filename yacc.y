@@ -2,6 +2,9 @@
 #include <string.h>
 #include <string>
 #include "../include/parser.h"
+#include "../include/exec_mysql.h"
+#include "../include/insert.h"
+
 
 extern "C"{
 	extern int yylex(void);
@@ -11,6 +14,13 @@ extern "C"{
 
 OP Operator(char* opstr);
 TYPE GetType(char* type_str);
+
+int PrintSelectQuery();
+int PrintAttrList();
+int PrintCondList();
+bool GetFragInfo(FragInfo *g_frag_list,char* g_tb_name, int g_frag_count,int g_frag_type);
+void printFraglist();
+void print();
 
 int SaveSelItem(char* tb_name, char* col_name);
 int SaveFromItem(char* tb_name);
@@ -88,10 +98,10 @@ static char recordstr[4096];
 	/* reserved keywords */
 %token SELECT FROM WHERE ORDER BY ASC DESC FRAGMENT LOAD
 %token ALL UNIQUE DISTINCT
-%token CREATE TABLE DROP INDEX
+%token CREATE TABLE DROP INDEX LOCAL
 %token INSERT INTO VALUES DELETE UPDATE SET
 %token CHARACTER INTEGER DATE FLOAT VARCHAR
-%token HORIZONAL VERTICAL MIX
+%token HORIZONAL VERTICAL MIXED NONE
 %token SHOW TABLES
 %token EXIT
 
@@ -137,13 +147,14 @@ show_table_stat:
 		}
 	;
 table_load:
-		LOAD STRING INTO NAME ';'
+		LOAD STRING INTO LOCAL TABLE NAME ';'
 		{
-			tb_name = $4;
-			cout<<"LOAD " << $2 <<" INTO "<<$4<<" "<<endl;
+			tb_name = $6;
+			cout<<"LOAD " << $2 <<" INTO "<<$6<<" "<<endl;
 			string tmp_name(tb_name);
 			load_data_into_local_db(tmp_name);
 		}
+	;
 frag_stat:
 		FRAGMENT '-'HORIZONAL NAME frag_list_h ';'
 		{
@@ -152,6 +163,8 @@ frag_stat:
 			cout<<"frag type is " << frag_type <<" HORIZONAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
 			cout<<"load_data";
+			// insertFragMeta();
+			// spliceFragToSelect();
 			load_data();
 		}
 	|	FRAGMENT '-'VERTICAL  NAME frag_list_v ';'
@@ -160,18 +173,38 @@ frag_stat:
 			frag_tb_name = $4;
 			cout<<"frag type is " << frag_type <<" VERTICAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
+			// insertFragMeta();
+			// spliceFragToSelect();
 			load_data();
 		}
-	|	FRAGMENT '-'MIX		  NAME frag_list_m	';'
+	|	FRAGMENT '-'MIXED		  NAME frag_list_m	';'
 	{
 			frag_type = M;
 			frag_tb_name = $4;
 			cout<<"frag type is " << frag_type <<" MIXED"<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
+			// insertFragMeta();
+			// spliceFragToSelect();
 			load_data();
+	}
+	|	FRAGMENT '-'NONE NAME NAME ';'
+	{
+			frag_type = N;
+			frag_tb_name = $4;
+			cout<<"frag type is " << frag_type <<" NONE"<<endl;
+			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
+			frag_list[frag_count].site_name = $5;
+			cout<<"site_name"<<frag_list[frag_count].site_name<<endl;
+			frag_count ++;
+			load_data();
+			//spliceFragToSelect();
 	}
 	;
 frag_list_m:
+		frag_m
+	|	frag_list_m '*' frag_m
+	;
+frag_m:
 	frag_cond '(' attr_list ')' NAME
 	{
 		frag_list[frag_count].site_name = $5;
@@ -405,11 +438,11 @@ table_drop:
 insert_stat:
 		INSERT INTO table VALUES '(' insert_list ')' ';'
 		{
-			cout << "Call Insert Func() here."<<endl;
-			cout << "INSERT INTO " << tb_name << " " << recordstr <<endl;
 			for(int i = 0; i<insert_count;i++){
 				cout<<i<<" "<<insert_record[i]<<endl;
-			}			
+			}	
+			string table_name = tb_name;
+			exec_insert_stmt(table_name);					
 		}
 	; 	
 insert_list:
@@ -418,41 +451,24 @@ insert_list:
 			insert_record[insert_count] = (char*)malloc(sizeof(int)*MAX_INT_LENGTH);
 			memcpy(insert_record[insert_count],$1, MAX_INT_LENGTH);
 			insert_count++;
-
-			strcpy(recordstr+curPos, $1);
-			curPos+=strlen($1);
 		}
 	|	STRING
 		{
 			insert_record[insert_count] = (char*)malloc(256);
 			memcpy(insert_record[insert_count],$1, 256);
-
-			strcpy(recordstr+curPos, $1);
-			curPos+=strlen($1);
+			insert_count++;
 		}
 	|	insert_list ',' NUMBER
 		{
 			insert_record[insert_count] = (char*)malloc(sizeof(int)*MAX_INT_LENGTH);
 			memcpy(insert_record[insert_count],$3, MAX_INT_LENGTH);
 			insert_count++;
-
-			strcpy(recordstr+curPos, ",");
-			curPos++;
-
-			strcpy(recordstr+curPos, $3);
-			curPos += strlen($3);
 		}
 	|	insert_list ',' STRING
 		{
 			insert_record[insert_count] = (char*)malloc(256);
 			memcpy(insert_record[insert_count],$3,256);
 			insert_count++;
-
-			strcpy(recordstr+curPos, ",");
-			curPos++;
-
-			strcpy(recordstr+curPos, $3);
-			curPos += strlen($3);
 		}
 	;
 	/* delete statement */
@@ -481,7 +497,7 @@ select_seg:
 		select_clause FROM fromlist where_clause orderby_clause
 		{
 			FillSelectCond();
-			PrintSelectQuery();
+			//PrintSelectQuery();
 			//query->tb_name = tb_name;
 			query->cond_count = cond_count;
 			query->sel_count = sel_count;

@@ -4,6 +4,7 @@
 #include "../include/global.h"
 
 
+
 typedef struct _SiteMetadata
 {
     int site_ID = 0;
@@ -46,3 +47,4 @@ private:
 };
 
 #endif // SITEINFO_H
+

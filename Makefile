@@ -13,7 +13,7 @@ OBJ = $(patsubst %.cpp,${DIR_OBJ}/%.o,$(notdir ${SRC}))
 
 TARGET = main
 BIN_TARGET = ${DIR_BIN}/${TARGET}
-CFLAGSs =  -g -I/usr/include/mysql/ -lmysqlclient -lrpc_sql -pthread -lrpc -lmysqlcppconn -lconfig++
+CFLAGSs =  -g -W -I/usr/include/mysql/ -lmysqlclient -lrpc_sql -pthread -lrpc -lmysqlcppconn -lconfig++
 
 ${BIN_TARGET}: ${DIR_OBJ}/yacc.tab.o ${DIR_OBJ}/lex.yy.o ${OBJ}
 	$(CC) $(DIR_OBJ)/yacc.tab.o $(DIR_OBJ)/lex.yy.o $(OBJ) -o $@ $(CFLAGSs)

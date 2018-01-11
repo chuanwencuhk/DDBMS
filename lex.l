@@ -18,6 +18,8 @@ extern "C"{
 	/* reserved keywords */
 CREATE	|
 create		return CREATE;
+local 	|
+LOCAL 		return LOCAL;
 TABLE	|
 table		return TABLE;
 LOAD	|
@@ -72,8 +74,10 @@ HOR(IZONAL)? |
 hor(izonal)? return HORIZONAL;
 VER(TICAL)? |
 ver(tical)?	return VERTICAL;
-MIX |
-mix return MIX;
+MIX(ED)? |
+mix(ed)? return MIXED;
+NONE	|
+none return NONE;
 varchar |
 VARCHAR		return VARCHAR;
 float	|

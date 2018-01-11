@@ -5,27 +5,41 @@
 #include <map>
 #include<set>
 
-typedef struct _Condition
+typedef struct _HCondition
 {
+    bool isValid = false;
     std::string attr_name = "";
     std::string attr_condition = "";
     std::string attr_value = "";
-    bool isValid = false;
-}Conditon;
 
-typedef struct _ConditionAB
+}HConditon;
+
+typedef struct _VCondition
 {
-    Conditon con_A;
-    Conditon con_B;
     bool isValid = false;
-//A and B ,2 condition can produce 4 slice
-}ConditonAB;
+    int attr_num = 0;
+    std::string attr_frag_strlist[MAX_VERTICAL_FRAGMENT_NUM];
+    std::string attr_prikey = "";
+
+
+}VCondition;
+
+typedef struct _ConditionHV
+{
+    bool isValid = false;
+    HConditon con_H1;
+    HConditon con_H2;
+
+    VCondition con_V1;
+    //VCondition con_V2;//no need to use con_V2 at now
+
+}ConditonHV;
 
 typedef struct _Fragment
 {
-     std::string frag_talbe_name = "";
+     std::string frag_table_name = "";
      //int slice_num =0;
-     ConditonAB condtion_slice[MAX_FRAGMENT_NUM];
+     ConditonHV condition_slice[MAX_FRAGMENT_NUM];
      //condition_slice[i] means DB[i]'s fragment
 
 }Fragment;
@@ -44,6 +58,8 @@ public:
     int get_availble_fragarray_pos();
 
     int get_fragment_pos(std::string str);
+
+    void delete_fragment_inmap(std::string str);
 
     //Fragment get_frag_bypos(int i){return frag_array[i];}
 

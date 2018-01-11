@@ -14,13 +14,13 @@ using sql::ResultSet;
 using std::ofstream;
 
 
-bool localExecute(string sql_statement);
+bool localExecute(string dbname, string sql_statement);
 
-string localExecuteQuery(string sql_statement);
+string localExecuteQuery(string dbname, string sql_statement);
 
-int localExecuteUpdate(string sql_statement);
+int localExecuteUpdate(string dbname, string sql_statement);
 
-bool localInsertFileToTable(string sql_file, string table_name);
+bool localInsertFileToTable(string dbname, string sql_file, string table_name);
 
 string getMySQLIp();
 string getUsername();
