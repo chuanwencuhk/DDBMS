@@ -15,7 +15,7 @@
 	
 	</head>
 	<body>
-		<div id="container" style="width: 2000px; height: 600px; margin: 0 auto"></div>
+		<div id="container" style="width: 2500px; height: 800px; margin: 0 auto"></div>
 		<script>
 		<%    
 			String path ="C:\\Users\\harpuia\\Documents\\Visual Studio 2017\\Projects\\query_tree\\query_tree";   // 这边文件目录需改成相对路径  

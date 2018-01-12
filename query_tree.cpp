@@ -20,44 +20,44 @@ void init_schema()
 	sch.table[3].table_name = "customer";	sch.table[4].table_name = "orders";
 	
 	sch.table[1].site_num = 4;	sch.table[1].type = 0;
-	sch.table[1].site[1].condition[0] = "id<104000&nation='PRC'";		sch.table[1].site[2].condition[0] = "id<104000&nation='USA'";
-	sch.table[1].site[3].condition[0] = "id>=104000&nation='PRC'";		sch.table[1].site[4].condition[0] = "id>=104000&nation='USA'";
+	sch.table[1].site[1].condition[0] = "publisher_id<104000&nation='PRC'";		sch.table[1].site[2].condition[0] = "publisher_id<104000&nation='USA'";
+	sch.table[1].site[3].condition[0] = "publisher_id>=104000&nation='PRC'";		sch.table[1].site[4].condition[0] = "publisher_id>=104000&nation='USA'";
 	//分片条件
 	sch.table[1].site[1].hcon_list_len = 2;	sch.table[1].site[2].hcon_list_len = 2;
 	sch.table[1].site[3].hcon_list_len = 2; sch.table[1].site[4].hcon_list_len = 2;
-	sch.table[1].site[1].hcon_list[1].attr = "id";	  sch.table[1].site[1].hcon_list[1].op = "<";  sch.table[1].site[1].hcon_list[1].section = "104000";
+	sch.table[1].site[1].hcon_list[1].attr = "publisher_id";	  sch.table[1].site[1].hcon_list[1].op = "<";  sch.table[1].site[1].hcon_list[1].section = "104000";
 	sch.table[1].site[1].hcon_list[2].attr = "nation"; sch.table[1].site[1].hcon_list[2].op = "=";  sch.table[1].site[1].hcon_list[2].section = "'PRC'";
-	sch.table[1].site[2].hcon_list[1].attr = "id";   sch.table[1].site[2].hcon_list[1].op = "<";  sch.table[1].site[2].hcon_list[1].section = "104000";
+	sch.table[1].site[2].hcon_list[1].attr = "publisher_id";   sch.table[1].site[2].hcon_list[1].op = "<";  sch.table[1].site[2].hcon_list[1].section = "104000";
 	sch.table[1].site[2].hcon_list[2].attr = "nation"; sch.table[1].site[2].hcon_list[2].op = "="; sch.table[1].site[2].hcon_list[2].section = "'USA'";
-	sch.table[1].site[3].hcon_list[1].attr = "id";   sch.table[1].site[3].hcon_list[1].op = ">="; sch.table[1].site[3].hcon_list[1].section = "104000";
+	sch.table[1].site[3].hcon_list[1].attr = "publisher_id";   sch.table[1].site[3].hcon_list[1].op = ">="; sch.table[1].site[3].hcon_list[1].section = "104000";
 	sch.table[1].site[3].hcon_list[2].attr = "nation"; sch.table[1].site[3].hcon_list[2].op = "=";  sch.table[1].site[3].hcon_list[2].section = "'PRC'";
-	sch.table[1].site[4].hcon_list[1].attr = "id";   sch.table[1].site[4].hcon_list[1].op = ">="; sch.table[1].site[4].hcon_list[1].section = "104000";
+	sch.table[1].site[4].hcon_list[1].attr = "publisher_id";   sch.table[1].site[4].hcon_list[1].op = ">="; sch.table[1].site[4].hcon_list[1].section = "104000";
 	sch.table[1].site[4].hcon_list[2].attr = "nation"; sch.table[1].site[4].hcon_list[2].op = "="; sch.table[1].site[4].hcon_list[2].section = "'USA'";
 	//表的列信息
 	sch.table[1].col_num = 3;
-	sch.table[1].col_name[1] = "id";	sch.table[1].col_name[2] = "name";	sch.table[1].col_name[3] = "nation";
+	sch.table[1].col_name[1] = "publisher_id";	sch.table[1].col_name[2] = "name";	sch.table[1].col_name[3] = "nation";
 
 	sch.table[2].site_num = 3;	sch.table[2].type = 0;
-	sch.table[2].site[1].condition[0] = "id<205000";		sch.table[2].site[2].condition[0] = "id>=205000&id<210000";
-	sch.table[2].site[3].condition[0] = "id>=210000";	
+	sch.table[2].site[1].condition[0] = "book_id<205000";		sch.table[2].site[2].condition[0] = "book_id>=205000&book_id<210000";
+	sch.table[2].site[3].condition[0] = "book_id>=210000";	
 	//分片条件
 	sch.table[2].site[1].hcon_list_len = 1;	sch.table[2].site[2].hcon_list_len = 2;
 	sch.table[2].site[3].hcon_list_len = 1; 
-	sch.table[2].site[1].hcon_list[1].attr = "id";	  sch.table[2].site[1].hcon_list[1].op = "<";  sch.table[2].site[1].hcon_list[1].section = "205000";
-	sch.table[2].site[2].hcon_list[1].attr = "id";   sch.table[2].site[2].hcon_list[1].op = ">=";  sch.table[2].site[2].hcon_list[1].section = "205000";
-	sch.table[2].site[2].hcon_list[2].attr = "id"; sch.table[2].site[2].hcon_list[2].op = "<"; sch.table[2].site[2].hcon_list[2].section = "210000";
-	sch.table[2].site[3].hcon_list[1].attr = "id";   sch.table[2].site[3].hcon_list[1].op = ">="; sch.table[2].site[3].hcon_list[1].section = "210000";
+	sch.table[2].site[1].hcon_list[1].attr = "book_id";	  sch.table[2].site[1].hcon_list[1].op = "<";  sch.table[2].site[1].hcon_list[1].section = "205000";
+	sch.table[2].site[2].hcon_list[1].attr = "book_id";   sch.table[2].site[2].hcon_list[1].op = ">=";  sch.table[2].site[2].hcon_list[1].section = "205000";
+	sch.table[2].site[2].hcon_list[2].attr = "book_id"; sch.table[2].site[2].hcon_list[2].op = "<"; sch.table[2].site[2].hcon_list[2].section = "210000";
+	sch.table[2].site[3].hcon_list[1].attr = "book_id";   sch.table[2].site[3].hcon_list[1].op = ">="; sch.table[2].site[3].hcon_list[1].section = "210000";
 	//表的列信息
 	sch.table[2].col_num = 5;
-	sch.table[2].col_name[1] = "id";	sch.table[2].col_name[2] = "title";	sch.table[2].col_name[3] = "authors";
+	sch.table[2].col_name[1] = "book_id";	sch.table[2].col_name[2] = "title";	sch.table[2].col_name[3] = "authors";
 	sch.table[2].col_name[4] = "publisher_id";	sch.table[2].col_name[5] = "copies";
 
 	sch.table[3].site_num = 2;	sch.table[3].type = 1;
-	sch.table[3].site[1].condition[1] = "id,name";
-	sch.table[3].site[2].condition[1] = "id,rank";
+	sch.table[3].site[1].condition[1] = "customer_id,name";
+	sch.table[3].site[2].condition[1] = "customer_id,rank";
 	//表的列信息
 	sch.table[3].col_num = 3;
-	sch.table[3].col_name[1] = "id";	sch.table[3].col_name[2] = "name";	sch.table[3].col_name[3] = "rank";	
+	sch.table[3].col_name[1] = "customer_id";	sch.table[3].col_name[2] = "name";	sch.table[3].col_name[3] = "rank";	
 
 	sch.table[4].site_num = 4;	sch.table[4].type = 0;
 	sch.table[4].site[1].condition[0] = "customer_id<307000&book_id<215000";		sch.table[4].site[2].condition[0] = "customer_id<307000&book_id>=215000";
