@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-	string input = "select * from job";
+	string input = "select customer_id,quantity from orders where (quantity<8)";
 	init_schema();
 	query_tree original_tree = get_original_tree(input);
 	cout << "original tree build complete\n";
