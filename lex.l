@@ -18,6 +18,8 @@ extern "C"{
 	/* reserved keywords */
 CREATE	|
 create		return CREATE;
+KEY 	|
+key 		return KEY;
 local 	|
 LOCAL 		return LOCAL;
 TABLE	|

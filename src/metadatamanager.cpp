@@ -690,6 +690,7 @@ void MetadataManager::set_fargment_info(Fragment &frg)
 //2017-12-30 addby yfchai
 void MetadataManager::delete_fragmemt_info(string str)
 {
+        delete_fragment_name_fromlist(str);
         Setting& root = cfg.getRoot();
         Setting& ddb_cfg = root[CONFIG_NAME_FRAGMENT];
         if(ddb_cfg.exists(str.c_str()))
@@ -714,26 +715,26 @@ void MetadataManager::set_siteinfo(SiteInfo& sti)
 //        root.add(CONFIG_NAME_SITEINFO,Setting::TypeGroup);
    string str = sti.get_site_name();
     Setting& sf = root[CONFIG_NAME_SITEINFO];
-    cout<<"717"<<endl;
+   // cout<<"717"<<endl;
     if(sf.exists(str.c_str()))//if exist site_i info then delete it and rebuild it to update siteinfo
         sf.remove(str.c_str());
     cout<<"cstr "<<str.c_str()<<endl;
     sf.add(str.c_str(),Setting::TypeGroup);
     Setting& info = sf[str.c_str()];
-    cout<<"723"<<endl;
+   // cout<<"723"<<endl;
     info.add(CONFIG_NAME_SITEINFO_SITE_ID, Setting::TypeInt) = sti.get_site_ID();
-    cout<<"725"<<endl;
+    //cout<<"725"<<endl;
     info.add(CONFIG_NAME_SITEINFO_SITE_IP,Setting::TypeString) = sti.get_site_ip().c_str();
-    cout<<"727"<<endl;
+   // cout<<"727"<<endl;
     info.add(CONFIG_NAME_SITEINFO_SITE_NAME,Setting::TypeString) = sti.get_site_name().c_str();
-    cout<<"729"<<endl;
+   // cout<<"729"<<endl;
     info.add(CONFIG_NAME_SITEINFO_STIE_PORT,Setting::TypeInt) = sti.get_site_port();
-    cout<<"731"<<endl;
+  //  cout<<"731"<<endl;
     info.add(CONFIG_NAME_SITEINFO_SITE_IS_CONTROL_SITE,Setting::TypeBoolean) = sti.get_isControlSite();
-    cout<<"733"<<endl;
+  //  cout<<"733"<<endl;
 
     write_to_config_file(METADATA_CONFIG_FILE);
-    cout<<"736"<<endl;
+   // cout<<"736"<<endl;
     cout<<"set_siteinfo() ok"<<endl;
 
 

@@ -16,16 +16,16 @@ struct condition_info
 
 struct fragment
 {
-	string condition[2];
+	string condition[2];//æ°´å¹³åˆ†ç‰‡æ¡ä»¶æ”¾åœ¨0ï¼Œå‚ç›´åˆ†ç‰‡æ¡ä»¶æ”¾åœ¨1,è¿™ä¸ªæ˜¯æ‰€æœ‰æ¡ä»¶æ‹¼æˆçš„å­—ç¬¦ä¸²
 	int hcon_list_len;
-	condition_info hcon_list[10];
+	condition_info hcon_list[10];//æ°´å¹³åˆ†ç‰‡çš„æ¡ä»¶çš„åˆ—è¡¨å­˜æ”¾åœ¨è¿™é‡Œï¼Œæ–¹ä¾¿å¤„ç†
 };
 
 struct schema_node
 {
 	string table_name;
 	int type;//0--horizontal 1--vertical 2--hybrid -1--no fragment
-	int col_num;
+	int col_num;//åˆ—çš„æ•°é‡
 	string col_name[maxcol];
 	int site_num;
 	fragment site[maxsite];
@@ -39,42 +39,42 @@ struct schema
 
 struct treenode
 {
-	int type;
-	string str;
-	int child[maxsite];//¶ù×Ó½ÚµãÖ¸Õë£¬Ã»ÓĞÔòÎª-1,child[0]±íÊ¾¶ù×ÓÊı
-	int fa;//¸¸½ÚµãÖ¸Õë
+	int type;//0æ˜¯åˆ†ç‰‡ 1æ˜¯union 2æ˜¯join 3æ˜¯æ ¹æ®conditioné€‰æ‹©å…ƒç»„ 4æ˜¯æŠ•å½±å–å±æ€§ -1è¡¨ç¤ºè¿™ä¸ªèŠ‚ç‚¹å·²åˆ é™¤
+	string str;//æ ‘èŠ‚ç‚¹çš„å†…å®¹
+	int child[maxsite];//å„¿å­èŠ‚ç‚¹æŒ‡é’ˆï¼Œæ²¡æœ‰åˆ™ä¸º-1,child[0]è¡¨ç¤ºå„¿å­æ•°
+	int fa;//çˆ¶èŠ‚ç‚¹æŒ‡é’ˆ
 	int depth;
 };
 struct query_tree
 {
-	int table_num;//×Ü¹²ÓĞ¶àÉÙ¸ö±í
-	map<string, int> schema_pos;//±£´æÊı¾İ×ÖµäÖĞ±íµÄÎ»ÖÃ
-	map<string, int> table_pos;//±£´æÊ÷µÄÊı×éÖĞ±íµÄÎ»ÖÃ
+	int table_num;//æ€»å…±æœ‰å¤šå°‘ä¸ªè¡¨
+	map<string, int> schema_pos;//ä¿å­˜æ•°æ®å­—å…¸ä¸­è¡¨çš„ä½ç½®
+	map<string, int> table_pos;//ä¿å­˜æ ‘çš„æ•°ç»„ä¸­è¡¨çš„ä½ç½®
 	treenode node[maxtreenode];
-	int root = -1;//¸ù½Úµã
-	int num = 0;//µ±Ç°½ÚµãÊı
+	int root = -1;//æ ¹èŠ‚ç‚¹
+	int num = 0;//å½“å‰èŠ‚ç‚¹æ•°
 };
 
 void init_schema();
-//Çó×î´óÖµ
+//æ±‚æœ€å¤§å€¼
 int maxint(int a, int b);
 double max(double a, double b);
-//ÅĞ¶ÏÒ»¸ö×Ö·û´®ÊÇ·ñÎª±äÁ¿
+//åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å¦ä¸ºå˜é‡
 bool isVar(string s);
-//È·¶¨±íÃûÎªsµÄ±íÔÚÊ÷ÖÖµÄÎ»ÖÃ
+//ç¡®å®šè¡¨åä¸ºsçš„è¡¨åœ¨æ ‘ç§çš„ä½ç½®
 int loc(string s, query_tree &o_tree);
-//½«±í²åÈëÊ÷ÖĞ
+//å°†è¡¨æ’å…¥æ ‘ä¸­
 void insert_table_list(string table_list, query_tree &o_tree);
-//ÕÒµ½tree[i]µÄ×æÏÈ
+//æ‰¾åˆ°tree[i]çš„ç¥–å…ˆ
 int get_fa(query_tree &tree, int i);
-//°Ñ²éÑ¯Ìõ¼ş²åÈëµ½Ê÷ÖĞ
+//æŠŠæŸ¥è¯¢æ¡ä»¶æ’å…¥åˆ°æ ‘ä¸­
 void insert_condition(string condition_list, query_tree &o_tree);
-//°ÑschemaÖĞ±íµÄÎ»ÖÃĞÅÏ¢£¬·Åµ½Ê÷ÖĞ
+//æŠŠschemaä¸­è¡¨çš„ä½ç½®ä¿¡æ¯ï¼Œæ”¾åˆ°æ ‘ä¸­
 void insert_schema(query_tree &o_tree, schema &sch);
-//»ñÈ¡´øÓĞ·ÖÆ¬ĞÅÏ¢µÄ×îÔ­Ê¼µÄ²éÑ¯Ê÷
+//è·å–å¸¦æœ‰åˆ†ç‰‡ä¿¡æ¯çš„æœ€åŸå§‹çš„æŸ¥è¯¢æ ‘
 query_tree get_original_tree(string s);
-//Êä³öÊ÷µ½ÎÄ¼ş
+//è¾“å‡ºæ ‘åˆ°æ–‡ä»¶
 void print_tree(query_tree tree);
-//ÉÏÍËÏÂÒÆ²Ù×÷£¬»ù´¡ÓÅ»¯
+//ä¸Šé€€ä¸‹ç§»æ“ä½œï¼ŒåŸºç¡€ä¼˜åŒ–
 void get_basic_opt_tree(query_tree &tree, int level);
 #endif

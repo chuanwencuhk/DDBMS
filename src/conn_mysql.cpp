@@ -44,12 +44,12 @@ const char *pPassword = " ";
 const char *pDbName = "db1";
 const unsigned int iDbPort = 3306;
 
-vector<string> ip_vec = {"192.168.8.133","192.168.8.134","192.168.8.135","192.168.8.136"};
+vector<string> ip_vec = {"10.48.224.134","10.48.139.126","10.77.30.189","10.77.30.189"};
 vector<string> db_names = {"db1","db2","db3","db4"};
 //vector<string> ip_vec = {"127.0.0.1"};
 
-vector<string> raw_data_name = {"asg.tsv","emp.tsv","job.tsv","sal.tsv"};
-vector<string> test_tb_name = {"asg","emp","job","sal"};
+// vector<string> raw_data_name = {"asg.tsv","emp.tsv","job.tsv","sal.tsv"};
+// vector<string> test_tb_name = {"asg","emp","job","sal"};
 
 void finish_with_error(const char* msg){
 	if(msg)
@@ -193,6 +193,7 @@ void load_data(){
 		send data to sites.
 	 */
 	string del_stmt = "DELETE FROM " + tb_name +";";
+	cout<<"del_stmt "<<del_stmt;
 
 	exe_sql(del_stmt.c_str());
 

@@ -68,24 +68,25 @@ extern int yydebug;
     DROP = 278,
     INDEX = 279,
     LOCAL = 280,
-    INSERT = 281,
-    INTO = 282,
-    VALUES = 283,
-    DELETE = 284,
-    UPDATE = 285,
-    SET = 286,
-    CHARACTER = 287,
-    INTEGER = 288,
-    DATE = 289,
-    FLOAT = 290,
-    VARCHAR = 291,
-    HORIZONAL = 292,
-    VERTICAL = 293,
-    MIXED = 294,
-    NONE = 295,
-    SHOW = 296,
-    TABLES = 297,
-    EXIT = 298
+    KEY = 281,
+    INSERT = 282,
+    INTO = 283,
+    VALUES = 284,
+    DELETE = 285,
+    UPDATE = 286,
+    SET = 287,
+    CHARACTER = 288,
+    INTEGER = 289,
+    DATE = 290,
+    FLOAT = 291,
+    VARCHAR = 292,
+    HORIZONAL = 293,
+    VERTICAL = 294,
+    MIXED = 295,
+    NONE = 296,
+    SHOW = 297,
+    TABLES = 298,
+    EXIT = 299
   };
 #endif
 
@@ -99,7 +100,7 @@ union YYSTYPE
 	int intval;
 	char* strval;
 
-#line 103 "yacc.tab.h" /* yacc.c:1909  */
+#line 104 "yacc.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

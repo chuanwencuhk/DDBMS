@@ -16,70 +16,71 @@ void init_schema()
 {
 	sch.table_num = 4;
 
-	sch.table[1].table_name = "sal";	sch.table[2].table_name = "emp";
-	sch.table[3].table_name = "job";	sch.table[4].table_name = "asg";
+	sch.table[1].table_name = "publisher";	sch.table[2].table_name = "book";
+	sch.table[3].table_name = "customer";	sch.table[4].table_name = "orders";
 	
-	sch.table[1].site_num = 1;	sch.table[1].type = -1;
-	sch.table[1].site[1].condition[0] = "null";
-	sch.table[1].col_num = 2;
-	sch.table[1].col_name[1] = "title"; sch.table[1].col_name[2] = "sal";
+	sch.table[1].site_num = 4;	sch.table[1].type = 0;
+	sch.table[1].site[1].condition[0] = "id<104000&nation='PRC'";		sch.table[1].site[2].condition[0] = "id<104000&nation='USA'";
+	sch.table[1].site[3].condition[0] = "id>=104000&nation='PRC'";		sch.table[1].site[4].condition[0] = "id>=104000&nation='USA'";
+	//åˆ†ç‰‡æ¡ä»¶
+	sch.table[1].site[1].hcon_list_len = 2;	sch.table[1].site[2].hcon_list_len = 2;
+	sch.table[1].site[3].hcon_list_len = 2; sch.table[1].site[4].hcon_list_len = 2;
+	sch.table[1].site[1].hcon_list[1].attr = "id";	  sch.table[1].site[1].hcon_list[1].op = "<";  sch.table[1].site[1].hcon_list[1].section = "104000";
+	sch.table[1].site[1].hcon_list[2].attr = "nation"; sch.table[1].site[1].hcon_list[2].op = "=";  sch.table[1].site[1].hcon_list[2].section = "'PRC'";
+	sch.table[1].site[2].hcon_list[1].attr = "id";   sch.table[1].site[2].hcon_list[1].op = "<";  sch.table[1].site[2].hcon_list[1].section = "104000";
+	sch.table[1].site[2].hcon_list[2].attr = "nation"; sch.table[1].site[2].hcon_list[2].op = "="; sch.table[1].site[2].hcon_list[2].section = "'USA'";
+	sch.table[1].site[3].hcon_list[1].attr = "id";   sch.table[1].site[3].hcon_list[1].op = ">="; sch.table[1].site[3].hcon_list[1].section = "104000";
+	sch.table[1].site[3].hcon_list[2].attr = "nation"; sch.table[1].site[3].hcon_list[2].op = "=";  sch.table[1].site[3].hcon_list[2].section = "'PRC'";
+	sch.table[1].site[4].hcon_list[1].attr = "id";   sch.table[1].site[4].hcon_list[1].op = ">="; sch.table[1].site[4].hcon_list[1].section = "104000";
+	sch.table[1].site[4].hcon_list[2].attr = "nation"; sch.table[1].site[4].hcon_list[2].op = "="; sch.table[1].site[4].hcon_list[2].section = "'USA'";
+	//è¡¨çš„åˆ—ä¿¡æ¯
+	sch.table[1].col_num = 3;
+	sch.table[1].col_name[1] = "id";	sch.table[1].col_name[2] = "name";	sch.table[1].col_name[3] = "nation";
 
-	sch.table[2].site_num = 4;	sch.table[2].type = 0;
-	sch.table[2].site[1].condition[0] = "eno<'E1000'&title<'N'";		sch.table[2].site[2].condition[0] = "eno<'E1000'&title>='N'";
-	sch.table[2].site[3].condition[0] = "eno>='E1000'&title<'N'";		sch.table[2].site[4].condition[0] = "eno>='E1000'&title>='N'";
-	//·ÖÆ¬Ìõ¼ş
-	sch.table[2].site[1].hcon_list_len = 2;	sch.table[2].site[2].hcon_list_len = 2;
-	sch.table[2].site[3].hcon_list_len = 2; sch.table[2].site[4].hcon_list_len = 2;
-	sch.table[2].site[1].hcon_list[1].attr = "eno";	  sch.table[2].site[1].hcon_list[1].op = "<";  sch.table[2].site[1].hcon_list[1].section = "'E1000'";
-	sch.table[2].site[1].hcon_list[2].attr = "title"; sch.table[2].site[1].hcon_list[2].op = "<";  sch.table[2].site[1].hcon_list[2].section = "'N'";
-	sch.table[2].site[2].hcon_list[1].attr = "eno";   sch.table[2].site[2].hcon_list[1].op = "<";  sch.table[2].site[2].hcon_list[1].section = "'E1000'";
-	sch.table[2].site[2].hcon_list[2].attr = "title"; sch.table[2].site[2].hcon_list[2].op = ">="; sch.table[2].site[2].hcon_list[2].section = "'N'";
-	sch.table[2].site[3].hcon_list[1].attr = "eno";   sch.table[2].site[3].hcon_list[1].op = ">="; sch.table[2].site[3].hcon_list[1].section = "'E1000'";
-	sch.table[2].site[3].hcon_list[2].attr = "title"; sch.table[2].site[3].hcon_list[2].op = "<";  sch.table[2].site[3].hcon_list[2].section = "'N'";
-	sch.table[2].site[4].hcon_list[1].attr = "eno";   sch.table[2].site[4].hcon_list[1].op = ">="; sch.table[2].site[4].hcon_list[1].section = "'E1000'";
-	sch.table[2].site[4].hcon_list[2].attr = "title"; sch.table[2].site[4].hcon_list[2].op = ">="; sch.table[2].site[4].hcon_list[2].section = "'N'";
-	//±íµÄÁĞĞÅÏ¢
-	sch.table[2].col_num = 3;
-	sch.table[2].col_name[1] = "eno";	sch.table[2].col_name[2] = "ename";	sch.table[2].col_name[3] = "title";
+	sch.table[2].site_num = 3;	sch.table[2].type = 0;
+	sch.table[2].site[1].condition[0] = "id<205000";		sch.table[2].site[2].condition[0] = "id>=205000&id<210000";
+	sch.table[2].site[3].condition[0] = "id>=210000";	
+	//åˆ†ç‰‡æ¡ä»¶
+	sch.table[2].site[1].hcon_list_len = 1;	sch.table[2].site[2].hcon_list_len = 2;
+	sch.table[2].site[3].hcon_list_len = 1; 
+	sch.table[2].site[1].hcon_list[1].attr = "id";	  sch.table[2].site[1].hcon_list[1].op = "<";  sch.table[2].site[1].hcon_list[1].section = "205000";
+	sch.table[2].site[2].hcon_list[1].attr = "id";   sch.table[2].site[2].hcon_list[1].op = ">=";  sch.table[2].site[2].hcon_list[1].section = "205000";
+	sch.table[2].site[2].hcon_list[2].attr = "id"; sch.table[2].site[2].hcon_list[2].op = "<"; sch.table[2].site[2].hcon_list[2].section = "210000";
+	sch.table[2].site[3].hcon_list[1].attr = "id";   sch.table[2].site[3].hcon_list[1].op = ">="; sch.table[2].site[3].hcon_list[1].section = "210000";
+	//è¡¨çš„åˆ—ä¿¡æ¯
+	sch.table[2].col_num = 5;
+	sch.table[2].col_name[1] = "id";	sch.table[2].col_name[2] = "title";	sch.table[2].col_name[3] = "authors";
+	sch.table[2].col_name[4] = "publisher_id";	sch.table[2].col_name[5] = "copies";
 
-	sch.table[3].site_num = 4;	sch.table[3].type = 2;
-	sch.table[3].site[1].condition[0] = "jno<'J0500'";	sch.table[3].site[1].condition[1] = "jno,jname,budget";
-	sch.table[3].site[2].condition[0] = "jno<'J0500'";	sch.table[3].site[2].condition[1] = "jno,loc";
-	sch.table[3].site[3].condition[0] = "jno>='J0500'";	sch.table[3].site[3].condition[1] = "jno,jname,budget";
-	sch.table[3].site[4].condition[0] = "jno>='J0500'";	sch.table[3].site[4].condition[1] = "jno,loc";
-	//·ÖÆ¬Ìõ¼ş
-	sch.table[3].site[1].hcon_list_len = 1;	sch.table[3].site[2].hcon_list_len = 1;
-	sch.table[3].site[3].hcon_list_len = 1; sch.table[3].site[4].hcon_list_len = 1;
-	sch.table[3].site[1].hcon_list[1].attr = "jno";   sch.table[3].site[1].hcon_list[1].op = "<";   sch.table[3].site[1].hcon_list[1].section = "'J0500'";
-	sch.table[3].site[2].hcon_list[1].attr = "jno";   sch.table[3].site[2].hcon_list[1].op = "<";   sch.table[3].site[2].hcon_list[1].section = "'J0500'";
-	sch.table[3].site[3].hcon_list[1].attr = "jno";   sch.table[3].site[3].hcon_list[1].op = ">=";  sch.table[3].site[3].hcon_list[1].section = "'J0500'";
-	sch.table[3].site[4].hcon_list[1].attr = "jno";   sch.table[3].site[4].hcon_list[1].op = ">=";  sch.table[3].site[4].hcon_list[1].section = "'J0500'";
-	//±íµÄÁĞĞÅÏ¢
-	sch.table[3].col_num = 4;
-	sch.table[3].col_name[1] = "jno";	sch.table[3].col_name[2] = "jname";	sch.table[3].col_name[3] = "budget";	sch.table[3].col_name[4] = "loc";
+	sch.table[3].site_num = 2;	sch.table[3].type = 1;
+	sch.table[3].site[1].condition[1] = "id,name";
+	sch.table[3].site[2].condition[1] = "id,rank";
+	//è¡¨çš„åˆ—ä¿¡æ¯
+	sch.table[3].col_num = 3;
+	sch.table[3].col_name[1] = "id";	sch.table[3].col_name[2] = "name";	sch.table[3].col_name[3] = "rank";	
 
 	sch.table[4].site_num = 4;	sch.table[4].type = 0;
-	sch.table[4].site[1].condition[0] = "eno<'E1000'&jno<'J0500'";		sch.table[4].site[2].condition[0] = "eno<'E1000'&jno>='J0500'";
-	sch.table[4].site[3].condition[0] = "eno>='E1000'&jno<'J0500'";		sch.table[4].site[4].condition[0] = "eno>='E1000'&jno>='J0500'";
-	//·ÖÆ¬Ìõ¼ş
+	sch.table[4].site[1].condition[0] = "customer_id<307000&book_id<215000";		sch.table[4].site[2].condition[0] = "customer_id<307000&book_id>=215000";
+	sch.table[4].site[3].condition[0] = "customer_id>=307000&book_id<215000";		sch.table[4].site[4].condition[0] = "customer_id>=307000&book_id>=215000";
+	//åˆ†ç‰‡æ¡ä»¶
 	sch.table[4].site[1].hcon_list_len = 2;	sch.table[4].site[2].hcon_list_len = 2;
 	sch.table[4].site[3].hcon_list_len = 2; sch.table[4].site[4].hcon_list_len = 2;
-	sch.table[4].site[1].hcon_list[1].attr = "eno";	  sch.table[4].site[1].hcon_list[1].op = "<";  sch.table[4].site[1].hcon_list[1].section = "'E1000'";
-	sch.table[4].site[1].hcon_list[2].attr = "jno";   sch.table[4].site[1].hcon_list[2].op = "<";  sch.table[4].site[1].hcon_list[2].section = "'J0500'";
-	sch.table[4].site[2].hcon_list[1].attr = "eno";   sch.table[4].site[2].hcon_list[1].op = "<";  sch.table[4].site[2].hcon_list[1].section = "'E1000'";
-	sch.table[4].site[2].hcon_list[2].attr = "jno";   sch.table[4].site[2].hcon_list[2].op = ">="; sch.table[4].site[2].hcon_list[2].section = "'J0500'";
-	sch.table[4].site[3].hcon_list[1].attr = "eno";   sch.table[4].site[3].hcon_list[1].op = ">="; sch.table[4].site[3].hcon_list[1].section = "'E1000'";
-	sch.table[4].site[3].hcon_list[2].attr = "jno";   sch.table[4].site[3].hcon_list[2].op = "<";  sch.table[4].site[3].hcon_list[2].section = "'J0500'";
-	sch.table[4].site[4].hcon_list[1].attr = "eno";   sch.table[4].site[4].hcon_list[1].op = ">="; sch.table[4].site[4].hcon_list[1].section = "'E1000'";
-	sch.table[4].site[4].hcon_list[2].attr = "jno";   sch.table[4].site[4].hcon_list[2].op = ">="; sch.table[4].site[4].hcon_list[2].section = "'J0500'";
-	//±íµÄÁĞĞÅÏ¢
-	sch.table[4].col_num = 4;
-	sch.table[4].col_name[1] = "eno";	sch.table[4].col_name[2] = "jno";	sch.table[4].col_name[3] = "resp";	sch.table[4].col_name[4] = "dur";
+	sch.table[4].site[1].hcon_list[1].attr = "customer_id";	  sch.table[4].site[1].hcon_list[1].op = "<";  sch.table[4].site[1].hcon_list[1].section = "307000";
+	sch.table[4].site[1].hcon_list[2].attr = "book_id";   sch.table[4].site[1].hcon_list[2].op = "<";  sch.table[4].site[1].hcon_list[2].section = "215000";
+	sch.table[4].site[2].hcon_list[1].attr = "customer_id";   sch.table[4].site[2].hcon_list[1].op = "<";  sch.table[4].site[2].hcon_list[1].section = "307000";
+	sch.table[4].site[2].hcon_list[2].attr = "book_id";   sch.table[4].site[2].hcon_list[2].op = ">="; sch.table[4].site[2].hcon_list[2].section = "215000";
+	sch.table[4].site[3].hcon_list[1].attr = "customer_id";   sch.table[4].site[3].hcon_list[1].op = ">="; sch.table[4].site[3].hcon_list[1].section = "307000";
+	sch.table[4].site[3].hcon_list[2].attr = "book_id";   sch.table[4].site[3].hcon_list[2].op = "<";  sch.table[4].site[3].hcon_list[2].section = "215000";
+	sch.table[4].site[4].hcon_list[1].attr = "customer_id";   sch.table[4].site[4].hcon_list[1].op = ">="; sch.table[4].site[4].hcon_list[1].section = "307000";
+	sch.table[4].site[4].hcon_list[2].attr = "book_id";   sch.table[4].site[4].hcon_list[2].op = ">="; sch.table[4].site[4].hcon_list[2].section = "215000";
+	//è¡¨çš„åˆ—ä¿¡æ¯
+	sch.table[4].col_num = 3;
+	sch.table[4].col_name[1] = "customer_id";	sch.table[4].col_name[2] = "book_id";	sch.table[4].col_name[3] = "quantity";	
 
 }
 
 
-//Çó×î´óÖµ
+//æ±‚æœ€å¤§å€¼
 int maxint(int a, int b)
 {
 	if (a > b) return a;
@@ -90,18 +91,18 @@ double max(double a, double b)
 	if (a > b) return a;
 	else return b;
 }
-//ÅĞ¶ÏÒ»¸ö×Ö·û´®ÊÇ·ñÎª±äÁ¿
+//åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å¦ä¸ºå˜é‡
 bool isVar(string s)
-{	//ÊÇ×Ö·û´®
+{	//æ˜¯å­—ç¬¦ä¸²
 	if (s.substr(0, 1) == "\"" || s.substr(0, 1) == "'") return false;
-	//ÊÇÊı×Ö
+	//æ˜¯æ•°å­—
 	if (s.substr(0, 1) >= "0" && s.substr(0, 1) <= "9") return false;
 	return true;
 }
 
 int loc(string s, query_tree &o_tree)
 {
-	int pos_dot = s.find(".");//ÕÒµ½×Ö·û"."µÄÎ»ÖÃ£¬Ö®Ç°¾ÍÊÇ±íµÄÃû×Ö
+	int pos_dot = s.find(".");//æ‰¾åˆ°å­—ç¬¦"."çš„ä½ç½®ï¼Œä¹‹å‰å°±æ˜¯è¡¨çš„åå­—
 	if (pos_dot > 0)
 	{
 		string name = s.substr(0, pos_dot);
@@ -117,7 +118,7 @@ int loc(string s, query_tree &o_tree)
 
 }
 
-//½«±í²åÈëÊ÷ÖĞ
+//å°†è¡¨æ’å…¥æ ‘ä¸­
 void insert_table_list(string table_list, query_tree &o_tree)
 {
 	int st = 0;
@@ -138,7 +139,7 @@ void insert_table_list(string table_list, query_tree &o_tree)
 			st = pos + 1;
 		}
 		//cout << table_name << endl;
-		//²åÈëtable_name
+		//æ’å…¥table_name
 		o_tree.node[++o_tree.num].type = 0;
 		o_tree.node[o_tree.num].str = table_name;
 		o_tree.node[o_tree.num].fa = -1;
@@ -150,7 +151,7 @@ void insert_table_list(string table_list, query_tree &o_tree)
 	}
 
 }
-//ÕÒµ½tree[i]µÄ×æÏÈ
+//æ‰¾åˆ°tree[i]çš„ç¥–å…ˆ
 int get_fa(query_tree &tree, int i)
 {	while (tree.node[i].fa!=-1)
 	{
@@ -158,7 +159,7 @@ int get_fa(query_tree &tree, int i)
 	}
 	return i;
 }
-//°Ñ²éÑ¯Ìõ¼ş²åÈëµ½Ê÷ÖĞ
+//æŠŠæŸ¥è¯¢æ¡ä»¶æ’å…¥åˆ°æ ‘ä¸­
 void insert_condition(string condition_list, query_tree &o_tree)
 {
 	int st = 0;
@@ -178,9 +179,9 @@ void insert_condition(string condition_list, query_tree &o_tree)
 			st = pos2 + 1;
 		}
 		//cout << condition << endl;
-		//µÃµ½Ò»Ìõcondition£¬²åÈëÊ÷ÖĞ
-		//ÅĞ¶ÏÊÇ²»ÊÇÒ»¸öÁ¬½Ó£¬Á½±ß¶¼ÊÇ±äÁ¿µÄ»°¾ÍÊÇÁ¬½Ó
-		//È·¶¨±È½Ï²Ù×÷·ûÎ»ÖÃ
+		//å¾—åˆ°ä¸€æ¡conditionï¼Œæ’å…¥æ ‘ä¸­
+		//åˆ¤æ–­æ˜¯ä¸æ˜¯ä¸€ä¸ªè¿æ¥ï¼Œä¸¤è¾¹éƒ½æ˜¯å˜é‡çš„è¯å°±æ˜¯è¿æ¥
+		//ç¡®å®šæ¯”è¾ƒæ“ä½œç¬¦ä½ç½®
 		int pos_op;
 		string op; int temp; string section;
 		temp = condition.find("=", 0);  if (temp >= 0) {
@@ -201,31 +202,31 @@ void insert_condition(string condition_list, query_tree &o_tree)
 		temp = condition.find("<>", 0); if (temp >= 0) {
 			op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 		}
-		//ÅĞ¶Ï×óÓÒÁ½²àÊÇ²»ÊÇ±äÁ¿
-		string str1 = condition.substr(0, pos_op);//×ó²à×Ö·û´®
-		string str2 = section;//ÓÒ²à×Ö·û´®
+		//åˆ¤æ–­å·¦å³ä¸¤ä¾§æ˜¯ä¸æ˜¯å˜é‡
+		string str1 = condition.substr(0, pos_op);//å·¦ä¾§å­—ç¬¦ä¸²
+		string str2 = section;//å³ä¾§å­—ç¬¦ä¸²
 		//cout << op << pos_op << endl;
 		//cout << str1 << " " << str2 << endl;
 		if (isVar(str1) && isVar(str2))
-		{	//¶¼ÊÇ±äÁ¿ÔòÎªÁ¬½Ó
-			int pos_l = loc(str1, o_tree), pos_r = loc(str2, o_tree);//È·¶¨×óÓÒ±äÁ¿µÄ×æÏÈÔÚÊ÷ÖĞµÄÎ»ÖÃ
+		{	//éƒ½æ˜¯å˜é‡åˆ™ä¸ºè¿æ¥
+			int pos_l = loc(str1, o_tree), pos_r = loc(str2, o_tree);//ç¡®å®šå·¦å³å˜é‡çš„ç¥–å…ˆåœ¨æ ‘ä¸­çš„ä½ç½®
 			int fa1 = get_fa(o_tree, pos_l), fa2 = get_fa(o_tree, pos_r);
-			//Ìí¼Ójoin½Úµã
+			//æ·»åŠ joinèŠ‚ç‚¹
 			o_tree.node[++o_tree.num].type = 2;
 			o_tree.node[o_tree.num].str = condition;
 			o_tree.node[o_tree.num].fa = -1;
 			o_tree.node[o_tree.num].child[0] = 2;
 			o_tree.node[o_tree.num].child[1] = fa1;	o_tree.node[o_tree.num].child[2] = fa2;
-			//¸ü¸Ä×Ó½ÚµãµÄ¸¸Ö¸Õë
+			//æ›´æ”¹å­èŠ‚ç‚¹çš„çˆ¶æŒ‡é’ˆ
 			o_tree.node[fa1].fa = o_tree.num;			o_tree.node[fa2].fa = o_tree.num;
 
 			//cout << get_fa(o_tree, pos_l) << " " << get_fa(o_tree, pos_r) << endl;
 		}
 		else
-		{	//·ñÔòÎªÌõ¼ş²Ù×÷£¬´ËÊ±ËùÓĞ±íÒÑ¾­ÓĞÒ»¸ö¹«¹²×æÏÈ£¬½«Ìõ¼ş²Ù×÷²åµ½¹«¹²×æÏÈµÄÍ·ÉÏ
-			int fa = get_fa(o_tree, 1);//Ëæ±ãÈ¡µÚÒ»¸ö½ÚµãµÄ×æÏÈ¾ÍÊÇ¹«¹²×æÏÈ
+		{	//å¦åˆ™ä¸ºæ¡ä»¶æ“ä½œï¼Œæ­¤æ—¶æ‰€æœ‰è¡¨å·²ç»æœ‰ä¸€ä¸ªå…¬å…±ç¥–å…ˆï¼Œå°†æ¡ä»¶æ“ä½œæ’åˆ°å…¬å…±ç¥–å…ˆçš„å¤´ä¸Š
+			int fa = get_fa(o_tree, 1);//éšä¾¿å–ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çš„ç¥–å…ˆå°±æ˜¯å…¬å…±ç¥–å…ˆ
 			//cout << "fa is:" << fa << endl;
-			//²åÈëÌõ¼ş²Ù×÷
+			//æ’å…¥æ¡ä»¶æ“ä½œ
 			o_tree.node[++o_tree.num].type = 3;
 			o_tree.node[o_tree.num].str = condition;
 			o_tree.node[o_tree.num].fa = -1;
@@ -235,7 +236,7 @@ void insert_condition(string condition_list, query_tree &o_tree)
 	}
 
 }
-//°ÑschemaÖĞ±íµÄÎ»ÖÃĞÅÏ¢£¬·Åµ½Ê÷ÖĞ
+//æŠŠschemaä¸­è¡¨çš„ä½ç½®ä¿¡æ¯ï¼Œæ”¾åˆ°æ ‘ä¸­
 void insert_schema(query_tree &o_tree, schema &sch)
 {
 	for (int i = 1; i <= sch.table_num; i++)
@@ -243,13 +244,13 @@ void insert_schema(query_tree &o_tree, schema &sch)
 		o_tree.schema_pos[sch.table[i].table_name] = i;
 	}
 }
-//»ñÈ¡´øÓĞ·ÖÆ¬ĞÅÏ¢µÄ×îÔ­Ê¼µÄ²éÑ¯Ê÷
+//è·å–å¸¦æœ‰åˆ†ç‰‡ä¿¡æ¯çš„æœ€åŸå§‹çš„æŸ¥è¯¢æ ‘
 query_tree get_original_tree(string s)
 {
 	query_tree o_tree;
-	//½«ĞèÒª²éÑ¯±íÏÈ·ÅÈëÊ÷ÖĞ
+	//å°†éœ€è¦æŸ¥è¯¢è¡¨å…ˆæ”¾å…¥æ ‘ä¸­
 	string sql = s;
-	sql.erase(0, 7);//É¾µôselect
+	sql.erase(0, 7);//åˆ æ‰select
 	int pos1 = sql.find("from");
 	int pos2 = sql.find(" ", pos1+5);
 	//cout << pos1 << sql << endl;
@@ -257,16 +258,16 @@ query_tree get_original_tree(string s)
 	insert_table_list(table_list, o_tree);
 	//cout << table_list << endl;
 
-	//½«²éÑ¯Ìõ¼ş²¿Êğµ½Ê÷ÖĞ
+	//å°†æŸ¥è¯¢æ¡ä»¶éƒ¨ç½²åˆ°æ ‘ä¸­
 	pos2 = sql.find("where")+6;
 	string condition = sql.substr(pos2, sql.length() - pos2);
 	//cout << condition << endl;
 	insert_condition(condition, o_tree);
 
-	//½«Í¶Ó°²Ù×÷²¿Êğµ½Ê÷ÖĞ
+	//å°†æŠ•å½±æ“ä½œéƒ¨ç½²åˆ°æ ‘ä¸­
 	string select = sql.substr(0, pos1-1);
 	//cout << pos1<<select << endl;
-	int fa = get_fa(o_tree, 1);//Ëæ±ãÈ¡µÚÒ»¸ö½ÚµãµÄ×æÏÈ¾ÍÊÇ¹«¹²×æÏÈ
+	int fa = get_fa(o_tree, 1);//éšä¾¿å–ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çš„ç¥–å…ˆå°±æ˜¯å…¬å…±ç¥–å…ˆ
 	o_tree.node[++o_tree.num].type = 4;
 	o_tree.node[o_tree.num].str = select;
 	o_tree.node[o_tree.num].fa = -1;
@@ -274,14 +275,15 @@ query_tree get_original_tree(string s)
 	o_tree.node[fa].fa = o_tree.num;
 	
 	o_tree.root = o_tree.num;
-	//°ÑschemaĞÅÏ¢·ÅÈëµ½Ê÷ÖĞ
+	//return o_tree;
+	//æŠŠschemaä¿¡æ¯æ”¾å…¥åˆ°æ ‘ä¸­
 	insert_schema(o_tree, sch);
-	//½«ËùÓĞ±í²ğ·ÖÎª·ÖÆ¬
+	//å°†æ‰€æœ‰è¡¨æ‹†åˆ†ä¸ºåˆ†ç‰‡
 	int i = 1;
 	while (o_tree.node[i].type == 0)
 	{	int s_pos = o_tree.schema_pos[o_tree.node[i].str];
 		if (sch.table[s_pos].site_num > 1)
-		{	//Ë®Æ½·ÖÆ¬Ö±½Ó²ğ³ÉÕ¾µãµÄunion
+		{	//æ°´å¹³åˆ†ç‰‡ç›´æ¥æ‹†æˆç«™ç‚¹çš„union
 			if (sch.table[s_pos].type == 0)
 			{	o_tree.node[i].type = 1;	o_tree.node[i].str = "";
 				o_tree.node[i].child[0] = sch.table[s_pos].site_num;
@@ -293,41 +295,47 @@ query_tree get_original_tree(string s)
 					o_tree.node[o_tree.num].str = sch.table[s_pos].table_name + ":" + to_string(j);
 				}
 			}
-			//´¹Ö±·ÖÆ¬²ğ³ÉÕ¾µãµÄÁ¬½Ó
+			//å‚ç›´åˆ†ç‰‡æ‹†æˆç«™ç‚¹çš„è¿æ¥
 			if (sch.table[s_pos].type == 1)
-			{	for (int j = 1; j <= sch.table[s_pos].site_num; j++)
-				{	//ÏÈ°Ñ·ÖÆ¬²åÈë
+			{
+				
+				for (int j = 1; j <= sch.table[s_pos].site_num; j++) 
+				{	//å…ˆæŠŠåˆ†ç‰‡æ’å…¥
 					o_tree.node[++o_tree.num].type = 0;
 					o_tree.node[o_tree.num].child[0] = 0;
 					o_tree.node[o_tree.num].fa = -1;
 					o_tree.node[o_tree.num].str = sch.table[s_pos].table_name + ":" + to_string(j);
 				}
-				//¶Ô³ıÁË×îºóÁ½¸ö·ÖÆ¬Á½Á½Á¬½Ó
+				//å¯¹é™¤äº†æœ€åä¸¤ä¸ªåˆ†ç‰‡ä¸¤ä¸¤è¿æ¥
 				int en = o_tree.num;
+				if (sch.table[s_pos].site_num > 2)
 				for (int st = o_tree.num - sch.table[s_pos].site_num + 1;st < en-1;st++)
-				{	//È¡Á½¸ö½ÚµãµÄ×æÏÈ
+				{	//å–ä¸¤ä¸ªèŠ‚ç‚¹çš„ç¥–å…ˆ
 					int fa1 = get_fa(o_tree, st);  int fa2 = get_fa(o_tree, st+1);
-					//ĞÂ½¨Ò»¸öjoin½Úµã
+					//æ–°å»ºä¸€ä¸ªjoinèŠ‚ç‚¹
 					o_tree.node[++o_tree.num].type = 2;
+					o_tree.node[fa1].fa = o_tree.num; o_tree.node[fa2].fa = o_tree.num;
 					o_tree.node[o_tree.num].child[0] = 2;
 					o_tree.node[o_tree.num].child[1] = fa1;
 					o_tree.node[o_tree.num].child[2] = fa2;
 				}
-				//½«×îºóÁ½¸ö½Úµãjoinµ½ÏÖÔÚµÄ½ÚµãÉÏ
+				//å°†æœ€åä¸¤ä¸ªèŠ‚ç‚¹joinåˆ°ç°åœ¨çš„èŠ‚ç‚¹ä¸Š
 				int fa1 = get_fa(o_tree, en - 1); int fa2 = get_fa(o_tree, en);
 				o_tree.node[i].type = 2; 
+				o_tree.node[fa1].fa = i; o_tree.node[fa2].fa = i;
 				o_tree.node[i].child[0] = 2; 
-				o_tree.node[o_tree.num].child[1] = fa1;
-				o_tree.node[o_tree.num].child[2] = fa2;
+				o_tree.node[i].child[1] = fa1;
+				o_tree.node[i].child[2] = fa2;
+				o_tree.node[i].str = "";
 			}
-			//»ìºÏ·ÖÆ¬£¬ÏÈ½«Ë®Æ½Ìõ¼şÏàÍ¬µÄ×öÁ¬½Ó£¬È»ºó×ö²¢
+			//æ··åˆåˆ†ç‰‡ï¼Œå…ˆå°†æ°´å¹³æ¡ä»¶ç›¸åŒçš„åšè¿æ¥ï¼Œç„¶ååšå¹¶
 			if (sch.table[s_pos].type == 2)
-			{	string attr[maxsite];//±£´æÏÖÔÚ·ÖÆ¬ÊôĞÔ¼¯µÄÁĞ±í£¬Ò²¾ÍÊÇ´¹Ö±·ÖÆ¬Ìõ¼ş
-				string cond[maxsite];//±£´æË®Æ½·ÖÆ¬ÁĞ±í
-				int pos[maxsite];//±£´æ·ÖÆ¬ÔÚÊ÷ÖĞµÄÎ»ÖÃ
+			{	string attr[maxsite];//ä¿å­˜ç°åœ¨åˆ†ç‰‡å±æ€§é›†çš„åˆ—è¡¨ï¼Œä¹Ÿå°±æ˜¯å‚ç›´åˆ†ç‰‡æ¡ä»¶
+				string cond[maxsite];//ä¿å­˜æ°´å¹³åˆ†ç‰‡åˆ—è¡¨
+				int pos[maxsite];//ä¿å­˜åˆ†ç‰‡åœ¨æ ‘ä¸­çš„ä½ç½®
 				int r = sch.table[s_pos].site_num;
 				for (int j = 1; j <= sch.table[s_pos].site_num; j++)
-				{	//ÏÈ°Ñ·ÖÆ¬²åÈë
+				{	//å…ˆæŠŠåˆ†ç‰‡æ’å…¥
 					o_tree.node[++o_tree.num].type = 0;
 					o_tree.node[o_tree.num].child[0] = 0;
 					o_tree.node[o_tree.num].fa = -1;
@@ -341,7 +349,7 @@ query_tree get_original_tree(string s)
 				int en = o_tree.num;
 				
 				for (int j = 1;j <= r;j++)
-				{	//Èç¹ûºóÃæÃ»ÓĞÊôĞÔÏàÍ¬µÄ·ÖÆ¬£¬ÇÒÇ°ÃæÓĞÊôĞÔÏàÍ¬µÄ£¬Ôòunion£¬Ò²¾ÍÊÇÈ¡×îºóÒ»¸ö·ÖÆ¬À´×öunion
+				{	//å¦‚æœåé¢æ²¡æœ‰å±æ€§ç›¸åŒçš„åˆ†ç‰‡ï¼Œä¸”å‰é¢æœ‰å±æ€§ç›¸åŒçš„ï¼Œåˆ™unionï¼Œä¹Ÿå°±æ˜¯å–æœ€åä¸€ä¸ªåˆ†ç‰‡æ¥åšunion
 					bool can_union = false, last = true;
 					for (int k = 1;k < j;k++)
 						if (attr[j].compare(attr[k]) == 0) can_union = true;
@@ -349,11 +357,11 @@ query_tree get_original_tree(string s)
 						if (attr[j].compare(attr[k]) == 0) last = false;
 					if (can_union && last)
 					{   //cout << j << endl;
-						//ÏÈ´´ÔìÒ»¸öunion½Úµã
+						//å…ˆåˆ›é€ ä¸€ä¸ªunionèŠ‚ç‚¹
 						o_tree.node[++o_tree.num].type = 1;
 						o_tree.node[o_tree.num].child[0] = 0;
 						o_tree.node[o_tree.num].fa = -1;
-						//½«ÄÜunionµÄunion½øÀ´
+						//å°†èƒ½unionçš„unionè¿›æ¥
 						for (int k = 1; k <= j;k++)
 						{
 							if (attr[j].compare(attr[k]) == 0)
@@ -362,7 +370,7 @@ query_tree get_original_tree(string s)
 								o_tree.node[pos[k]].fa = o_tree.num;
 							}
 						}
-						//unionÖ®ºóÉ¾³ı,Ö»±£ÁôÒ»¸ö·ÖÆ¬¼´¿É
+						//unionä¹‹ååˆ é™¤,åªä¿ç•™ä¸€ä¸ªåˆ†ç‰‡å³å¯
 						for (int k = 1; k < j;k++)
 						{
 							if (attr[j].compare(attr[k]) == 0)
@@ -382,18 +390,18 @@ query_tree get_original_tree(string s)
 				}
 			
 				
-				//ÕÒ¿ÉÒÔjoinµÄ·ÖÆ¬£¬¾­¹ıÉÏÒ»²½£¬ÊôĞÔÏàÍ¬µÄÒÑ¾­union£¬½«ËùÓĞ·ÖÆ¬join
+				//æ‰¾å¯ä»¥joinçš„åˆ†ç‰‡ï¼Œç»è¿‡ä¸Šä¸€æ­¥ï¼Œå±æ€§ç›¸åŒçš„å·²ç»unionï¼Œå°†æ‰€æœ‰åˆ†ç‰‡join
 				for (int j=1;j<r-2;j++)
-				{	//È¡Á½¸ö½ÚµãµÄ×æÏÈ
+				{	//å–ä¸¤ä¸ªèŠ‚ç‚¹çš„ç¥–å…ˆ
 					int fa1 = get_fa(o_tree, pos[j]);  int fa2 = get_fa(o_tree, pos[j+1]);
-					//ĞÂ½¨Ò»¸öjoin½Úµã
+					//æ–°å»ºä¸€ä¸ªjoinèŠ‚ç‚¹
 					o_tree.node[++o_tree.num].type = 2;
 					o_tree.node[o_tree.num].child[0] = 2;
 					o_tree.node[o_tree.num].child[1] = fa1; o_tree.node[fa1].fa = o_tree.num;
 					o_tree.node[o_tree.num].child[2] = fa2; o_tree.node[fa2].fa = o_tree.num;
 				}
 						
-				//½«×îºóÁ½¸ö½Úµãjoinµ½ÏÖÔÚµÄ½ÚµãÉÏ
+				//å°†æœ€åä¸¤ä¸ªèŠ‚ç‚¹joinåˆ°ç°åœ¨çš„èŠ‚ç‚¹ä¸Š
 				int fa1 = get_fa(o_tree, pos[r-1]); int fa2 = get_fa(o_tree, pos[r]);
 						
 				o_tree.node[i].type = 2;
@@ -410,7 +418,7 @@ query_tree get_original_tree(string s)
 	return o_tree;
 	
 }
-//Êä³öÊ÷µ½ÎÄ¼ş
+//è¾“å‡ºæ ‘åˆ°æ–‡ä»¶
 void print_tree(query_tree tree)
 {
 	ofstream out("tree.txt");
@@ -436,10 +444,10 @@ void print_tree(query_tree tree)
 	out.close();
 }
 
-//ÅĞ¶Ï²éÑ¯Ìõ¼şµÄ×Ö·û´®condition£¬Óë·ÖÆ¬ÊÇ·ñÆ¥Åä
+//åˆ¤æ–­æŸ¥è¯¢æ¡ä»¶çš„å­—ç¬¦ä¸²conditionï¼Œä¸åˆ†ç‰‡æ˜¯å¦åŒ¹é…
 bool match_condition_frag(string condition, treenode &x, query_tree &tree)
-{	//ÔİÊ±Ö»Ğ´ANDµÄÇé¿ö£¬¼´Ò»¸öÀ¨ºÅÀïÖ»ÓĞÒ»¸öÌõ¼ş
-	//È·¶¨±È½Ï²Ù×÷·ûÎ»ÖÃ
+{	//æš‚æ—¶åªå†™ANDçš„æƒ…å†µï¼Œå³ä¸€ä¸ªæ‹¬å·é‡Œåªæœ‰ä¸€ä¸ªæ¡ä»¶
+	//ç¡®å®šæ¯”è¾ƒæ“ä½œç¬¦ä½ç½®
 	int pos_op;
 	string op; int temp; string section;
 	temp = condition.find("=", 0);  if (temp >= 0) {
@@ -460,13 +468,13 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 	temp = condition.find("<>", 0); if (temp >= 0) {
 		op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 	}
-	//ÕÒµ½.µÄÎ»ÖÃ£¬°Ñ±íÃûÈ¥µô
+	//æ‰¾åˆ°.çš„ä½ç½®ï¼ŒæŠŠè¡¨åå»æ‰
 	int pos_dot = condition.find(".", 0);
-	//ÌáÈ¡³ö²éÑ¯Ìõ¼şµÄÊôĞÔ
+	//æå–å‡ºæŸ¥è¯¢æ¡ä»¶çš„å±æ€§
 	string attr = "";
 	if (pos_dot < 0) attr = condition.substr(0, pos_op);		
 	else attr = condition.substr(pos_dot + 1, pos_op - pos_dot - 1);
-	//ÌáÈ¡tree.node[x]µÄ±íÃûºÍ·ÖÆ¬ĞòºÅ
+	//æå–tree.node[x]çš„è¡¨åå’Œåˆ†ç‰‡åºå·
 	int pos_colon = x.str.find(":");
 	string name = ""; int site = 0;
 	if (pos_colon < 0)
@@ -478,10 +486,10 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 		name = x.str.substr(0, pos_colon);
 		site = atoi(x.str.substr(pos_colon + 1, len - pos_colon - 1).c_str());
 	}
-	//È·¶¨Õâ¸ö·ÖÆ¬ÓĞÃ»ÓĞÕâ¸öÊôĞÔ
+	//ç¡®å®šè¿™ä¸ªåˆ†ç‰‡æœ‰æ²¡æœ‰è¿™ä¸ªå±æ€§
 	int sch_pos = tree.schema_pos[name];
 	//cout << sch_pos << " " <<name <<endl;
-	//Ë®Æ½ºÍ²»·ÖÆ¬²éÕÒ¶ÔÓ¦µÄ±íÊÇ·ñÓĞ¸ÃÊôĞÔ
+	//æ°´å¹³å’Œä¸åˆ†ç‰‡æŸ¥æ‰¾å¯¹åº”çš„è¡¨æ˜¯å¦æœ‰è¯¥å±æ€§
 	if (sch.table[sch_pos].type == -1 || sch.table[sch_pos].type == 0)
 	{
 		bool flag = false;
@@ -495,7 +503,7 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 		if (!flag) return false;
 	}
 	else
-	{	//¿´´¹Ö±·ÖÆ¬ĞÅÏ¢ÉÏÊÇ·ñÓĞ¸ÃÊôĞÔ
+	{	//çœ‹å‚ç›´åˆ†ç‰‡ä¿¡æ¯ä¸Šæ˜¯å¦æœ‰è¯¥å±æ€§
 		//cout << "find " << attr << endl;
 		int pos = sch.table[sch_pos].site[site].condition[1].find(attr);
 		if (pos >= 0)
@@ -626,7 +634,7 @@ bool intersect(string op, string section, condition_info condition)
 }
 
 bool condition_intersect(string condition, treenode &x, query_tree &tree)
-{	//È·¶¨±È½Ï²Ù×÷·ûÎ»ÖÃ ºÍ ±È½Ï²Ù×÷·û
+{	//ç¡®å®šæ¯”è¾ƒæ“ä½œç¬¦ä½ç½® å’Œ æ¯”è¾ƒæ“ä½œç¬¦
 	int pos_op;
 	string op; int temp; string section;
 	temp = condition.find("=", 0);  if (temp >= 0) {
@@ -648,13 +656,13 @@ bool condition_intersect(string condition, treenode &x, query_tree &tree)
 		op = "<>"; pos_op = temp; section = condition.substr(pos_op + 2, condition.length() - pos_op - 2);
 	}
 	//cout << op << " " << section << endl;
-	//ÕÒµ½.µÄÎ»ÖÃ£¬°Ñ±íÃûÈ¥µô
+	//æ‰¾åˆ°.çš„ä½ç½®ï¼ŒæŠŠè¡¨åå»æ‰
 	int pos_dot = condition.find(".", 0);
-	//ÌáÈ¡³ö²éÑ¯Ìõ¼şµÄÊôĞÔ
+	//æå–å‡ºæŸ¥è¯¢æ¡ä»¶çš„å±æ€§
 	string attr = "";
 	if (pos_dot < 0) attr = condition.substr(0, pos_op);
 	else attr = condition.substr(pos_dot + 1, pos_op - pos_dot - 1);
-	//ÌáÈ¡tree.node[x]µÄ±íÃûºÍ·ÖÆ¬ĞòºÅ
+	//æå–tree.node[x]çš„è¡¨åå’Œåˆ†ç‰‡åºå·
 	int pos_colon = x.str.find(":");
 	string name = ""; int site = 0;
 	if (pos_colon < 0)
@@ -668,71 +676,71 @@ bool condition_intersect(string condition, treenode &x, query_tree &tree)
 		name = x.str.substr(0, pos_colon);
 		site = atoi(x.str.substr(pos_colon + 1, len - pos_colon - 1).c_str());
 	}
-	//Ê×ÏÈÈ·¶¨Õâ¸ö·ÖÆ¬Ìõ¼şÓĞÃ»ÓĞÕâ¸öÊôĞÔ
+	//é¦–å…ˆç¡®å®šè¿™ä¸ªåˆ†ç‰‡æ¡ä»¶æœ‰æ²¡æœ‰è¿™ä¸ªå±æ€§
 	int sch_pos = tree.schema_pos[name];
-	//Ë®Æ½·ÖÆ¬
+	//æ°´å¹³åˆ†ç‰‡
 	if (sch.table[sch_pos].type == 0)
-	{	//·ÖÆ¬Ìõ¼şÓĞÕâ¸öÊôĞÔ
+	{	//åˆ†ç‰‡æ¡ä»¶æœ‰è¿™ä¸ªå±æ€§
 		if (sch.table[sch_pos].site[site].condition[0].find(attr) >= 0)
-		{	//ÔòÓĞÕâ¸öÊôĞÔ£¬ÅĞ¶ÏÇø¼äÊÇ·ñÏà½»
-			//cout << "ÅĞ¶ÏÊÇ·ñÏã½¶" << endl;
+		{	//åˆ™æœ‰è¿™ä¸ªå±æ€§ï¼Œåˆ¤æ–­åŒºé—´æ˜¯å¦ç›¸äº¤
+			//cout << "åˆ¤æ–­æ˜¯å¦é¦™è•‰" << endl;
 			bool flag = true;
 			for (int i = 1;i <= sch.table[sch_pos].site[site].hcon_list_len;i++)
-			{	//ÒòÎªÖ»ÓĞAND£¬ËùÒÔ²éÑ¯Ìõ¼şÖ»ÓĞÒ»¸ö£¬È»ºó²éÑ¯Ìõ¼şµÄÇø¼äÒªÓëÃ¿¸öÊôĞÔÏàÍ¬µÄ·ÖÆ¬Ìõ¼ş¶¼ÒªÓĞ½á¹û
+			{	//å› ä¸ºåªæœ‰ANDï¼Œæ‰€ä»¥æŸ¥è¯¢æ¡ä»¶åªæœ‰ä¸€ä¸ªï¼Œç„¶åæŸ¥è¯¢æ¡ä»¶çš„åŒºé—´è¦ä¸æ¯ä¸ªå±æ€§ç›¸åŒçš„åˆ†ç‰‡æ¡ä»¶éƒ½è¦æœ‰ç»“æœ
 				if (attr.compare(sch.table[sch_pos].site[site].hcon_list[i].attr) == 0)
-				{	//ÊôĞÔÏàÍ¬£¬¿´ÊÇ·ñÏà½»
+				{	//å±æ€§ç›¸åŒï¼Œçœ‹æ˜¯å¦ç›¸äº¤
 					//cout << "compare " << op << " "<<section<<" "<< sch.table[sch_pos].site[site].hcon_list[i].op << " "<< sch.table[sch_pos].site[site].hcon_list[i].section<< endl;
 					if (!intersect(op, section, sch.table[sch_pos].site[site].hcon_list[i])) flag = false;
 				}
 			}
 			return flag;
 		}
-		//·ñÔò¿ÉÄÜ´æÔÚ½á¹û
+		//å¦åˆ™å¯èƒ½å­˜åœ¨ç»“æœ
 		else return true;
 	}
-	//»ìºÏ·ÖÆ¬
+	//æ··åˆåˆ†ç‰‡
 	else if (sch.table[sch_pos].type == 2)
-	{	//Ê×ÏÈ´¹Ö±·ÖÆ¬Ìõ¼şµÃÓĞÕâ¸öÊôĞÔ
+	{	//é¦–å…ˆå‚ç›´åˆ†ç‰‡æ¡ä»¶å¾—æœ‰è¿™ä¸ªå±æ€§
 		//cout << "FUCK!!!!!!" << endl;
 		int pos = sch.table[sch_pos].site[site].condition[1].find(attr);
 		if (pos >= 0)
-		//È»ºóºÍË®Æ½·ÖÆ¬Ò»ÑùÅĞ¶ÏÊÇ·ñÓĞ½»¼¯
-		{	//·ÖÆ¬Ìõ¼şÓĞÕâ¸öÊôĞÔ
+		//ç„¶åå’Œæ°´å¹³åˆ†ç‰‡ä¸€æ ·åˆ¤æ–­æ˜¯å¦æœ‰äº¤é›†
+		{	//åˆ†ç‰‡æ¡ä»¶æœ‰è¿™ä¸ªå±æ€§
 			if (sch.table[sch_pos].site[site].condition[0].find(attr) >= 0)
-			{	//cout << "ÅĞ¶ÏÊÇ·ñÏã½¶" << endl;
+			{	//cout << "åˆ¤æ–­æ˜¯å¦é¦™è•‰" << endl;
 				bool flag = true;
 				for (int i = 1;i <= sch.table[sch_pos].site[site].hcon_list_len;i++)
-				{	//ÒòÎªÖ»ÓĞAND£¬ËùÒÔ²éÑ¯Ìõ¼şÖ»ÓĞÒ»¸ö£¬È»ºó²éÑ¯Ìõ¼şµÄÇø¼äÒªÓëÃ¿¸öÊôĞÔÏàÍ¬µÄ·ÖÆ¬Ìõ¼ş¶¼ÒªÓĞ½á¹û
+				{	//å› ä¸ºåªæœ‰ANDï¼Œæ‰€ä»¥æŸ¥è¯¢æ¡ä»¶åªæœ‰ä¸€ä¸ªï¼Œç„¶åæŸ¥è¯¢æ¡ä»¶çš„åŒºé—´è¦ä¸æ¯ä¸ªå±æ€§ç›¸åŒçš„åˆ†ç‰‡æ¡ä»¶éƒ½è¦æœ‰ç»“æœ
 					if (attr.compare(sch.table[sch_pos].site[site].hcon_list[i].attr) == 0)
-					{	//ÊôĞÔÏàÍ¬£¬¿´ÊÇ·ñÏà½»
+					{	//å±æ€§ç›¸åŒï¼Œçœ‹æ˜¯å¦ç›¸äº¤
 						//cout << "compare " << op << " " << section << " " << sch.table[sch_pos].site[site].hcon_list[i].op << " " << sch.table[sch_pos].site[site].hcon_list[i].section << endl;
 						if (!intersect(op, section, sch.table[sch_pos].site[site].hcon_list[i])) flag = false;
 					}
 				}
 				return flag;
 			}
-			//·ñÔò¿ÉÄÜ´æÔÚ½á¹û
+			//å¦åˆ™å¯èƒ½å­˜åœ¨ç»“æœ
 			else return true;
 		}
 		else return false;
 	}
 	return true;
 }
-//½«nodeÕâ¸ö½Úµã¸´ÖÆµ½tree[x]µÄ¸¸½Úµã´¦£¬Í¬Ê±¸üĞÂÖ¸Õë
+//å°†nodeè¿™ä¸ªèŠ‚ç‚¹å¤åˆ¶åˆ°tree[x]çš„çˆ¶èŠ‚ç‚¹å¤„ï¼ŒåŒæ—¶æ›´æ–°æŒ‡é’ˆ
 void copy_node(query_tree &tree, int x, treenode &node)
 {	tree.node[++tree.num] = node;
 	int child_pos;
 	for (int i = 1;i <= tree.node[tree.node[x].fa].child[0];i++)
 	{	if (tree.node[tree.node[x].fa].child[i] == x) child_pos = i;
 	}
-	//¸üĞÂÖ¸Õë
+	//æ›´æ–°æŒ‡é’ˆ
 	tree.node[tree.num].fa = tree.node[x].fa;
 	tree.node[tree.node[x].fa].child[child_pos] = tree.num;
 	tree.node[tree.num].child[0] = 1;
 	tree.node[tree.num].child[1] = x;
 	tree.node[x].fa = tree.num;
 }
-//É¾³ıÊ÷ÖĞµÄÒ»¸ö½Úµã£¬Í¬Ê±¸üĞÂÖ¸Õë
+//åˆ é™¤æ ‘ä¸­çš„ä¸€ä¸ªèŠ‚ç‚¹ï¼ŒåŒæ—¶æ›´æ–°æŒ‡é’ˆ
 void delete_node(query_tree &tree, int x)
 {	int child_pos;
 	if (tree.node[x].fa != -1)
@@ -741,26 +749,26 @@ void delete_node(query_tree &tree, int x)
 		{
 			if (tree.node[tree.node[x].fa].child[i] == x) child_pos = i;
 		}
-		//¸üĞÂ¸¸½ÚµãµÄ¶ù×ÓÁĞ±í
+		//æ›´æ–°çˆ¶èŠ‚ç‚¹çš„å„¿å­åˆ—è¡¨
 		for (int i = child_pos; i < tree.node[tree.node[x].fa].child[0]; i++)
 		{
 			tree.node[tree.node[x].fa].child[i] = tree.node[tree.node[x].fa].child[i + 1];
 		}
 		tree.node[tree.node[x].fa].child[0]--;
-		//Èç¹ûÕâ¸ö½ÚµãÓĞ¶ù×Ó£¬ÔòÖ»ÄÜÓĞÒ»¸ö¶ù×Ó£¬»òÕßÃ»ÓĞ¶ù×Ó·ñÔòÕâ¸ö½Úµã²»ÄÜÉ¾³ı
+		//å¦‚æœè¿™ä¸ªèŠ‚ç‚¹æœ‰å„¿å­ï¼Œåˆ™åªèƒ½æœ‰ä¸€ä¸ªå„¿å­ï¼Œæˆ–è€…æ²¡æœ‰å„¿å­å¦åˆ™è¿™ä¸ªèŠ‚ç‚¹ä¸èƒ½åˆ é™¤
 		if (tree.node[x].child[0] == 1)
 		{	tree.node[tree.node[x].fa].child[++tree.node[tree.node[x].fa].child[0]] = tree.node[x].child[1];
 			tree.node[tree.node[x].child[1]].fa = tree.node[x].fa;
 		}
 	}
-	//É¾µôÕâ¸ö½Úµã
+	//åˆ æ‰è¿™ä¸ªèŠ‚ç‚¹
 	tree.node[x].type = -1;
 }
 
 void push_condition_down(query_tree &tree)
-{	//²éÑ¯Ìõ¼şÏÂÍÆ
+{	//æŸ¥è¯¢æ¡ä»¶ä¸‹æ¨
 	int en = tree.num;
-	//·ÖÆ¬ÁĞ±í
+	//åˆ†ç‰‡åˆ—è¡¨
 	int q[maxtreenode], r = 0;
 	for (int i = 1;i <= en;i++)
 	{	if (tree.node[i].type == 0)
@@ -768,48 +776,48 @@ void push_condition_down(query_tree &tree)
 		}
 	}
 	for (int i = 1;i <= en;i++)
-	{	if (tree.node[i].type == 3) //Óöµ½Ìõ¼ş¾ÍÏÂÍÆ
-		{	//ÏÈ°ÑÌõ¼şµÄ±íÃûÈ¥µô
+	{	if (tree.node[i].type == 3) //é‡åˆ°æ¡ä»¶å°±ä¸‹æ¨
+		{	//å…ˆæŠŠæ¡ä»¶çš„è¡¨åå»æ‰
 			int pos = tree.node[i].str.find(".");
 			if (pos >= 0) tree.node[i].str = tree.node[i].str.substr(pos + 1, tree.node[i].str.length() - pos - 1);
-			//ÅĞ¶ÏÊÇ·ñÒª²åÈëµ½·ÖÆ¬ÉÏ
+			//åˆ¤æ–­æ˜¯å¦è¦æ’å…¥åˆ°åˆ†ç‰‡ä¸Š
 			for (int j = 1;j <= r;j++)
 			{	
 				if (q[j] == -1) continue;
 				//cout << tree.node[i].str << " " << tree.node[q[j]].str << endl;
-				//ÅĞ¶Ï²éÑ¯Ìõ¼şµÄÊôĞÔ£¬·ÖÆ¬ÊÇ·ñÓµÓĞ
+				//åˆ¤æ–­æŸ¥è¯¢æ¡ä»¶çš„å±æ€§ï¼Œåˆ†ç‰‡æ˜¯å¦æ‹¥æœ‰
 				if (match_condition_frag(tree.node[i].str, tree.node[q[j]], tree))
-				{	//´¹Ö±·ÖÆ¬»òÕß²»·ÖÆ¬ÓĞÕâ¸öÊôĞÔÆäÊµ¾Í¿ÉÒÔÖ±½Ó²åÈëÁË
+				{	//å‚ç›´åˆ†ç‰‡æˆ–è€…ä¸åˆ†ç‰‡æœ‰è¿™ä¸ªå±æ€§å…¶å®å°±å¯ä»¥ç›´æ¥æ’å…¥äº†
 					if (tree.node[i].type == 1 || tree.node[i].type == -1)
-					{	//cout << tree.node[i].str << " ²åÈë " << tree.node[q[j]].str << endl;
+					{	//cout << tree.node[i].str << " æ’å…¥ " << tree.node[q[j]].str << endl;
 						copy_node(tree, q[j], tree.node[i]);
 					}
-					//·ñÔòÔÚÓĞÕâ¸öÊôĞÔµÄÇé¿öÏÂ£¬²éÑ¯Ìõ¼şÔÚÕâ¸ö·ÖÆ¬ÉÏÊÇ·ñÓĞ½á¹û£¬Ò²¾ÍÊÇ²éÑ¯Ìõ¼şÊÇ·ñÓë·ÖÆ¬Ìõ¼şÓĞ½»¼¯
+					//å¦åˆ™åœ¨æœ‰è¿™ä¸ªå±æ€§çš„æƒ…å†µä¸‹ï¼ŒæŸ¥è¯¢æ¡ä»¶åœ¨è¿™ä¸ªåˆ†ç‰‡ä¸Šæ˜¯å¦æœ‰ç»“æœï¼Œä¹Ÿå°±æ˜¯æŸ¥è¯¢æ¡ä»¶æ˜¯å¦ä¸åˆ†ç‰‡æ¡ä»¶æœ‰äº¤é›†
 					else
 					{	if (condition_intersect(tree.node[i].str, tree.node[q[j]], tree))
-						{	//cout << "Ìõ¼şÓë·ÖÆ¬Æ¥Åä£¬²åÈë" << endl;
+						{	//cout << "æ¡ä»¶ä¸åˆ†ç‰‡åŒ¹é…ï¼Œæ’å…¥" << endl;
 							copy_node(tree, q[j], tree.node[i]);
 						}
 						else
-						{	//cout << "Ìõ¼şÓë·ÖÆ¬²»Æ¥Åä£¬É¾³ıÕâÒ»Ö¦" << endl;
+						{	//cout << "æ¡ä»¶ä¸åˆ†ç‰‡ä¸åŒ¹é…ï¼Œåˆ é™¤è¿™ä¸€æ" << endl;
 							int to_del = q[j];
-							//×Ôµ×ÏòÉÏÒ»Ö±É¾µ½union
+							//è‡ªåº•å‘ä¸Šä¸€ç›´åˆ åˆ°union
 							while (tree.node[to_del].type != 1)
 							{	delete_node(tree, to_del);
 								to_del = tree.node[to_del].fa;
 							}
-							q[j] = -1;//Õâ¸ö·ÖÆ¬ÉèÎªÎŞĞ§·ÖÆ¬
-							//Èç¹ûÉ¾µÄunionÖ»ÓĞÒ»¸ö¶ù×ÓÁË£¬°ÑunionÒ²É¾ÁË
+							q[j] = -1;//è¿™ä¸ªåˆ†ç‰‡è®¾ä¸ºæ— æ•ˆåˆ†ç‰‡
+							//å¦‚æœåˆ çš„unionåªæœ‰ä¸€ä¸ªå„¿å­äº†ï¼ŒæŠŠunionä¹Ÿåˆ äº†
 							if (tree.node[to_del].child[0] == 1) delete_node(tree, to_del);
 						}
 					}
 				}
-				//Ã»ÓĞ¾ÍÊ²Ã´¶¼²»×ö
+				//æ²¡æœ‰å°±ä»€ä¹ˆéƒ½ä¸åš
 				else
-				{	//cout << "Ê²Ã´¶¼²»×ö" << endl;
+				{	//cout << "ä»€ä¹ˆéƒ½ä¸åš" << endl;
 				}
 			}
-			//ÍÆÍê½«Õâ¸ö²éÑ¯Ìõ¼şÉ¾³ı
+			//æ¨å®Œå°†è¿™ä¸ªæŸ¥è¯¢æ¡ä»¶åˆ é™¤
 			delete_node(tree, i);
 		}
 	}
@@ -820,7 +828,7 @@ void clear_frag(query_tree &tree)
 {	for (int i=1;i<=tree.num;i++)
 	{
 		if (tree.node[i].type == 2 && tree.node[i].str.compare("")==0)
-		{	//¿´Õâ¸öÊÇ·ñĞèÒªÉ¾³ı
+		{	//çœ‹è¿™ä¸ªæ˜¯å¦éœ€è¦åˆ é™¤
 			bool l = false, r = false;
 			int pos;
 			pos = tree.node[tree.node[i].child[1]].str.find(",");
@@ -828,13 +836,13 @@ void clear_frag(query_tree &tree)
 			pos = tree.node[tree.node[i].child[2]].str.find(",");
 			if (pos >= 0) r = true;
 			if (l == false)
-			{	//É¾³ı×ó×ÓÊ÷
+			{	//åˆ é™¤å·¦å­æ ‘
 				tree.node[i].child[1] = tree.node[i].child[2];
 				tree.node[i].child[0] = 1;
 				delete_node(tree, i);
 			}
 			else if (r == false)
-			{	//É¾³ıÓÒ×ÓÊ÷
+			{	//åˆ é™¤å³å­æ ‘
 				tree.node[i].child[0] = 1;
 				delete_node(tree, i);
 			}
@@ -845,28 +853,39 @@ void clear_frag(query_tree &tree)
 void push_select_down(query_tree &tree)
 {
 	if (tree.node[tree.root].str.compare("*") == 0)
-	{	//cout << "²»ÓÃÏÂÍÆ\n";
+	{	//cout << "ä¸ç”¨ä¸‹æ¨\n";
 	}
 	else
-	{	//ÔòÒªÊ¹ÓÃÍ¶Ó°ÏÂÍÆ
-		string s = tree.node[tree.root].str;
-		//½«Í¶Ó°ÊôĞÔ²ğ·Öµ½attr
+	{	//åˆ™è¦ä½¿ç”¨æŠ•å½±ä¸‹æ¨
+		string s = tree.node[tree.root].str,t;
+		//å°†æŠ•å½±å±æ€§æ‹†åˆ†åˆ°attr
 		int attr_num = 0;
 		string attr[20];
 		int pos = s.find(",");
 		while (pos >= 0)
 		{
-			attr[++attr_num] = s.substr(0, pos);
+			t = s.substr(0, pos);
 			s = s.substr(pos + 1, s.length() - pos - 1);
+			pos = t.find(".");
+			if (pos<0)	attr[++attr_num] = t;
+			else attr[++attr_num] = t.substr(pos+1, t.length()- pos -1);
+			//cout << attr[attr_num] << endl;
+			
+			
 			pos = s.find(",");
 		}
-		attr[++attr_num] = s;
+		t = s;
+		pos = t.find(".");
+		if (pos<0)	attr[++attr_num] = t;
+		else attr[++attr_num] = t.substr(pos + 1, t.length() - pos - 1);
+		//cout << attr[attr_num] << endl;
+
 		int en = tree.num;
-		//É¨ÃèÈ«Ê÷£¬Óöµ½·ÖÆ¬¾ÍÏÂÍÆselect
+		//æ‰«æå…¨æ ‘ï¼Œé‡åˆ°åˆ†ç‰‡å°±ä¸‹æ¨select
 		for (int i = 1;i <= en;i++)
 		{
 			if (tree.node[i].type == 0)
-			{	//ÌáÈ¡·ÖÆ¬±íÃûºÍ·ÖÆ¬ĞòºÅ
+			{	//æå–åˆ†ç‰‡è¡¨åå’Œåˆ†ç‰‡åºå·
 				//cout << "aaa\n";
 				string x = tree.node[i].str;
 				int pos_colon = x.find(":");
@@ -883,44 +902,44 @@ void push_select_down(query_tree &tree)
 					site = atoi(x.substr(pos_colon + 1, len - pos_colon - 1).c_str());
 				}
 				//cout << name << site << endl;
-				//×Ôµ×ÏòÉÏ¿´¸Ã·ÖÆ¬ĞèÒªÄÄĞ©ÊôĞÔ
+				//è‡ªåº•å‘ä¸Šçœ‹è¯¥åˆ†ç‰‡éœ€è¦å“ªäº›å±æ€§
 				int frag_attr_num = 0; string frag_attr[20];
 				int p = i;
 				while (tree.node[p].fa != -1)
 				{
-					if (tree.node[p].type == 2)//ÈôÊÇjoinÔò¸Ã·ÖÆ¬Ó¦¸ÃÓĞÁ¬½ÓÌõ¼şÖĞµÄÊôĞÔ£¬Èç¹û¿ÉÒÔÓĞµÄ»°
+					if (tree.node[p].type == 2)//è‹¥æ˜¯joinåˆ™è¯¥åˆ†ç‰‡åº”è¯¥æœ‰è¿æ¥æ¡ä»¶ä¸­çš„å±æ€§ï¼Œå¦‚æœå¯ä»¥æœ‰çš„è¯
 					{
 						string tmp = tree.node[p].str;
 						if (tmp.compare("") == 0)
-						{	//·ÖÆ¬Ö®¼äµÄÁ¬½Ó£¬È¡Á½¸ö·ÖÆ¬µÄ¹«¹²ÊôĞÔ£¬ÆäÊµ¾ÍÊÇ·ÖÆ¬Ìõ¼şÖĞµÄµÚÒ»¸öÊôĞÔ
+						{	//åˆ†ç‰‡ä¹‹é—´çš„è¿æ¥ï¼Œå–ä¸¤ä¸ªåˆ†ç‰‡çš„å…¬å…±å±æ€§ï¼Œå…¶å®å°±æ˜¯åˆ†ç‰‡æ¡ä»¶ä¸­çš„ç¬¬ä¸€ä¸ªå±æ€§
 							tmp = sch.table[tree.schema_pos[name]].site[site].condition[1];
 							pos = tmp.find(",");
 							tmp = tmp.substr(0, pos);
 							//cout << tmp << endl;
 						}
 						else
-						{   //ÓÃÌáÈ¡Á½¸ö.µÄ×î±¿µÄ×ö·¨
+						{   //ç”¨æå–ä¸¤ä¸ª.çš„æœ€ç¬¨çš„åšæ³•
 							pos = tmp.find(".");
 							tmp = tmp.substr(pos + 1, tmp.length() - pos - 1);
 							pos = tmp.find(".");
 							tmp = tmp.substr(pos + 1, tmp.length() - pos - 1);
 							//cout << tmp << endl;
-							//tmpÔòÎªĞèÒªÅĞ¶ÏµÄÊôĞÔ
+							//tmpåˆ™ä¸ºéœ€è¦åˆ¤æ–­çš„å±æ€§
 						}
-						//ÅĞ¶ÏtmpÊÇ·ñÓ¦¸Ã¼ÓÈë
-						bool frag_has_attr = false;//·ÖÆ¬ÊÇ·ñÓĞÕâ¸öÊôĞÔ
+						//åˆ¤æ–­tmpæ˜¯å¦åº”è¯¥åŠ å…¥
+						bool frag_has_attr = false;//åˆ†ç‰‡æ˜¯å¦æœ‰è¿™ä¸ªå±æ€§
 						if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
-						{	//Ë®Æ½·ÖÆ¬ºÍ²»·ÖÆ¬¿´¶ÔÓ¦µÄ±íÊÇ·ñÓĞÊôĞÔ
+						{	//æ°´å¹³åˆ†ç‰‡å’Œä¸åˆ†ç‰‡çœ‹å¯¹åº”çš„è¡¨æ˜¯å¦æœ‰å±æ€§
 							for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
 								if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
 						}
 						else
-						{	//´¹Ö±·ÖÆ¬ºÍ»ìºÏ·ÖÆ¬¿´·ÖÆ¬Ìõ¼şÉÏÊÇ·ñÓĞ
+						{	//å‚ç›´åˆ†ç‰‡å’Œæ··åˆåˆ†ç‰‡çœ‹åˆ†ç‰‡æ¡ä»¶ä¸Šæ˜¯å¦æœ‰
 							pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
 							if (pos >= 0) frag_has_attr = true;
 						}
 						if (frag_has_attr)
-						{	//ÓĞÕâ¸öÊôĞÔ²¢ÇÒ»¹Î´Ìí¼Ó
+						{	//æœ‰è¿™ä¸ªå±æ€§å¹¶ä¸”è¿˜æœªæ·»åŠ 
 							frag_has_attr = false;
 							for (int j = 1;j <= frag_attr_num;j++)
 								if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
@@ -934,36 +953,36 @@ void push_select_down(query_tree &tree)
 					//cout << "aaa\n" << endl;
 					p = tree.node[p].fa;
 				}
-				//Ìí¼ÓÍ¶Ó°ÖĞµÄÊôĞÔ£¬Èç¹û¿ÉÒÔµÄ»°
+				//æ·»åŠ æŠ•å½±ä¸­çš„å±æ€§ï¼Œå¦‚æœå¯ä»¥çš„è¯
 				for (int j = 1;j <= attr_num;j++)
 				{
 					bool frag_has_attr = false;
 					string tmp = attr[j];
 					if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
-					{	//Ë®Æ½·ÖÆ¬ºÍ²»·ÖÆ¬¿´¶ÔÓ¦µÄ±íÊÇ·ñÓĞÊôĞÔ
+					{	//æ°´å¹³åˆ†ç‰‡å’Œä¸åˆ†ç‰‡çœ‹å¯¹åº”çš„è¡¨æ˜¯å¦æœ‰å±æ€§
 						for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
 							if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
 					}
 					else
-					{	//´¹Ö±·ÖÆ¬ºÍ»ìºÏ·ÖÆ¬¿´·ÖÆ¬Ìõ¼şÉÏÊÇ·ñÓĞ
+					{	//å‚ç›´åˆ†ç‰‡å’Œæ··åˆåˆ†ç‰‡çœ‹åˆ†ç‰‡æ¡ä»¶ä¸Šæ˜¯å¦æœ‰
 						pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
 						if (pos >= 0) frag_has_attr = true;
 					}
 					if (frag_has_attr)
-					{	//ÓĞÕâ¸öÊôĞÔ²¢ÇÒ»¹Î´Ìí¼Ó
+					{	//æœ‰è¿™ä¸ªå±æ€§å¹¶ä¸”è¿˜æœªæ·»åŠ 
 						frag_has_attr = false;
 						for (int j = 1;j <= frag_attr_num;j++)
 							if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
 						if (!frag_has_attr) frag_attr[++frag_attr_num] = tmp;
 					}
 				}
-				//´´½¨Ò»¸öÍ¶Ó°½Úµã
+				//åˆ›å»ºä¸€ä¸ªæŠ•å½±èŠ‚ç‚¹
 				tree.node[++tree.num].type = 4;
 				tree.node[tree.num].str = "";
-				//ÕÒÑ°Õâ¸öÍ¶Ó°Ó¦¸Ã²åÈëµÄÎ»ÖÃ
+				//æ‰¾å¯»è¿™ä¸ªæŠ•å½±åº”è¯¥æ’å…¥çš„ä½ç½®
 				pos = i;
 				while (tree.node[pos].fa != -1)
-				{	//²åµ½ËùÓĞÑ¡ÔñÌõ¼şµÄÉÏ·½
+				{	//æ’åˆ°æ‰€æœ‰é€‰æ‹©æ¡ä»¶çš„ä¸Šæ–¹
 					if (tree.node[tree.node[pos].fa].type == 3) pos = tree.node[pos].fa;
 					else break;
 				}
@@ -982,7 +1001,7 @@ void push_select_down(query_tree &tree)
 		clear_frag(tree);
 	}
 	
-	//°Ñ×îÉÏÃæµÄÍ¶Ó°²Ù×÷É¾³ı
+	//æŠŠæœ€ä¸Šé¢çš„æŠ•å½±æ“ä½œåˆ é™¤
 	/*tree.node[tree.root].type = -1;
 	tree.node[tree.node[tree.root].child[1]].fa = -1;
 	tree.root = tree.node[tree.root].child[1];
@@ -991,14 +1010,14 @@ void push_select_down(query_tree &tree)
 }
 
 
-//´Óx¿ªÊ¼£¬µİ¹é¸´ÖÆxÒÔÏÂËùÓĞµÄÊ÷½á¹¹²åÈëµ½Ê÷ÖĞfa½ÚµãÖ®ÏÂ
+//ä»xå¼€å§‹ï¼Œé€’å½’å¤åˆ¶xä»¥ä¸‹æ‰€æœ‰çš„æ ‘ç»“æ„æ’å…¥åˆ°æ ‘ä¸­faèŠ‚ç‚¹ä¹‹ä¸‹
 void copy_branch(query_tree &tree, int x, int fa)
-{	//´¦Àí¸´ÖÆ³öÀ´µÄ½Úµã
+{	//å¤„ç†å¤åˆ¶å‡ºæ¥çš„èŠ‚ç‚¹
 	tree.node[++tree.num].type = tree.node[x].type;
 	tree.node[tree.num].child[0] = 0;
 	tree.node[tree.num].fa = fa;
 	tree.node[tree.num].str = tree.node[x].str;
-	//Á´½Óµ½faÉÏ
+	//é“¾æ¥åˆ°faä¸Š
 	tree.node[fa].child[++tree.node[fa].child[0]] = tree.num;
 
 	int newnode = tree.num;
@@ -1006,7 +1025,7 @@ void copy_branch(query_tree &tree, int x, int fa)
 		copy_branch(tree, tree.node[x].child[i], newnode);
 }
 
-//Í³¼Æ´Óx¿ªÊ¼ÒÔÏÂËùÓĞÊ÷½á¹¹ÓĞ¶àÉÙ½Úµã
+//ç»Ÿè®¡ä»xå¼€å§‹ä»¥ä¸‹æ‰€æœ‰æ ‘ç»“æ„æœ‰å¤šå°‘èŠ‚ç‚¹
 int count_branch(query_tree &tree, int x)
 {
 	int sum = 1;
@@ -1016,25 +1035,25 @@ int count_branch(query_tree &tree, int x)
 
 
 int dfs_push(query_tree &tree, int x)
-{	//Õâ¸ö½ÚµãµÄ×óÓÒ·ÖÖ§ÊıÄ¿
+{	//è¿™ä¸ªèŠ‚ç‚¹çš„å·¦å³åˆ†æ”¯æ•°ç›®
 	int l = 0, r = 0 ,sum = 0;
-	//join×¼±¸ÏÂÍÆ
+	//joinå‡†å¤‡ä¸‹æ¨
 	if (tree.node[x].type == 2)
 	{
 		l = dfs_push(tree, tree.node[x].child[1]);
 		r = dfs_push(tree, tree.node[x].child[2]);
 		if (l == 1 && r == 1)
 		{
-			//cout << x<<"Ã»±ØÒªÏÂÍÆ\n";
+			//cout << x<<"æ²¡å¿…è¦ä¸‹æ¨\n";
 			sum = 1;
 		}
 		else
 		{	
-			//cout << x<<" "<<l << " " << r << "ĞèÒªÏÂÍÆ\n";
-			//Á½Á½join
-			int q[100], num = 0, newjoin;//±£´æĞÂjoinµÄÍ·½Úµã
+			//cout << x<<" "<<l << " " << r << "éœ€è¦ä¸‹æ¨\n";
+			//ä¸¤ä¸¤join
+			int q[100], num = 0, newjoin;//ä¿å­˜æ–°joinçš„å¤´èŠ‚ç‚¹
 			int lroot = tree.node[x].child[1], rroot = tree.node[x].child[2];
-			//ÅĞ¶ÏÊ÷ÊÇ·ñÓĞ×ã¹»µÄ¿Õ¼ä½øĞĞjoinÏÂÍÆ
+			//åˆ¤æ–­æ ‘æ˜¯å¦æœ‰è¶³å¤Ÿçš„ç©ºé—´è¿›è¡Œjoinä¸‹æ¨
 			int l_branch, r_branch, node_to_add = 0;
 			for (int i = 1;i <= l;i++)
 			for (int j = 1;j <= r;j++)
@@ -1049,19 +1068,19 @@ int dfs_push(query_tree &tree, int x)
 			}
 			bool can_push = true;
 			if (tree.num + node_to_add > maxtreenode) 
-			{	//²åÈëµÄ½ÚµãÊı³¬³öÊ÷µÄ´óĞ¡
-				can_push = false; cout << x << tree.node[x].str << "Ìí¼Ó" << node_to_add << "¸ö½Úµã£¬³¬³öÊ÷µÄ´óĞ¡"<<endl;
+			{	//æ’å…¥çš„èŠ‚ç‚¹æ•°è¶…å‡ºæ ‘çš„å¤§å°
+				can_push = false; cout << x << tree.node[x].str << "æ·»åŠ " << node_to_add << "ä¸ªèŠ‚ç‚¹ï¼Œè¶…å‡ºæ ‘çš„å¤§å°"<<endl;
 			}
 			if (l*r > maxsite - 1)
-			{	//²åÈëµÄ·ÖÖ§³¬³öÊ÷µÄ×î´ó·ÖÖ§
-				can_push = false; cout << x << tree.node[x].str << "Ìí¼Ó" << node_to_add << "¸ö·ÖÖ§£¬³¬³öÊ÷×î´ó·ÖÖ§" << endl;
+			{	//æ’å…¥çš„åˆ†æ”¯è¶…å‡ºæ ‘çš„æœ€å¤§åˆ†æ”¯
+				can_push = false; cout << x << tree.node[x].str << "æ·»åŠ " << node_to_add << "ä¸ªåˆ†æ”¯ï¼Œè¶…å‡ºæ ‘æœ€å¤§åˆ†æ”¯" << endl;
 			}
 			if (can_push)
 			{
 				for (int i = 1;i <= l;i++)
 					for (int j = 1;j <= r;j++)
 					{
-						//¸´ÖÆÒ»¸öºÍxÏàÍ¬µÄjoin½Úµã
+						//å¤åˆ¶ä¸€ä¸ªå’Œxç›¸åŒçš„joinèŠ‚ç‚¹
 						tree.node[++tree.num].type = tree.node[x].type;
 						tree.node[tree.num].fa = x;
 						tree.node[tree.num].str = tree.node[x].str;
@@ -1075,7 +1094,7 @@ int dfs_push(query_tree &tree, int x)
 						q[++num] = newjoin;
 
 					}
-				//½«ĞÂ½¨µÄjoin½ÚµãÁ¬½Óµ½xÉÏ
+				//å°†æ–°å»ºçš„joinèŠ‚ç‚¹è¿æ¥åˆ°xä¸Š
 				tree.node[x].child[0] = 0;
 				for (int i = 1;i <= num;i++)
 				{
@@ -1103,7 +1122,7 @@ int dfs_push(query_tree &tree, int x)
 }
 
 bool join_frag(query_tree &tree, string frag1, string frag2)
-{	//ÌáÈ¡frag1,frag2µÄ±íÃûºÍ·ÖÆ¬ĞòºÅ
+{	//æå–frag1,frag2çš„è¡¨åå’Œåˆ†ç‰‡åºå·
 	int pos_colon = frag1.find(":");
 	string name1 = ""; int site1 = 0;
 	if (pos_colon < 0)
@@ -1130,16 +1149,16 @@ bool join_frag(query_tree &tree, string frag1, string frag2)
 		name2 = frag2.substr(0, pos_colon);
 		site2 = atoi(frag2.substr(pos_colon + 1, len - pos_colon - 1).c_str());
 	}
-	//²é¿´ÊÇ·ñÓĞ½á¹û
+	//æŸ¥çœ‹æ˜¯å¦æœ‰ç»“æœ
 	int pos1 = tree.schema_pos[name1], pos2 = tree.schema_pos[name2];
 	if (sch.table[pos1].type == 0 || sch.table[pos1].type == 2)
 	if (sch.table[pos2].type == 0 || sch.table[pos2].type == 2)
-	{	//Ö»ÓĞË®Æ½»òÕß»ìºÏ²ÅÄÜÍ¨¹ıÌõ¼şÅĞ¶ÏÊÇ·ñÓĞ½»¼¯£¬½öÍ¨¹ıÊôĞÔÊÇÅĞ¶Ï²»³öµÄ
-		//cout << "±È½Ï" << frag1 << " " << frag2 << endl;
+	{	//åªæœ‰æ°´å¹³æˆ–è€…æ··åˆæ‰èƒ½é€šè¿‡æ¡ä»¶åˆ¤æ–­æ˜¯å¦æœ‰äº¤é›†ï¼Œä»…é€šè¿‡å±æ€§æ˜¯åˆ¤æ–­ä¸å‡ºçš„
+		//cout << "æ¯”è¾ƒ" << frag1 << " " << frag2 << endl;
 		for (int i = 1;i <= sch.table[pos1].site[site1].hcon_list_len;i++)
 		for (int j = 1;j <= sch.table[pos2].site[site2].hcon_list_len;j++)
 		if (sch.table[pos1].site[site1].hcon_list[i].attr.compare(sch.table[pos2].site[site2].hcon_list[j].attr) == 0)
-		{	//ÊôĞÔÏàÍ¬Ê±£¬¿´Ìõ¼şÊÇ·ñÓĞ½»¼¯
+		{	//å±æ€§ç›¸åŒæ—¶ï¼Œçœ‹æ¡ä»¶æ˜¯å¦æœ‰äº¤é›†
 			if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
 			{
 				return false;
@@ -1159,16 +1178,16 @@ string dfs_delete(query_tree &tree, int x)
 		for (int i = 1;i <= tree.node[x].child[0];i++)
 		{
 			string tmp = dfs_delete(tree, tree.node[x].child[i]);
-			if (tmp.compare("") == 0) continue;//±»É¾³ıµÄÖ¦¾ÍÌø¹ı
+			if (tmp.compare("") == 0) continue;//è¢«åˆ é™¤çš„æå°±è·³è¿‡
 			child++; 
 			if (str.compare("") ==0) str += tmp;
 			else str += " "+tmp;
 		}
 	}
 	//cout << x << " " << str << endl;
-	//¿¼ÂÇjoinµÄ·ÖÆ¬¼¯ºÏstrÊÇ·ñÓĞ½á¹û£¬Ã»ÓĞÉ¾³ıÕâÒ»Ö§
+	//è€ƒè™‘joinçš„åˆ†ç‰‡é›†åˆstræ˜¯å¦æœ‰ç»“æœï¼Œæ²¡æœ‰åˆ é™¤è¿™ä¸€æ”¯
 	if (tree.node[x].type == 2)
-	{	//ÌáÈ¡·ÖÆ¬Êı×é
+	{	//æå–åˆ†ç‰‡æ•°ç»„
 		string tmp = str;
 		string frag[100]; int num = 0;
 		int pos = tmp.find(" ");
@@ -1177,11 +1196,11 @@ string dfs_delete(query_tree &tree, int x)
 			frag[++num] = tmp.substr(0, pos);
 			tmp = tmp.substr(pos+1, tmp.length()-pos-1);
 			pos = tmp.find(" ");
-			//cout << tmp << "°¡";
+			//cout << tmp << "å•Š";
 		}
 		frag[++num] = tmp;
 		
-		//¿´Á½Á½·ÖÆ¬ÊÇ·ñÎŞ½á¹û
+		//çœ‹ä¸¤ä¸¤åˆ†ç‰‡æ˜¯å¦æ— ç»“æœ
 		bool have_res = true;
 		for (int i = 1;i <= num;i++)
 		for (int j = i + 1;j <= num;j++)
@@ -1189,15 +1208,15 @@ string dfs_delete(query_tree &tree, int x)
 			if (!join_frag(tree, frag[i], frag[j])) have_res = false;
 		}
 		if (!have_res || child <= 1)
-		{	//É¾³ıÕâ¸ö½Úµã
-			//cout << "É¾³ı" << x << " " << str << endl;
+		{	//åˆ é™¤è¿™ä¸ªèŠ‚ç‚¹
+			//cout << "åˆ é™¤" << x << " " << str << endl;
 			tree.node[x].type = -1;
 			str = "";
 		}
 	}
 	return str;
 }
-//ÇåÀíµôÉ¾³ıµÄ½Úµã
+//æ¸…ç†æ‰åˆ é™¤çš„èŠ‚ç‚¹
 void clear_tree(query_tree &tree, int x)
 {	for (int i=1;i<=tree.node[x].child[0];i++)
 	{
@@ -1212,20 +1231,20 @@ void clear_tree(query_tree &tree, int x)
 }
 
 void push_join_down(query_tree &tree)
-{	//Éî¶ÈÓÅÏÈ±éÀúÊ÷£¬ºó¸ù    
+{	//æ·±åº¦ä¼˜å…ˆéå†æ ‘ï¼Œåæ ¹    
 	dfs_push(tree, tree.root);
-	//É¾³ıÃ»ÓĞ½»¼¯µÄ·ÖÖ§
+	//åˆ é™¤æ²¡æœ‰äº¤é›†çš„åˆ†æ”¯
 	dfs_delete(tree, tree.root);
 	clear_tree(tree, tree.root);
 }
 
-//ÉÏÍËÏÂÒÆ²Ù×÷£¬»ù´¡ÓÅ»¯
+//ä¸Šé€€ä¸‹ç§»æ“ä½œï¼ŒåŸºç¡€ä¼˜åŒ–
 void get_basic_opt_tree(query_tree &tree, int level)
-{	//µÚÒ»²½£¬½«Ìõ¼şÏÂÍÆ
+{	//ç¬¬ä¸€æ­¥ï¼Œå°†æ¡ä»¶ä¸‹æ¨
 	if (level>=1) push_condition_down(tree);
-	//µÚ¶ş²½£¬½«Í¶Ó°²Ù×÷ÏÂÍÆ
+	//ç¬¬äºŒæ­¥ï¼Œå°†æŠ•å½±æ“ä½œä¸‹æ¨
 	if (level>=2) push_select_down(tree);
-	//µÚÈı²½£¬½«Á¬½Ó²Ù×÷ÏÂÍÆ
+	//ç¬¬ä¸‰æ­¥ï¼Œå°†è¿æ¥æ“ä½œä¸‹æ¨
 	if (level >= 3)
 	{   push_join_down(tree);
 	}

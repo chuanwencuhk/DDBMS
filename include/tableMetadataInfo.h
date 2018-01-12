@@ -17,7 +17,7 @@ typedef struct _Attribution
       int attr_datatype = 1;
       int attr_length = 0;
       //RulesType attr_rulestype = NOT_NULL;
-      int attr_rulestype = 1;
+      int attr_rulestype = 0;
 
 }Attribution;
 

@@ -7,6 +7,12 @@
 #include <deque>
 #include <fstream>
 #include <set>
+#include <string.h>
+#include <iostream>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/time.h>
 
 class MetadataManager;
 vector<string> db_names2 = {"db1","db2","db3","db4"};
@@ -233,6 +239,8 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
     cplmnt_set.clear();
     tmp_set.clear();
     //set<string> tmp_set;
+    struct timeval start, end;
+    gettimeofday( &start, NULL );
 
     MetadataManager* pmgr = MetadataManager::getInstance();
 
@@ -253,7 +261,8 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
 
             string f_name = qtree.node[pos].str;
             std::string::size_type n = f_name.find(":");
-            int site_ID = -1;
+            //int site_ID = -1;
+            int site_ID = 1;
             if(n != f_name.npos)
             {
                 string s = f_name.substr(0,n);
@@ -267,11 +276,11 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
 
             Fragment frg = pmgr->get_fragment_bystr(f_name);
             bool V_frag = false;
-            for(int i=0;i<MAX_FRAGMENT_NUM;i++)
-                V_frag = frg.condition_slice[i].con_V1.isValid;
+            //for(int i=0;i<MAX_FRAGMENT_NUM;i++)
+                V_frag = frg.condition_slice[site_ID-1].con_V1.isValid;
             if(V_frag)//if V_frag==true means the table has vertical frangment
             {
-                if(site_ID == -1) site_ID =1;
+                //if(site_ID == -1) site_ID =1;
                 string IP_address = pmgr->get_IP_by_siteID(site_ID-1);
                 string sql_stm = "select * from "+f_name+";" ;
                 cout<<"the SQL is: "<<sql_stm<<" to site: "<<site_ID<<" IP is: "<<IP_address<<endl;
@@ -318,7 +327,7 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
                     tmp_set.insert(get_hash_fromstr(f_name));
                 }
                 string buf_string = readFileIntoString("/home/wcw/ddb_parser/"+get_hash_fromstr(f_name)+".ttb");
-               // cout<<"buf_string********"<<buf_string<<endl;
+                //cout<<"buf_string********"<<buf_string<<endl;
                 RPCInsertFileToTable(default_local_ip,"db1",buf_string,get_hash_fromstr(f_name));
 
                 //qtree.node[pos].type = 5;//means the remote data has store in a tmp table with hashed name
@@ -332,24 +341,30 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
                 //int complement_frag_num;
                 int complemnt_siteID;
                 for(int k=0;k<MAX_FRAGMENT_NUM;k++)
-                {
+            {
                     if(hasdifferent_frag_attr) break;
                     if(k==(site_ID-1)) continue;
-                    if(frg.condition_slice[site_ID-1].con_H1.attr_condition == frg.condition_slice[k].con_H1.attr_condition)
-                    {
+                    for(int kk =1;kk<frg.condition_slice[k].con_V1.attr_num;kk++)
+                {
+                    //if(frg.condition_slice[site_ID-1].con_H1.attr_condition == frg.condition_slice[k].con_H1.attr_condition)
+                    //{
                         complemnt_siteID = k;
-                        for(int q=1;q<frg.condition_slice[k].con_V1.attr_num;q++)
-                        {
-                            int frg_attr_pos = SQL.find(frg.condition_slice[k].con_V1.attr_frag_strlist[q]);
+                        //for(int q=1;q<frg.condition_slice[k].con_V1.attr_num;q++)
+                        //{
+                            int frg_attr_pos = SQL.find(frg.condition_slice[k].con_V1.attr_frag_strlist[kk]);
                             if(frg_attr_pos != SQL.npos)
                             {
+                                complemnt_siteID = k;
                                 hasdifferent_frag_attr = true;
+                                cout<<"find complete fragment "<<endl;
                                 break;
                             }
 
-                        }
-                    }
+                        //}
+                
+                    //}
                 }
+            }
 
                 if(SQL.find("*") != SQL.npos) hasselectall = true;
 //to create complement table with vertical fragment
@@ -370,8 +385,8 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
                     TableMedata tb = pmgr->get_tablemetadata(f_name);
                     string create_tmp_table = "create table "+get_hash_fromstr(f_name+"_L")+"(";
 
-                    //cplmnt_set.insert(get_hash_fromstr(f_name)+"_L");
-                    cplmnt_set.insert(f_name);
+                    cplmnt_set.insert(get_hash_fromstr(f_name)+"_L");
+                    //cplmnt_set.insert(f_name);
 
                     tree_set.clear();
                     for(int j=0;j<frg.condition_slice[complemnt_siteID].con_V1.attr_num;j++)
@@ -416,9 +431,9 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
                 }
 
             }
-            else//no vertical fragment condition
+        else if(frg.condition_slice[site_ID-1].con_H1.isValid ||frg.condition_slice[site_ID-1].con_H2.isValid )//no vertical fragment condition
             {
-                if(site_ID == -1) site_ID =1;
+                //if(site_ID == -1) site_ID =1;
                 string IP_address = pmgr->get_IP_by_siteID(site_ID-1);
                 string sql_stm = "select * from "+f_name+";" ;
                 cout<<"the SQL is: "<<sql_stm<<" to site: "<<site_ID<<" IP is: "<<IP_address<<endl;
@@ -550,11 +565,13 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
 
     }
     string final_res;
+    cout <<"******************************"<<endl;
     cout<<"The final SQL query is:"<<SQL<<endl;
     final_res = RPCExecuteQuery(default_local_ip,"db1", SQL+";");//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     cout<<final_res<<endl;
-
+    cout<<"SIZE IS " << final_res.length()<<endl;
+    cout <<"******************************"<<endl;
     string drop_str = "drop table ";
     auto tmp_it = tmp_set.cbegin();
     while(tmp_it!=tmp_set.cend())
@@ -565,7 +582,10 @@ void Dispatcher::exec_SQL_query_poor_optimal(string SQL)
         tmp_it++;
     }
 
-
+    gettimeofday( &end, NULL );
+    double timeuse = 1000000 * ( end.tv_sec - start.tv_sec ) + (end.tv_usec -start.tv_usec);
+    double timeuse_new = timeuse/1000;
+    printf("The SQL query time is: %f ms\n", timeuse_new);
 
 }
 
@@ -583,7 +603,7 @@ string Dispatcher::get_hash_fromstr(string str)
 string Dispatcher::get_attr_ruletypestring(int rule_type)
 {
     switch (rule_type) {
-    case 0:
+    case 1:
         return string("primary key");
         break;
 

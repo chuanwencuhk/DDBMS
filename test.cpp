@@ -5,21 +5,6 @@
  *      Author: wcw
  *	
  */
-
-insert into emp values ('E2500','wangchuanwen','teacher');
-select * from emp where eno = 'E2500';
-
-select * from emp where eno = 'E2497';
-
-select * from job  where jno = 'J0999';
-select * from asg where eno = 'E1159';
-
-
-insert into job values ('J1230','Project #2000','20000','Newyork City');
-
-select * from job where jno='J1230';
-
-
 step 1. DROP TABLES;
 drop table sal;
 drop table emp;
@@ -33,7 +18,23 @@ create table emp(eno char(100),ename char(100), title char(100));
 create table job(jno char(100),jname char(20), budget integer, loc char(20));
 create table asg(eno char(100), jno char(20), resp char(20), dur integer);
 
-CHECK ON ALL SITES.
+
+create table publisher(id integer,name char(100),nation char(3));
+create table book(id integer,title char(100),authors char(20),publisher_id integer,copies integer);
+create table customer(id integer,name char(25),rank integer);
+create table orders (customer_id integer,book_id integer,quantity integer);
+
+frag -hor publisher id < 104000 and nation = 'PRC' db1 * id < 104000 and nation = 'USA' db2 * id >= 104000 and nation = 'PRC' db3 * id >= 104000 and nation = 'USA' db4;
+
+frag -hor book id < 205000 db1 * id >= 205000 and id < 210000 db2 * id >= 210000 db3;
+
+frag -ver customer (id,name) db1 * (id,rank) db2;
+
+frag -hor orders customer_id < 307000 and book_id < 215000 db1 * customer_id < 307000 and book_id >= 215000 db2 * customer_id >= 307000 and book_id < 215000 db3 * customer_id >= 307000 and book_id >= 215000 db4;
+
+frag -hor asg eno < 'E1000' and jno < 'J0500' db1 * eno < 'E1000' and jno >= 'J0500' db2 * eno >= 'E1000' and jno < 'J0500' db3 * eno >= 'E1000' and jno >= 'J0500' db4;
+
+
 
 use foo;
 show tables;
@@ -51,13 +52,21 @@ load 'sal.csv' into local table sal ;
 
 frag -none sal db1;
 
+
+frag -ver emp (eno,ename)	db1 * (eno,title) db2;
+
+create table emp(eno char(100),ename char(100), title char(100));
+
 frag -hor emp eno < 'E1000' and title < 'N' db1 * eno < 'E1000' and title >= 'N' db2 * eno >= 'E1000' and title < 'N' db3 * eno >= 'E1000' and title >= 'N' db4;
 
-frag -hor asg eno < 'E1000' and jno < 'J0500' db1 * eno < 'E1000' and jno >= 'J0500' db2 * eno >= 'E1000' and jno < 'J0500' db3 * eno >= 'E1000' and jno >= 'J0500' db4;
+
 
 frag -hor job jno < 'J0500' db1 * jno >= 'J0500' db2;
 
 frag -mix job jno < 'J0500' (jno,jname,budget) db1 * jno < 'j0500' (jno,loc) db2 * jno >= 'j0500' (jno,jname,budget) db3 * jno >= 'J0500' (jno,loc) db4;
+
+
+
 
 
 
@@ -91,4 +100,16 @@ delete from emp;
 step 5. UPDATE
 update job set jname = 'Project #988' where jno = 'J0999';
 
+insert into emp values ('E2500','wangchuanwen','teacher');
+select * from emp where eno = 'E2500';
+
+select * from emp where eno = 'E2497';
+
+select * from job  where jno = 'J0999';
+select * from asg where eno = 'E1159';
+
+
+insert into job values ('J1230','Project #2000','20000','Newyork City');
+
+select * from job where jno='J1230';
 

@@ -45,6 +45,7 @@ struct AttrInfo{
 	char* table_name;
 	char* attr_name;
 	TYPE type;
+	bool is_key = false;
 	int used_size;
 };
 

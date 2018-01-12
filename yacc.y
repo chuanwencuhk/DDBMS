@@ -98,7 +98,7 @@ static char recordstr[4096];
 	/* reserved keywords */
 %token SELECT FROM WHERE ORDER BY ASC DESC FRAGMENT LOAD
 %token ALL UNIQUE DISTINCT
-%token CREATE TABLE DROP INDEX LOCAL
+%token CREATE TABLE DROP INDEX LOCAL KEY
 %token INSERT INTO VALUES DELETE UPDATE SET
 %token CHARACTER INTEGER DATE FLOAT VARCHAR
 %token HORIZONAL VERTICAL MIXED NONE
@@ -162,10 +162,10 @@ frag_stat:
 			frag_tb_name = $4;
 			cout<<"frag type is " << frag_type <<" HORIZONAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
-			cout<<"load_data";
-			// insertFragMeta();
-			 spliceFragToSelect();
-			//load_data();
+			//cout<<"load_data";
+			//spliceFragToSelect();
+			//insertFragMeta();
+			load_data();
 		}
 	|	FRAGMENT '-'VERTICAL  NAME frag_list_v ';'
 		{
@@ -173,8 +173,8 @@ frag_stat:
 			frag_tb_name = $4;
 			cout<<"frag type is " << frag_type <<" VERTICAL "<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
-			// insertFragMeta();
-			 //spliceFragToSelect();
+			//spliceFragToSelect();
+			//insertFragMeta();
 			load_data();
 		}
 	|	FRAGMENT '-'MIXED		  NAME frag_list_m	';'
@@ -183,8 +183,8 @@ frag_stat:
 			frag_tb_name = $4;
 			cout<<"frag type is " << frag_type <<" MIXED"<<endl;
 			cout<<"frag_tb_name is "<<frag_tb_name<<endl;
-			// insertFragMeta();
-			// spliceFragToSelect();
+			//spliceFragToSelect();
+			//insertFragMeta();
 			load_data();
 	}
 	|	FRAGMENT '-'NONE NAME NAME ';'
@@ -366,6 +366,7 @@ table_def:
 			cout<<"Create Table "<< tb_name << endl;
 			PrintAttrList();
 			cout<<"exec_create_stmt"<<endl;
+			//spliceCreateStmt();
 			exec_create_stmt();
 			//parser_init();	
 		}
@@ -384,10 +385,16 @@ table_attr_list:
 	|	table_attr_list ',' column_def
 	;
 column_def:
-		column data_type
+		column data_type key_stat
 		{
-			attr_count++;
-			
+			attr_count++;			
+		}
+key_stat:
+		
+	|
+		KEY
+		{
+			attr_list[attr_count].is_key = true;
 		}
 	;
 column:
@@ -758,7 +765,7 @@ int FillUpdateCond(){
 int PrintAttrList(){
 	int i;
 	for(i=0;i<attr_count;i++){
-			cout<<"attr "<<i<<": "<<attr_list[i].attr_name<<" type "<<attr_list[i].type<<" size "<<attr_list[i].used_size<<endl;
+			cout<<"attr "<<i<<": "<<attr_list[i].attr_name<<" type "<<attr_list[i].type<<" size "<<attr_list[i].used_size<<"is key: "<<attr_list[i].is_key<<endl;
 		}
 		return 0;
 }

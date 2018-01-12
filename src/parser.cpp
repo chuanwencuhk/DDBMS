@@ -135,9 +135,12 @@ string GetVTypeString(TYPE type, int i){
 }
 
 bool insertFragMeta(){
+	cout<<"insertFragMeta  *************"<<endl;
+	cout<<"Frag****"<<frag_tb_name<<endl;
 	string tmp_tb_name(frag_tb_name);
 	Fragment tmp_frag;
 	tmp_frag.frag_table_name = tmp_tb_name;
+	cout<<frag_count<<endl;
 	//MetadataManager::getInstance()->add_fragment_name_intolist(tmp_tb_name);
 	if(frag_type == HOR){
 		for (int i = 0; i < frag_count; ++i)
@@ -183,6 +186,7 @@ bool insertFragMeta(){
 		{
 			tmp_frag.condition_slice[i].isValid = true;
 			tmp_frag.condition_slice[i].con_H1.isValid = true;
+			tmp_frag.condition_slice[i].con_V1.isValid = true;
 
 			tmp_frag.condition_slice[i].con_H1.attr_name = frag_list[i].CondList[0].col_name;
 			tmp_frag.condition_slice[i].con_H1.attr_condition = GetTypeString(frag_list[i].CondList[0].op);
@@ -204,6 +208,8 @@ bool insertFragMeta(){
 		return true;
 	}
 	if(frag_type == N){
+		cout<<"N "<<frag_count<<endl;
+		MetadataManager::getInstance()->set_fargment_info(tmp_frag);
 		return true;
 	}
 	return false;
@@ -224,7 +230,10 @@ bool insertIntoTableMeta(){
 		tmp_tb_meta.Attr[i].attr_name = attr_list[i].attr_name;
 		tmp_tb_meta.Attr[i].attr_datatype = attr_list[i].type;
 		tmp_tb_meta.Attr[i].attr_length = attr_list[i].used_size;
-		cout<<"insertIntoTableMeta COPY "<< tmp_tb_meta.Attr[i].attr_name<<tmp_tb_meta.Attr[i].attr_datatype<<tmp_tb_meta.Attr[i].attr_length<<endl;
+		if(attr_list[i].is_key){
+			tmp_tb_meta.Attr[i].attr_rulestype = 1;
+		}		
+		cout<<"insertIntoTableMeta COPY "<< tmp_tb_meta.Attr[i].attr_name<<tmp_tb_meta.Attr[i].attr_datatype<<tmp_tb_meta.Attr[i].attr_length <<" "<< tmp_tb_meta.Attr[i].attr_rulestype <<endl;
 	}
 
 	MetadataManager::getInstance()->set_tablemetadata(tmp_tb_meta);
@@ -248,6 +257,8 @@ string spliceCreateStmt(){
 	tmp_stmt.append(" ");
 	string type_string = GetVTypeString(attr_list[0].type,0);
 	tmp_stmt.append(type_string);
+	if(attr_list[0].is_key)
+		tmp_stmt += " KEY ";
 	for (int i = 1; i < attr_count; i++)
 	{
 		tmp_stmt.append(", ");
@@ -357,7 +368,7 @@ string spliceDeleteStmt(){
 		slpice cond_list same as where_cond in select.
 	 */
 	if(delete_query->cond_count!=0)
-		tmp_stmt += "WHERE ";
+		tmp_stmt += " WHERE ";
 	string cond_stmt = spliceCondStmt(delete_query->cond_count,delete_query->CondList);
 	if(cond_stmt != "")
 		tmp_stmt.append(cond_stmt);
@@ -394,35 +405,6 @@ string spliceUpdateStmt(){
 	tmp_stmt += ";";
 	return tmp_stmt;
 }
-// bool checkIsSelStmtValid(){
-// 	cout<<"enter checkIsSelStmtValid"<<endl;
-// 	for(int i=0; i<query->from_count;i++){
-// 		if(!isTableExists(query->FromList[i].tb_name))
-// 			return false;
-// 	}
-// 	for (int i = 0; i < query->sel_count; ++i)
-// 	{
-// 		if(query->SelList[i].table_name!=NULL){
-// 			string tmp_name = query->SelList[i].table_name;
-// 			if(!isTableExists(tmp_name)){
-// 				cout<<"ERROR: table not exists."<<endl;
-// 				cout<< query->SelList[i].table_name<<"."<<query->SelList[i].col_name<<"is not valid."<<endl;
-// 				return false;
-// 			}
-// 		}
-// 		if(!isAttrExists(query->SelList[i].col_name,query->SelList[i].table_name)){
-// 			cout<<"ERROR: attribute not exists."<<endl;
-// 			cout<<query->SelList[i].col_name;
-// 			return false;
-// 		}
-// 	}
-// 	// if(query->cond_count!=0){
-// 	// 	if(!checkIsCondValid(query->cond_count,query->CondList))
-// 	// 		return false;
-// 	// }
-// 	return true;
-// }
-
 string spliceSelectStmt(){
 		cout<<"spliceSelectStmt"<<endl;
 		if(NULL == query){
@@ -499,11 +481,13 @@ string spliceInsertStmt(){
 	SELECT jno, loc INTO OUTFILE '/var/lib/mysql-files/job_db4.data' FIELDS TERMINATED BY '	' FROM job WHERE jno >= 'J0500';
  */
 void spliceFragToSelect(){
+	cout<<"INTO spliceFragToSelect"<<endl;
 	if(frag_count == 0){
 		cout << "there is no frag info."<<endl;
 		return;
 	}
 	for(int i = 0; i<MAX_FRAG_NUM;i++){
+		cout<<"empty frag_creat_stmt"<<endl;
 		frag_creat_stmt[i] ="";
 		frag_select_stmt[i]="";
 	}
@@ -585,6 +569,8 @@ void spliceFragToSelect(){
 				if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
 					string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
 					tmp_create_stmt += type_string;
+					if(tmp_tb_meta.Attr[m].attr_rulestype==1)
+						tmp_create_stmt += " key ";
 					flag = true;
 					break;
 				}
@@ -603,6 +589,8 @@ void spliceFragToSelect(){
 					if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
 						string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
 						tmp_create_stmt += type_string;
+						if(tmp_tb_meta.Attr[m].attr_rulestype==1)
+							tmp_create_stmt += " key ";
 						flag = true;
 						break;
 					}
@@ -670,6 +658,8 @@ void spliceFragToSelect(){
 				if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
 					string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
 					tmp_create_stmt += type_string;
+					if(tmp_tb_meta.Attr[m].attr_rulestype==1)
+						tmp_create_stmt += " key ";
 					flag = true;
 					break;
 				}
@@ -688,6 +678,8 @@ void spliceFragToSelect(){
 					if(tmp_attr_name == tmp_tb_meta.Attr[m].attr_name){
 						string type_string =  GetTypeStringF((TYPE)tmp_tb_meta.Attr[m].attr_datatype,tmp_tb_meta.Attr[m].attr_length);
 						tmp_create_stmt += type_string;
+						if(tmp_tb_meta.Attr[m].attr_rulestype==1)
+						tmp_create_stmt += " key ";
 						flag = true;
 						break;
 					}
