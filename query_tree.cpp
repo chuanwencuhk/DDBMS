@@ -865,11 +865,12 @@ void push_select_down(query_tree &tree)
 		while (pos >= 0)
 		{
 			t = s.substr(0, pos);
+			s = s.substr(pos + 1, s.length() - pos - 1);
 			pos = t.find(".");
 			if (pos<0)	attr[++attr_num] = t;
 			else attr[++attr_num] = t.substr(pos+1, t.length()- pos -1);
-			cout << attr[attr_num] << endl;
-			s = s.substr(pos + 1, s.length() - pos - 1);
+			//cout << attr[attr_num] << endl;
+			
 			
 			pos = s.find(",");
 		}
@@ -877,7 +878,7 @@ void push_select_down(query_tree &tree)
 		pos = t.find(".");
 		if (pos<0)	attr[++attr_num] = t;
 		else attr[++attr_num] = t.substr(pos + 1, t.length() - pos - 1);
-		cout << attr[attr_num] << endl;
+		//cout << attr[attr_num] << endl;
 
 		int en = tree.num;
 		//扫描全树，遇到分片就下推select
