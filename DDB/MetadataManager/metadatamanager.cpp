@@ -513,6 +513,8 @@ void MetadataManager::initialize_siteinfo()
     write_to_config_file(METADATA_CONFIG_FILE);
     cout << "initialize_siteinfo is ok! "  << endl;
 
+
+
 }
 
 void MetadataManager::initialize_database()
