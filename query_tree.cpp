@@ -470,6 +470,7 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 	}
 	//找到.的位置，把表名去掉
 	int pos_dot = condition.find(".", 0);
+	string table_name = condition.substr(0, pos_dot);
 	//提取出查询条件的属性
 	string attr = "";
 	if (pos_dot < 0) attr = condition.substr(0, pos_op);		
@@ -504,7 +505,7 @@ bool match_condition_frag(string condition, treenode &x, query_tree &tree)
 	}
 	else
 	{	//看垂直分片信息上是否有该属性
-		//cout << "find " << attr << endl;
+		//cout << "find " << site << attr << endl;
 		int pos = sch.table[sch_pos].site[site].condition[1].find(attr);
 		if (pos >= 0)
 		{
@@ -777,18 +778,40 @@ void push_condition_down(query_tree &tree)
 	}
 	for (int i = 1;i <= en;i++)
 	{	if (tree.node[i].type == 3) //遇到条件就下推
-		{	//先把条件的表名去掉
+		{	//提取分片表名和分片序号
+			//cout << "aaa\n";
+			
+			//先把条件的表名去掉
+			//string con = tree.node[i].str;
 			int pos = tree.node[i].str.find(".");
 			if (pos >= 0) tree.node[i].str = tree.node[i].str.substr(pos + 1, tree.node[i].str.length() - pos - 1);
+			
 			//判断是否要插入到分片上
 			for (int j = 1;j <= r;j++)
-			{	
+			{
 				if (q[j] == -1) continue;
+				string x = tree.node[q[j]].str;
+				int pos_colon = x.find(":");
+				string name = ""; int site = 0;
+				if (pos_colon < 0)
+				{
+					name = x;
+					site = 1;
+				}
+				else
+				{
+					int len = x.length();
+					name = x.substr(0, pos_colon);
+					site = atoi(x.substr(pos_colon + 1, len - pos_colon - 1).c_str());
+				}
+				//cout << name << site << endl;
+				
 				//cout << tree.node[i].str << " " << tree.node[q[j]].str << endl;
 				//判断查询条件的属性，分片是否拥有
+				//cout << tree.node[i].str << tree.node[q[j]].str << endl;
 				if (match_condition_frag(tree.node[i].str, tree.node[q[j]], tree))
 				{	//垂直分片或者不分片有这个属性其实就可以直接插入了
-					if (tree.node[i].type == 1 || tree.node[i].type == -1)
+					if (sch.table[tree.schema_pos[name]].type == 1 || sch.table[tree.schema_pos[name]].type == -1)
 					{	//cout << tree.node[i].str << " 插入 " << tree.node[q[j]].str << endl;
 						copy_node(tree, q[j], tree.node[i]);
 					}
@@ -814,7 +837,46 @@ void push_condition_down(query_tree &tree)
 				}
 				//没有就什么都不做
 				else
-				{	//cout << "什么都不做" << endl;
+				{
+					
+					//如果是垂直分片，并且没有这个属性，可以删除这一枝
+					if (sch.table[tree.schema_pos[name]].type == 1 && false)
+					{	//将投影属性拆分到attr
+						string s = tree.node[tree.root].str, t;
+						int attr_num = 0;
+						string attr[20];
+						int pos = s.find(",");
+						while (pos >= 0)
+						{
+							t = s.substr(0, pos);
+							s = s.substr(pos + 1, s.length() - pos - 1);
+							pos = t.find(".");
+							if (pos<0)	attr[++attr_num] = t;
+							else attr[++attr_num] = t.substr(pos+1, t.length()- pos -1);
+							//cout << attr[attr_num] << endl;
+							pos = s.find(",");
+						}
+						t = s;
+						pos = t.find(".");
+						if (pos<0)	attr[++attr_num] = t;
+						else attr[++attr_num] = t.substr(pos + 1, t.length() - pos - 1);
+						//看这个分片用不用删除
+						bool frag_has_attr = false;
+						for (int k = 1;k <= attr_num;k++)
+						{
+							string tmp = attr[k];
+							pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
+							if (pos >= 0) frag_has_attr = true;
+						}
+						if (!frag_has_attr)
+						{
+							cout << "aa\n";
+							delete_node(tree, q[j]);
+							if (tree.node[tree.node[q[j]].fa].type == 2) delete_node(tree, tree.node[q[j]].fa);
+						}
+
+						
+					}
 				}
 			}
 			//推完将这个查询条件删除
@@ -928,6 +990,49 @@ void push_select_down(query_tree &tree)
 						}
 						//判断tmp是否应该加入
 						bool frag_has_attr = false;//分片是否有这个属性
+						if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
+						{	//水平分片和不分片看对应的表是否有属性
+							for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
+								if (tmp.compare(sch.table[tree.schema_pos[name]].col_name[j]) == 0) frag_has_attr = true;
+						}
+						else
+						{	//垂直分片和混合分片看分片条件上是否有
+							pos = sch.table[tree.schema_pos[name]].site[site].condition[1].find(tmp);
+							if (pos >= 0) frag_has_attr = true;
+						}
+						if (frag_has_attr)
+						{	//有这个属性并且还未添加
+							frag_has_attr = false;
+							for (int j = 1;j <= frag_attr_num;j++)
+								if (tmp.compare(frag_attr[j]) == 0) frag_has_attr = true;
+							if (!frag_has_attr)
+							{
+								frag_attr[++frag_attr_num] = tmp;
+								//cout << "add" << tmp << endl;
+							}
+						}
+
+						//看连接条件前面的属性
+						tmp = tree.node[p].str;
+						if (tmp.compare("") == 0)
+						{	//分片之间的连接，取两个分片的公共属性，其实就是分片条件中的第一个属性
+							tmp = sch.table[tree.schema_pos[name]].site[site].condition[1];
+							pos = tmp.find(",");
+							tmp = tmp.substr(0, pos);
+							//cout << tmp << endl;
+						}
+						else
+						{   
+							pos = tmp.find(".");
+							tmp = tmp.substr(pos + 1, tmp.length() - pos - 1);
+							//cout << tmp << endl;
+							pos = tmp.find("=");
+							tmp = tmp.substr(0, pos);
+							//cout << tmp << endl;
+							//tmp则为需要判断的属性
+						}
+						//判断tmp是否应该加入
+						frag_has_attr = false;//分片是否有这个属性
 						if (sch.table[tree.schema_pos[name]].type == 0 || sch.table[tree.schema_pos[name]].type == -1)
 						{	//水平分片和不分片看对应的表是否有属性
 							for (int j = 1;j <= sch.table[tree.schema_pos[name]].col_num;j++)
@@ -1157,11 +1262,47 @@ bool join_frag(query_tree &tree, string frag1, string frag2)
 		//cout << "比较" << frag1 << " " << frag2 << endl;
 		for (int i = 1;i <= sch.table[pos1].site[site1].hcon_list_len;i++)
 		for (int j = 1;j <= sch.table[pos2].site[site2].hcon_list_len;j++)
-		if (sch.table[pos1].site[site1].hcon_list[i].attr.compare(sch.table[pos2].site[site2].hcon_list[j].attr) == 0)
-		{	//属性相同时，看条件是否有交集
-			if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+		{	
+			string a1 = sch.table[pos1].site[site1].hcon_list[i].attr, a2 = sch.table[pos2].site[site2].hcon_list[j].attr;
+			//cout << a1 << " " << a2 << endl;
+			if (a1.compare(a2) == 0)
+			{	//属性相同时，看条件是否有交集
+				if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+				{
+					return false;
+				}
+			}
+			if (name1.compare("book")==0)
+			if (a1.compare("id") == 0 && a2.compare("book_id") == 0)
 			{
-				return false;
+				if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+				{
+					return false;
+				}
+			}
+			if (name2.compare("book") == 0)
+			if (a1.compare("book_id") == 0 && a2.compare("id") == 0)
+			{
+				if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+				{
+					return false;
+				}
+			}
+			if (name1.compare("customer") == 0)
+			if (a1.compare("id") == 0 && a2.compare("customer_id") == 0)
+			{
+				if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+				{
+					return false;
+				}
+			}
+			if (name2.compare("customer") == 0)
+			if (a1.compare("customer_id") == 0 && a2.compare("id") == 0)
+			{
+				if (!intersect(sch.table[pos1].site[site1].hcon_list[i].op, sch.table[pos1].site[site1].hcon_list[i].section, sch.table[pos2].site[site2].hcon_list[j]))
+				{
+					return false;
+				}
 			}
 		}
 	}
