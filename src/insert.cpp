@@ -22,79 +22,30 @@ vector<string> db_names1 = {"db1","db2","db3","db4"};
 
 std::vector<string> site_name = {"db1","db2","db3","db4"};
 
-string GetVTypeStringX(TYPE type, int i, AttrInfo* attrs){
-	string tmp_string;
+string GetTypeStringX(TYPE type, int used_size){
+	string tmp_string = " ";
 	if(type == 1)
-		return "INTEGER";
+		return " INTEGER";
 	if(type == C){
-		tmp_string = "CHAR";
-		tmp_string = tmp_string+ "("+std::to_string(attrs[i].used_size)+")";
+		tmp_string = " CHAR";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
 		return tmp_string;
 	}
 	if(type == V){
-		tmp_string = "VARCHAR";
-		tmp_string = tmp_string+ "("+std::to_string(attrs[i].used_size)+")";
+		tmp_string = " VARCHAR";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
 		return tmp_string;
 	}
 	if(type == F){
-		tmp_string = "FLOAT";
-		tmp_string = tmp_string+ "("+std::to_string(attrs[i].used_size)+")";
+		tmp_string = " FLOAT";
+		tmp_string = tmp_string+ "("+std::to_string(used_size)+")";
 		return tmp_string;
 	}
 	if(type == D)
-		return "DATE";
+		return " DATE";
 }
 
-
-// string spliceCreateStmtX(string tb_name, int attr_count, AttrInfo* attr_list);
-// int spliceFragToSelectX(vector<string> &strings,string name);
-// void load_dataX(int fcount,string table_name,vector<string> &strings);
-
-string spliceCreateStmtX(string tb_name, int attr_count, AttrInfo* attrs){
-	cout <<"*************spliceCreateStmtX"<<endl;
-	for (int i = 0; i < attr_count; ++i)
-	{
-		cout<<"attr_name:  "<< attrs[i].attr_name <<endl;
-		cout<<"type  :"<<attrs[i].type<<endl;
-		cout<<"used_size:    "<<attrs[i].used_size<<endl;
-	}
-	if(stmts.size()!=0)
-		stmts.clear();
-	cout<<"clear over"<<endl;
-	if((attr_count == 0) || (tb_name =="")){
-		cout<<"spliceCreateStmtX error"<<endl;
-		return "";
-	}
-	cout<<"******count "<< attr_count<<endl;
-	string tmp_stmt;
-	tmp_stmt = "CREATE TABLE ";
-	cout<<tmp_stmt<<endl;
-	tmp_stmt.append(tb_name);
-	cout<<tmp_stmt<<endl;
-	tmp_stmt.append("(");
-	tmp_stmt.append(attrs[0].attr_name);
-	cout<<tmp_stmt<<endl;
-	tmp_stmt.append(" ");
-	string type_string = GetVTypeStringX(attrs[0].type,0,attrs);
-	tmp_stmt.append(type_string);
-
-	cout<<tmp_stmt<<endl;
-
-	for (int i = 1; i < attr_count; i++)
-	{
-		tmp_stmt.append(", ");
-		tmp_stmt.append(attrs[i].attr_name);
-		cout<<"i:  "<<attrs[i].attr_name<<endl;
-		tmp_stmt.append(" ");
-		string type_string = GetVTypeStringX(attrs[i].type,i,attrs);
-		tmp_stmt.append(type_string);
-	}
-	tmp_stmt.append(" );");
-	cout << tmp_stmt << endl;
-	return tmp_stmt;
-
-}
-int spliceFragToSelectX(vector<string>&strings,string name){
+int spliceFragToSelectX(string name){
 	Fragment tmp_frag = MetadataManager::getInstance()->get_fragment_bystr(name);
 	for (int i = 0; i < MAX_FRAGMENT_NUM; ++i)
 	{
@@ -113,8 +64,6 @@ int spliceFragToSelectX(vector<string>&strings,string name){
 				tmp_stmt += tmp_frag.condition_slice[i].con_V1.attr_frag_strlist[j];
 			}
 		}
-		
-
 		string tmp_name = name + "_tmp";
 
 		data_path_tmp[i] = dir;
@@ -124,7 +73,7 @@ int spliceFragToSelectX(vector<string>&strings,string name){
 		data_path_tmp[i].append(".data");
 		cout<<"i "<<i<<" "<<data_path_tmp[i]<<endl;
 
-		tmp_stmt += tmp_name;
+		//stmp_stmt += tmp_name;
 
 		tmp_stmt += " INTO OUTFILE '";
 		tmp_stmt += data_path_tmp[i];
@@ -145,15 +94,15 @@ int spliceFragToSelectX(vector<string>&strings,string name){
 			tmp_stmt += tmp_frag.condition_slice[i].con_H2.attr_value;
 		}
 		tmp_stmt.append(";");
-		strings.push_back(tmp_stmt);
-		cout<<strings[i]<<endl;
+		stmts.push_back(tmp_stmt);
+		cout<<stmts[i]<<endl;
 	}
-	int fcount = strings.size();
-	cout<<"fcount is " <<fcount<<endl;string data_path_tmp[MAX_FRAG_NUM];
+	int fcount = stmts.size();
+	cout<<"fcount is " <<fcount<<endl;
 	return fcount;
 }
 
-int get_frag_dataX(vector<string> &stmts,string name){
+int get_frag_dataX(string name,int fcount){
 	cout<<"get_frag_dataX."<<endl;
 	if(stmts.size() == 0){
 		cout<<"get_frag_dataX: 0"<<endl;
@@ -161,7 +110,7 @@ int get_frag_dataX(vector<string> &stmts,string name){
 	}
 
 	const char* c_sql_stmt;
-	for(int i = 0; i < frag_count; i++){
+	for(int i = 0; i < fcount; i++){
 		cout << stmts[i]<<endl;
 		c_sql_stmt = stmts[i].c_str();
 		cout<<"c_sql_stmt "<<c_sql_stmt<<endl;
@@ -181,20 +130,21 @@ int get_frag_dataX(vector<string> &stmts,string name){
 void load_dataX(string table_name,vector<string> &stmts){
 	cout<<"load_dataX"<<endl;
 	int fcount = stmts.size();
-	for(int i = 0; i < fcount; i++){
-		cout<<"remove old frag data"<<data_path_tmp[i]<<endl;
-		cout<<remove(data_path_tmp[i].c_str())<<endl;
-	}
 
 	/*
 	get select stmt
 	 */
 	cout<<" table_name "<<table_name<<endl;
 
-	spliceFragToSelectX(stmts,table_name);
+	fcount = spliceFragToSelectX(table_name);
+	for(int i = 0; i < fcount; i++){
+		cout<<"remove old frag data"<<data_path_tmp[i]<<endl;
+		cout<<remove(data_path_tmp[i].c_str())<<endl;
+	}
 
 	for (int i = 0; i < fcount; ++i)
 	{
+		cout<<i<<endl;
 		cout<<stmts[i]<<endl;
 	}
 	/*
@@ -203,14 +153,14 @@ void load_dataX(string table_name,vector<string> &stmts){
 	if(init_mysql())
 		finish_with_error(NULL);
 
-	get_frag_dataX(stmts,table_name);
+	get_frag_dataX(table_name,fcount);
 
 	fstream infile;
 	/*
 		send data to sites.
 	 */
 	cout<<"Start Sending Data."<<endl;
-	for(int i = 0; i < frag_count; i++){
+	for(int i = 0; i < fcount; i++){
 		cout<<data_path_tmp[i]<<endl;
 		string buf_string = readFileIntoString(data_path_tmp[i]);
 		cout<<"abcde    "<<i<<" "<<buf_string.size()<<endl;
@@ -232,31 +182,26 @@ void exec_insert_stmt(string tb_name){
 	cout<<"attrs malloc"<<endl;
 	int count = tmp_tb_meta.table_attr_num;
 
-	for (int i = 0; i < count; i++)
-	{
-		cout<<"i "<<i<<endl;
-		string s = tmp_tb_meta.Attr[i].attr_name;		 
-		attrs[i].attr_name = (char*)s.c_str();
-		//strcpy(attrs[i].attr_name,p);
-		attrs[i].type = (TYPE)tmp_tb_meta.Attr[i].attr_datatype;
-		attrs[i].used_size = tmp_tb_meta.Attr[i].attr_length;
-		cout<<"attr_name:  "<<i<< attrs[i].attr_name <<endl;
-		cout<<"type  :"<<i<<attrs[i].type<<endl;
-		cout<<"used_size:    "<<i<<attrs[i].used_size<<endl;
-	}
-
 	string tmp_tb_name = table_name +"_tmp";
-	cout << "tmp_tb_name "<<tmp_tb_name <<endl;
-	cout <<"count  :"<<count<<endl;
-	for (int i = 0; i < count; ++i)
+	string create_stmt = "CREATE TABLE "+tmp_tb_name+"( ";
+	cout << "tmp_tb_name "<<create_stmt <<endl;
+
+	string s = tmp_tb_meta.Attr[0].attr_name;
+	create_stmt += s;
+	string type_string = GetTypeStringX((TYPE)tmp_tb_meta.Attr[0].attr_datatype, tmp_tb_meta.Attr[0].attr_length);
+	create_stmt += type_string;
+
+	for (int i = 1; i < count; i++)
 	{
-		cout<<"attr_name:  "<<i<< attrs[i].attr_name <<endl;
-		cout<<"type  :"<<i<<attrs[i].type<<endl;
-		cout<<"used_size:    "<<i<<attrs[i].used_size<<endl;
+		create_stmt +=",";
+		s = tmp_tb_meta.Attr[i].attr_name;
+		create_stmt += s;
+		type_string = GetTypeStringX((TYPE)tmp_tb_meta.Attr[i].attr_datatype, tmp_tb_meta.Attr[i].attr_length);
+		create_stmt += type_string;
 	}
-	string tmp_crt = spliceCreateStmtX(tmp_tb_name, count, attrs);
-	cout << "tmp crt   "<<tmp_crt<<endl;
-	const char* c_sql_stmt = tmp_crt.c_str();
+	create_stmt+=");";
+	cout<<"create_stmt********"<<create_stmt<<endl;
+	const char* c_sql_stmt = create_stmt.c_str();
 	if(c_sql_stmt == ""){
 		cout<<"Create Tmp Table Error."<<endl;
 		return;
@@ -279,6 +224,17 @@ void exec_insert_stmt(string tb_name){
 	if(exe_sql(c_insert_stmt))
 		finish_with_error(NULL);
 	mysql_close(mysql_conn);
+	cout<<"LOAD data X"<<endl;
 	load_dataX(table_name,stmts);
+
+	cout<<"drop tmp table!"<<endl;
+	string drop_stmt = "DROP TABLE "+tmp_tb_name;
+	const char* c_delete_stmt = drop_stmt.c_str();
+	if(init_mysql())
+		finish_with_error(NULL);
+	if(exe_sql(c_delete_stmt))
+		finish_with_error(NULL);
+	mysql_close(mysql_conn);
+
 	return;
 }

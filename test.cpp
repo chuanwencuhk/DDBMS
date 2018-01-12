@@ -5,6 +5,21 @@
  *      Author: wcw
  *	
  */
+
+insert into emp values ('E2500','wangchuanwen','teacher');
+select * from emp where eno = 'E2500';
+
+select * from emp where eno = 'E2497';
+
+select * from job  where jno = 'J0999';
+select * from asg where eno = 'E1159';
+
+
+insert into job values ('J1230','Project #2000','20000','Newyork City');
+
+select * from job where jno='J1230';
+
+
 step 1. DROP TABLES;
 drop table sal;
 drop table emp;
@@ -75,4 +90,5 @@ delete from emp;
 
 step 5. UPDATE
 update job set jname = 'Project #988' where jno = 'J0999';
+
 

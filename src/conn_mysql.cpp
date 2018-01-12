@@ -41,7 +41,7 @@ MYSQL_ROW row;
 const char *pHostName = "localhost";
 const char *pUserName = "root";
 const char *pPassword = " ";
-const char *pDbName = "foo";
+const char *pDbName = "db1";
 const unsigned int iDbPort = 3306;
 
 vector<string> ip_vec = {"192.168.8.133","192.168.8.134","192.168.8.135","192.168.8.136"};
