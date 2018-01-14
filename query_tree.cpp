@@ -1103,7 +1103,7 @@ void push_select_down(query_tree &tree)
 				
 			}
 		}
-		clear_frag(tree);
+		//clear_frag(tree);
 	}
 	
 	//把最上面的投影操作删除
