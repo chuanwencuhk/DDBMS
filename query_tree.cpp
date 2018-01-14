@@ -895,8 +895,10 @@ void clear_frag(query_tree &tree)
 			int pos;
 			pos = tree.node[tree.node[i].child[1]].str.find(",");
 			if (pos >= 0) l = true;
+			if (tree.node[tree.node[tree.node[i].child[1]].child[1]].type == 3) l = true;
 			pos = tree.node[tree.node[i].child[2]].str.find(",");
 			if (pos >= 0) r = true;
+			if (tree.node[tree.node[tree.node[i].child[2]].child[1]].type == 3) r = true;
 			if (l == false)
 			{	//删除左子树
 				tree.node[i].child[1] = tree.node[i].child[2];
@@ -1103,7 +1105,7 @@ void push_select_down(query_tree &tree)
 				
 			}
 		}
-		//clear_frag(tree);
+		clear_frag(tree);
 	}
 	
 	//把最上面的投影操作删除

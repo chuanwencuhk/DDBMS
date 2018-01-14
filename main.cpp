@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-	string input = "select customer.name,orders.quantity,book.title from customer,orders,book where (book.book_id=orders.book_id) and (customer.customer_id=orders.customer_id) and (customer.rank=1) and (book.copies>5000)";
+	string input = "select customer.name,orders.quantity from customer,orders where (customer.customer_id=orders.customer_id)";
 	init_schema();
 	query_tree original_tree = get_original_tree(input);
 	cout << "original tree build complete\n";
