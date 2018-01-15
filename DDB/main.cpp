@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     sf.set_site_ip("192.168.1."+to_string(i+1));
     sf.set_site_port(3367+i);
     sf.set_control_site(true);
-    //dm.mtr.set_siteinfo(sf);
+    dm.mtr->set_siteinfo(sf);
     }
 
 if(TEST_SWITCH ==1)
