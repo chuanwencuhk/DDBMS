@@ -1,0 +1,128 @@
+1.create table.
+
+create table publisher(p_id integer key,name char(100),nation char(3));
+
+create table book(b_id integer key,title char(100),authors char(20),p_id integer,copies integer);
+
+create table customer(c_id integer key,name char(25),rank integer);
+
+create table orders (c_id integer,b_id integer,quantity integer);
+
+2.make fragments and distribute data.
+
+frag -hor publisher p_id < '104000' and nation = 'PRC' db1 * p_id < '104000' and nation = 'USA' db2 * p_id >= '104000' and nation = 'PRC' db3 * p_id >= '104000' and nation = 'USA' db4;
+
+frag -hor book b_id < 205000 db1 * b_id >= 205000 and b_id < 210000 db2 * b_id >= 210000 db3;
+
+frag -hor orders c_id < 307000 and b_id < 215000 db1 * c_id < 307000 and b_id >= 215000 db2 * c_id >= 307000 and b_id < 215000 db3 * c_id >= 307000 and b_id >= 215000 db4;
+
+frag -ver customer (c_id,name) db1 * (c_id,rank) db2;
+
+3.insert & delete test.
+
+insert into customer values(300001, 'Xiaoming', 1);
+select * from customer where id = 300001;
+
+insert into customer values(390004,'Xiaohong', 1);
+select * from customer where id = 390004;
+delete from customer where id = 300002; 
+
+insert into publisher  values(194001,'High Education Press', 'PRC');
+select * from publisher where id = 104001;
+delete from publisher where id = 104001;
+
+insert into book values(295001, 'DDB', 'Oszu', 104001, 100);
+
+insert into orders values(390004, 295001,5);
+
+delete from orders;
+delete from book where copies = 100;
+
+select * from book where copies = 100;
+
+delete from publisher where nation = 'PRC';
+
+delete from customer where name='Xiaohong' and rank=1;
+
+delete from customer where rank = 1;
+
+4.queries test.
+(1)
+select * from customer;
+result:
+SIZE IS 405251
+ROWs is 15000
+
+(2)
+select publisher.name from publisher;
+result:
+SIZE IS 94999
+ROWs is 5000
+
+(3)
+select book.title from book where copies>5000;
+result:
+SIZE IS 348683
+ROWs is 24906
+
+(4)
+select c_id, quantity from orders where quantity < 8;
+
+result:
+SIZE IS 993459
+ROWs is 99346
+
+(5)
+select book.title,book.copies,publisher.name,publisher.nation from book,publisher where book.p_id=publisher.p_id and publisher.nation='USA'and book.copies > 1000;
+result:
+SIZE IS 898842
+ROWs is 21923
+
+(6)
+select customer.name,orders.quantity from customer,orders where customer.c_id=orders.c_id;
+
+result:
+SIZE IS 1301237
+ROWs is 100000
+
+(7)
+select customer.name,rank,orders.quantity from customer,orders where customer.c_id=orders.c_id and rank=1;
+
+result:
+SIZE IS 618201
+ROWs is 41098
+
+(8)
+select customer.name ,orders.quantity,book.title from customer,orders,book where customer.c_id=orders.c_id and book.b_id=orders.b_id and rank=1 and book.copies>5000;
+
+result:
+SIZE IS 536868
+ROWs is 20612
+
+(9)
+select customer.name, book.title,publisher.name, orders.quantity from customer, book, publisher, orders where customer.c_id=orders.c_id and book.b_id=orders.b_id and book.p_id=publisher.p_id and book.b_id>220000 and publisher.nation='USA' and orders.quantity>1 ;
+
+result:
+SIZE IS 889490
+ROWs is 20209
+
+(10)
+select customer.name, book.title, publisher.name, orders.quantity from customer, book, publisher, orders where customer.c_id=orders.c_id and book.b_id=orders.b_id and book.p_id=publisher.p_id and customer.c_id>308000 and book.copies>100 and orders.quantity>1 and publisher.nation='PRC';
+
+result:
+SIZE IS 718961
+ROWs is 16345
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,131 @@
+12
+12 4 -1 1 11 1/customer.name,book.title,publisher.name,quantity
+11 1 12 8 134 150 198 214 262 278 294 310 2/
+134 2 11 2 135 147 3/book.p_id=publisher.p_id
+150 2 11 2 151 163 3/book.p_id=publisher.p_id
+198 2 11 2 199 211 3/book.p_id=publisher.p_id
+214 2 11 2 215 227 3/book.p_id=publisher.p_id
+262 2 11 2 263 275 3/book.p_id=publisher.p_id
+278 2 11 2 279 291 3/book.p_id=publisher.p_id
+294 2 11 2 295 307 3/book.p_id=publisher.p_id
+310 2 11 2 311 323 3/book.p_id=publisher.p_id
+135 2 134 2 136 139 4/book.b_id=orders.b_id
+147 4 134 1 148 4/name
+151 2 150 2 152 155 4/book.b_id=orders.b_id
+163 4 150 1 164 4/name
+199 2 198 2 200 203 4/book.b_id=orders.b_id
+211 4 198 1 212 4/name
+215 2 214 2 216 219 4/book.b_id=orders.b_id
+227 4 214 1 228 4/name
+263 2 262 2 264 267 4/book.b_id=orders.b_id
+275 4 262 1 276 4/name
+279 2 278 2 280 283 4/book.b_id=orders.b_id
+291 4 278 1 292 4/name
+295 2 294 2 296 299 4/book.b_id=orders.b_id
+307 4 294 1 308 4/name
+311 2 310 2 312 315 4/book.b_id=orders.b_id
+323 4 310 1 324 4/name
+136 4 135 1 137 5/p_id,title
+139 2 135 2 140 144 5/customer.c_id=orders.c_id
+148 3 147 1 149 5/nation='PRC'
+152 4 151 1 153 5/p_id,title
+155 2 151 2 156 160 5/customer.c_id=orders.c_id
+164 3 163 1 165 5/nation='PRC'
+200 4 199 1 201 5/p_id,title
+203 2 199 2 204 208 5/customer.c_id=orders.c_id
+212 3 211 1 213 5/nation='PRC'
+216 4 215 1 217 5/p_id,title
+219 2 215 2 220 224 5/customer.c_id=orders.c_id
+228 3 227 1 229 5/nation='PRC'
+264 4 263 1 265 5/p_id,title
+267 2 263 2 268 272 5/customer.c_id=orders.c_id
+276 3 275 1 277 5/nation='PRC'
+280 4 279 1 281 5/p_id,title
+283 2 279 2 284 288 5/customer.c_id=orders.c_id
+292 3 291 1 293 5/nation='PRC'
+296 4 295 1 297 5/p_id,title
+299 2 295 2 300 304 5/customer.c_id=orders.c_id
+308 3 307 1 309 5/nation='PRC'
+312 4 311 1 313 5/p_id,title
+315 2 311 2 316 320 5/customer.c_id=orders.c_id
+324 3 323 1 325 5/nation='PRC'
+137 3 136 1 138 6/copies>100
+140 4 139 1 141 6/c_id,b_id,quantity
+144 4 139 1 145 6/c_id,name
+149 0 148 0 6/publisher:1
+153 3 152 1 154 6/copies>100
+156 4 155 1 157 6/c_id,b_id,quantity
+160 4 155 1 161 6/c_id,name
+165 0 164 0 6/publisher:3
+201 3 200 1 202 6/copies>100
+204 4 203 1 205 6/c_id,b_id,quantity
+208 4 203 1 209 6/c_id,name
+213 0 212 0 6/publisher:1
+217 3 216 1 218 6/copies>100
+220 4 219 1 221 6/c_id,b_id,quantity
+224 4 219 1 225 6/c_id,name
+229 0 228 0 6/publisher:3
+265 3 264 1 266 6/copies>100
+268 4 267 1 269 6/c_id,b_id,quantity
+272 4 267 1 273 6/c_id,name
+277 0 276 0 6/publisher:1
+281 3 280 1 282 6/copies>100
+284 4 283 1 285 6/c_id,b_id,quantity
+288 4 283 1 289 6/c_id,name
+293 0 292 0 6/publisher:3
+297 3 296 1 298 6/copies>100
+300 4 299 1 301 6/c_id,b_id,quantity
+304 4 299 1 305 6/c_id,name
+309 0 308 0 6/publisher:1
+313 3 312 1 314 6/copies>100
+316 4 315 1 317 6/c_id,b_id,quantity
+320 4 315 1 321 6/c_id,name
+325 0 324 0 6/publisher:3
+138 0 137 0 7/book:1
+141 3 140 1 142 7/c_id>308000
+145 3 144 1 146 7/c_id>308000
+154 0 153 0 7/book:1
+157 3 156 1 158 7/c_id>308000
+161 3 160 1 162 7/c_id>308000
+202 0 201 0 7/book:2
+205 3 204 1 206 7/c_id>308000
+209 3 208 1 210 7/c_id>308000
+218 0 217 0 7/book:2
+221 3 220 1 222 7/c_id>308000
+225 3 224 1 226 7/c_id>308000
+266 0 265 0 7/book:3
+269 3 268 1 270 7/c_id>308000
+273 3 272 1 274 7/c_id>308000
+282 0 281 0 7/book:3
+285 3 284 1 286 7/c_id>308000
+289 3 288 1 290 7/c_id>308000
+298 0 297 0 7/book:3
+301 3 300 1 302 7/c_id>308000
+305 3 304 1 306 7/c_id>308000
+314 0 313 0 7/book:3
+317 3 316 1 318 7/c_id>308000
+321 3 320 1 322 7/c_id>308000
+142 3 141 1 143 8/quantity>1
+146 0 145 0 8/customer:1
+158 3 157 1 159 8/quantity>1
+162 0 161 0 8/customer:1
+206 3 205 1 207 8/quantity>1
+210 0 209 0 8/customer:1
+222 3 221 1 223 8/quantity>1
+226 0 225 0 8/customer:1
+270 3 269 1 271 8/quantity>1
+274 0 273 0 8/customer:1
+286 3 285 1 287 8/quantity>1
+290 0 289 0 8/customer:1
+302 3 301 1 303 8/quantity>1
+306 0 305 0 8/customer:1
+318 3 317 1 319 8/quantity>1
+322 0 321 0 8/customer:1
+143 0 142 0 9/orders:3
+159 0 158 0 9/orders:3
+207 0 206 0 9/orders:3
+223 0 222 0 9/orders:3
+271 0 270 0 9/orders:3
+287 0 286 0 9/orders:3
+303 0 302 0 9/orders:4
+319 0 318 0 9/orders:4
